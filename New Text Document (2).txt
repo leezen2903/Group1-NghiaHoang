@@ -1,0 +1,9 @@
+Bài thực hành buổi số 4:
+1. Tao ma tran ngau nhien ghi vao file
+2. HIen thi ma tran tu file len man hinh (Dùng kien thuc Read File)
+3. Sap xep ma tran theo hinh xoan oc (Sap xep - Tức là đọc file lên - xong roi ghi nguoc lai vao file)
+
+Học về Thread. 
+- Để làm dc với Thread thì làm việc với Implement?
+Implement từ INterface thì sẽ có 1 cái hàm Override.
+Hàm chức năng: 
