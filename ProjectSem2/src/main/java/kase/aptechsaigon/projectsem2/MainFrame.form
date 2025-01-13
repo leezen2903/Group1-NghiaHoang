@@ -26,48 +26,107 @@
             <Property name="text" type="java.lang.String" value="Nh&#xe2;n s&#x1ef1;"/>
           </Properties>
           <SubComponents>
-            <Menu class="javax.swing.JMenu" name="mnuStaff">
+            <Menu class="javax.swing.JMenu" name="mnuDepartment">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Nh&#xe2;n vi&#xea;n"/>
+                <Property name="text" type="java.lang.String" value="Ph&#xf2;ng ban"/>
               </Properties>
               <SubComponents>
-                <MenuItem class="javax.swing.JMenuItem" name="mnuViewStaff">
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiViewDept">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Xem danh s&#xe1;ch nh&#xe2;n vi&#xea;n"/>
+                    <Property name="text" type="java.lang.String" value="Xem danh s&#xe1;ch ph&#xf2;ng ban"/>
                   </Properties>
                 </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="mnuAddStaff">
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiAddDept">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Th&#xea;m nh&#xe2;n vi&#xea;n"/>
+                    <Property name="text" type="java.lang.String" value="Th&#xea;m ph&#xf2;ng ban"/>
                   </Properties>
                 </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="mnuEditStaff">
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiEditDept">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="&#x110;i&#x1ec1;u ch&#x1ec9;nh th&#xf4;ng tin nh&#xe2;n vi&#xea;n"/>
+                    <Property name="text" type="java.lang.String" value="&#x110;i&#x1ec1;u ch&#x1ec9;nh ph&#xf2;ng ban"/>
                   </Properties>
                 </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="mnuDeleteStaff">
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiDelDept">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="X&#xf3;a th&#xf4;ng tin nh&#xe2;n vi&#xea;n"/>
                   </Properties>
                 </MenuItem>
               </SubComponents>
             </Menu>
-            <MenuItem class="javax.swing.JMenuItem" name="mnuiDepartmenjt">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Ph&#xf2;ng ban"/>
-              </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="mnuiTeam">
+            <Menu class="javax.swing.JMenu" name="mnuTeam">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Nh&#xf3;m"/>
               </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="mnuiSalary1">
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiViewStaff1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Xem danh s&#xe1;ch nh&#xf3;m"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiAddStaff1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Th&#xea;m nh&#xf3;m"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiEditStaff1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="&#x110;i&#x1ec1;u ch&#x1ec9;nh th&#xf4;ng tin nh&#xf3;m"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuiEditStaff1ActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiDeleteStaff1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="X&#xf3;a nh&#xf3;m"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
+            <Menu class="javax.swing.JMenu" name="mnuStaff">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Nh&#xe2;n vi&#xea;n"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiViewStaff">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Xem danh s&#xe1;ch nh&#xe2;n vi&#xea;n"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiAddStaff">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Th&#xea;m nh&#xe2;n vi&#xea;n"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiEditStaff">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="&#x110;i&#x1ec1;u ch&#x1ec9;nh th&#xf4;ng tin nh&#xe2;n vi&#xea;n"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiDeleteStaff">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="X&#xf3;a th&#xf4;ng tin nh&#xe2;n vi&#xea;n"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
+            <Menu class="javax.swing.JMenu" name="mnuSalary">
               <Properties>
                 <Property name="text" type="java.lang.String" value="L&#x1b0;&#x1a1;ng"/>
               </Properties>
-            </MenuItem>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiViewSalary">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Xem b&#x1ea3;ng l&#x1b0;&#x1a1;ng"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="mnuiCalSalaray">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="T&#xed;nh l&#x1b0;&#x1a1;ng"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="mnuJob">
@@ -92,36 +151,36 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mnuTaskReport">
               <Properties>
-                <Property name="text" type="java.lang.String" value="jMenuItem1"/>
+                <Property name="text" type="java.lang.String" value="B&#xe1;o c&#xe1;o nhi&#x1ec7;m v&#x1ee5;"/>
               </Properties>
             </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="mnuStatistical">
           <Properties>
-            <Property name="text" type="java.lang.String" value="jMenu1"/>
+            <Property name="text" type="java.lang.String" value="Th&#x1ed1;ng k&#xea;"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="mnuiS_Salary">
               <Properties>
-                <Property name="text" type="java.lang.String" value="jMenuItem1"/>
+                <Property name="text" type="java.lang.String" value="Th&#x1ed1;ng k&#xea; c&#xf4;ng vi&#x1ec7;c"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mnuiS_Job">
               <Properties>
-                <Property name="text" type="java.lang.String" value="jMenuItem1"/>
+                <Property name="text" type="java.lang.String" value="Th&#x1ed1;ng k&#xea; nh&#xe2;n s&#x1ef1;"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mnuiS_HR">
               <Properties>
-                <Property name="text" type="java.lang.String" value="jMenuItem1"/>
+                <Property name="text" type="java.lang.String" value="Th&#x1ed1;ng k&#xea; l&#x1b0;&#x1a1;ng"/>
               </Properties>
             </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="mnuSystem">
           <Properties>
-            <Property name="text" type="java.lang.String" value="jMenu1"/>
+            <Property name="text" type="java.lang.String" value="H&#x1ec7; th&#x1ed1;ng"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="mnuiInfo">

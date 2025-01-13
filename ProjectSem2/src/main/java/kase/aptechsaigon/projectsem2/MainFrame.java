@@ -33,14 +33,24 @@ public class MainFrame extends javax.swing.JFrame {
         mnuiViewAcc = new javax.swing.JMenuItem();
         mnuiEditAcc = new javax.swing.JMenuItem();
         mnuHR = new javax.swing.JMenu();
+        mnuDepartment = new javax.swing.JMenu();
+        mnuiViewDept = new javax.swing.JMenuItem();
+        mnuiAddDept = new javax.swing.JMenuItem();
+        mnuiEditDept = new javax.swing.JMenuItem();
+        mnuiDelDept = new javax.swing.JMenuItem();
+        mnuTeam = new javax.swing.JMenu();
+        mnuiViewStaff1 = new javax.swing.JMenuItem();
+        mnuiAddStaff1 = new javax.swing.JMenuItem();
+        mnuiEditStaff1 = new javax.swing.JMenuItem();
+        mnuiDeleteStaff1 = new javax.swing.JMenuItem();
         mnuStaff = new javax.swing.JMenu();
-        mnuViewStaff = new javax.swing.JMenuItem();
-        mnuAddStaff = new javax.swing.JMenuItem();
-        mnuEditStaff = new javax.swing.JMenuItem();
-        mnuDeleteStaff = new javax.swing.JMenuItem();
-        mnuiDepartmenjt = new javax.swing.JMenuItem();
-        mnuiTeam = new javax.swing.JMenuItem();
-        mnuiSalary1 = new javax.swing.JMenuItem();
+        mnuiViewStaff = new javax.swing.JMenuItem();
+        mnuiAddStaff = new javax.swing.JMenuItem();
+        mnuiEditStaff = new javax.swing.JMenuItem();
+        mnuiDeleteStaff = new javax.swing.JMenuItem();
+        mnuSalary = new javax.swing.JMenu();
+        mnuiViewSalary = new javax.swing.JMenuItem();
+        mnuiCalSalaray = new javax.swing.JMenuItem();
         mnuJob = new javax.swing.JMenu();
         mnuJobList = new javax.swing.JMenuItem();
         mnuJobAssignment = new javax.swing.JMenuItem();
@@ -69,30 +79,68 @@ public class MainFrame extends javax.swing.JFrame {
 
         mnuHR.setText("Nhân sự");
 
+        mnuDepartment.setText("Phòng ban");
+
+        mnuiViewDept.setText("Xem danh sách phòng ban");
+        mnuDepartment.add(mnuiViewDept);
+
+        mnuiAddDept.setText("Thêm phòng ban");
+        mnuDepartment.add(mnuiAddDept);
+
+        mnuiEditDept.setText("Điều chỉnh phòng ban");
+        mnuDepartment.add(mnuiEditDept);
+
+        mnuiDelDept.setText("Xóa thông tin nhân viên");
+        mnuDepartment.add(mnuiDelDept);
+
+        mnuHR.add(mnuDepartment);
+
+        mnuTeam.setText("Nhóm");
+
+        mnuiViewStaff1.setText("Xem danh sách nhóm");
+        mnuTeam.add(mnuiViewStaff1);
+
+        mnuiAddStaff1.setText("Thêm nhóm");
+        mnuTeam.add(mnuiAddStaff1);
+
+        mnuiEditStaff1.setText("Điều chỉnh thông tin nhóm");
+        mnuiEditStaff1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuiEditStaff1ActionPerformed(evt);
+            }
+        });
+        mnuTeam.add(mnuiEditStaff1);
+
+        mnuiDeleteStaff1.setText("Xóa nhóm");
+        mnuTeam.add(mnuiDeleteStaff1);
+
+        mnuHR.add(mnuTeam);
+
         mnuStaff.setText("Nhân viên");
 
-        mnuViewStaff.setText("Xem danh sách nhân viên");
-        mnuStaff.add(mnuViewStaff);
+        mnuiViewStaff.setText("Xem danh sách nhân viên");
+        mnuStaff.add(mnuiViewStaff);
 
-        mnuAddStaff.setText("Thêm nhân viên");
-        mnuStaff.add(mnuAddStaff);
+        mnuiAddStaff.setText("Thêm nhân viên");
+        mnuStaff.add(mnuiAddStaff);
 
-        mnuEditStaff.setText("Điều chỉnh thông tin nhân viên");
-        mnuStaff.add(mnuEditStaff);
+        mnuiEditStaff.setText("Điều chỉnh thông tin nhân viên");
+        mnuStaff.add(mnuiEditStaff);
 
-        mnuDeleteStaff.setText("Xóa thông tin nhân viên");
-        mnuStaff.add(mnuDeleteStaff);
+        mnuiDeleteStaff.setText("Xóa thông tin nhân viên");
+        mnuStaff.add(mnuiDeleteStaff);
 
         mnuHR.add(mnuStaff);
 
-        mnuiDepartmenjt.setText("Phòng ban");
-        mnuHR.add(mnuiDepartmenjt);
+        mnuSalary.setText("Lương");
 
-        mnuiTeam.setText("Nhóm");
-        mnuHR.add(mnuiTeam);
+        mnuiViewSalary.setText("Xem bảng lương");
+        mnuSalary.add(mnuiViewSalary);
 
-        mnuiSalary1.setText("Lương");
-        mnuHR.add(mnuiSalary1);
+        mnuiCalSalaray.setText("Tính lương");
+        mnuSalary.add(mnuiCalSalaray);
+
+        mnuHR.add(mnuSalary);
 
         jMenuBar1.add(mnuHR);
 
@@ -107,25 +155,25 @@ public class MainFrame extends javax.swing.JFrame {
         mnuTaskManagement.setText("Quản lý nhiệm vụ");
         mnuJob.add(mnuTaskManagement);
 
-        mnuTaskReport.setText("jMenuItem1");
+        mnuTaskReport.setText("Báo cáo nhiệm vụ");
         mnuJob.add(mnuTaskReport);
 
         jMenuBar1.add(mnuJob);
 
-        mnuStatistical.setText("jMenu1");
+        mnuStatistical.setText("Thống kê");
 
-        mnuiS_Salary.setText("jMenuItem1");
+        mnuiS_Salary.setText("Thống kê công việc");
         mnuStatistical.add(mnuiS_Salary);
 
-        mnuiS_Job.setText("jMenuItem1");
+        mnuiS_Job.setText("Thống kê nhân sự");
         mnuStatistical.add(mnuiS_Job);
 
-        mnuiS_HR.setText("jMenuItem1");
+        mnuiS_HR.setText("Thống kê lương");
         mnuStatistical.add(mnuiS_HR);
 
         jMenuBar1.add(mnuStatistical);
 
-        mnuSystem.setText("jMenu1");
+        mnuSystem.setText("Hệ thống");
 
         mnuiInfo.setText("Thông tin ứng dụng");
         mnuSystem.add(mnuiInfo);
@@ -153,6 +201,10 @@ public class MainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void mnuiEditStaff1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuiEditStaff1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mnuiEditStaff1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -184,29 +236,39 @@ public static void main(String args[]) {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenu mnuAcc;
-    private javax.swing.JMenuItem mnuAddStaff;
-    private javax.swing.JMenuItem mnuDeleteStaff;
-    private javax.swing.JMenuItem mnuEditStaff;
+    private javax.swing.JMenu mnuDepartment;
     private javax.swing.JMenu mnuHR;
     private javax.swing.JMenu mnuJob;
     private javax.swing.JMenuItem mnuJobAssignment;
     private javax.swing.JMenuItem mnuJobList;
+    private javax.swing.JMenu mnuSalary;
     private javax.swing.JMenu mnuStaff;
     private javax.swing.JMenu mnuStatistical;
     private javax.swing.JMenu mnuSystem;
     private javax.swing.JMenuItem mnuTaskManagement;
     private javax.swing.JMenuItem mnuTaskReport;
-    private javax.swing.JMenuItem mnuViewStaff;
-    private javax.swing.JMenuItem mnuiDepartmenjt;
+    private javax.swing.JMenu mnuTeam;
+    private javax.swing.JMenuItem mnuiAddDept;
+    private javax.swing.JMenuItem mnuiAddStaff;
+    private javax.swing.JMenuItem mnuiAddStaff1;
+    private javax.swing.JMenuItem mnuiCalSalaray;
+    private javax.swing.JMenuItem mnuiDelDept;
+    private javax.swing.JMenuItem mnuiDeleteStaff;
+    private javax.swing.JMenuItem mnuiDeleteStaff1;
     private javax.swing.JMenuItem mnuiEditAcc;
+    private javax.swing.JMenuItem mnuiEditDept;
+    private javax.swing.JMenuItem mnuiEditStaff;
+    private javax.swing.JMenuItem mnuiEditStaff1;
     private javax.swing.JMenuItem mnuiExit;
     private javax.swing.JMenuItem mnuiInfo;
     private javax.swing.JMenuItem mnuiLogout;
     private javax.swing.JMenuItem mnuiS_HR;
     private javax.swing.JMenuItem mnuiS_Job;
     private javax.swing.JMenuItem mnuiS_Salary;
-    private javax.swing.JMenuItem mnuiSalary1;
-    private javax.swing.JMenuItem mnuiTeam;
     private javax.swing.JMenuItem mnuiViewAcc;
+    private javax.swing.JMenuItem mnuiViewDept;
+    private javax.swing.JMenuItem mnuiViewSalary;
+    private javax.swing.JMenuItem mnuiViewStaff;
+    private javax.swing.JMenuItem mnuiViewStaff1;
     // End of variables declaration//GEN-END:variables
 }
