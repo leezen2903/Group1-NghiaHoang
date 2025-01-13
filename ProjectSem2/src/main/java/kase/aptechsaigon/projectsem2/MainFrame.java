@@ -29,20 +29,114 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenu2 = new javax.swing.JMenu();
-        jMenu3 = new javax.swing.JMenu();
+        mnuAcc = new javax.swing.JMenu();
+        mnuiViewAcc = new javax.swing.JMenuItem();
+        mnuiEditAcc = new javax.swing.JMenuItem();
+        mnuHR = new javax.swing.JMenu();
+        mnuStaff = new javax.swing.JMenu();
+        mnuViewStaff = new javax.swing.JMenuItem();
+        mnuAddStaff = new javax.swing.JMenuItem();
+        mnuEditStaff = new javax.swing.JMenuItem();
+        mnuDeleteStaff = new javax.swing.JMenuItem();
+        mnuiDepartmenjt = new javax.swing.JMenuItem();
+        mnuiTeam = new javax.swing.JMenuItem();
+        mnuiSalary1 = new javax.swing.JMenuItem();
+        mnuJob = new javax.swing.JMenu();
+        mnuJobList = new javax.swing.JMenuItem();
+        mnuJobAssignment = new javax.swing.JMenuItem();
+        mnuTaskManagement = new javax.swing.JMenuItem();
+        mnuTaskReport = new javax.swing.JMenuItem();
+        mnuStatistical = new javax.swing.JMenu();
+        mnuiS_Salary = new javax.swing.JMenuItem();
+        mnuiS_Job = new javax.swing.JMenuItem();
+        mnuiS_HR = new javax.swing.JMenuItem();
+        mnuSystem = new javax.swing.JMenu();
+        mnuiInfo = new javax.swing.JMenuItem();
+        mnuiLogout = new javax.swing.JMenuItem();
+        mnuiExit = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jMenu1.setText("Tài Khoản");
-        jMenuBar1.add(jMenu1);
+        mnuAcc.setText("Tài khoản");
 
-        jMenu2.setText("Nhân sự");
-        jMenuBar1.add(jMenu2);
+        mnuiViewAcc.setText("Xem thông tin");
+        mnuAcc.add(mnuiViewAcc);
 
-        jMenu3.setText("jMenu3");
-        jMenuBar1.add(jMenu3);
+        mnuiEditAcc.setText("Chỉnh sửa");
+        mnuAcc.add(mnuiEditAcc);
+
+        jMenuBar1.add(mnuAcc);
+
+        mnuHR.setText("Nhân sự");
+
+        mnuStaff.setText("Nhân viên");
+
+        mnuViewStaff.setText("Xem danh sách nhân viên");
+        mnuStaff.add(mnuViewStaff);
+
+        mnuAddStaff.setText("Thêm nhân viên");
+        mnuStaff.add(mnuAddStaff);
+
+        mnuEditStaff.setText("Điều chỉnh thông tin nhân viên");
+        mnuStaff.add(mnuEditStaff);
+
+        mnuDeleteStaff.setText("Xóa thông tin nhân viên");
+        mnuStaff.add(mnuDeleteStaff);
+
+        mnuHR.add(mnuStaff);
+
+        mnuiDepartmenjt.setText("Phòng ban");
+        mnuHR.add(mnuiDepartmenjt);
+
+        mnuiTeam.setText("Nhóm");
+        mnuHR.add(mnuiTeam);
+
+        mnuiSalary1.setText("Lương");
+        mnuHR.add(mnuiSalary1);
+
+        jMenuBar1.add(mnuHR);
+
+        mnuJob.setText("Công việc");
+
+        mnuJobList.setText("Danh sách công việc");
+        mnuJob.add(mnuJobList);
+
+        mnuJobAssignment.setText("Phân công công việc");
+        mnuJob.add(mnuJobAssignment);
+
+        mnuTaskManagement.setText("Quản lý nhiệm vụ");
+        mnuJob.add(mnuTaskManagement);
+
+        mnuTaskReport.setText("jMenuItem1");
+        mnuJob.add(mnuTaskReport);
+
+        jMenuBar1.add(mnuJob);
+
+        mnuStatistical.setText("jMenu1");
+
+        mnuiS_Salary.setText("jMenuItem1");
+        mnuStatistical.add(mnuiS_Salary);
+
+        mnuiS_Job.setText("jMenuItem1");
+        mnuStatistical.add(mnuiS_Job);
+
+        mnuiS_HR.setText("jMenuItem1");
+        mnuStatistical.add(mnuiS_HR);
+
+        jMenuBar1.add(mnuStatistical);
+
+        mnuSystem.setText("jMenu1");
+
+        mnuiInfo.setText("Thông tin ứng dụng");
+        mnuSystem.add(mnuiInfo);
+
+        mnuiLogout.setText("Đăng xuất");
+        mnuSystem.add(mnuiLogout);
+
+        mnuiExit.setText("Thoát chương trình");
+        mnuSystem.add(mnuiExit);
+
+        jMenuBar1.add(mnuSystem);
 
         setJMenuBar(jMenuBar1);
 
@@ -88,9 +182,31 @@ public static void main(String args[]) {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenu mnuAcc;
+    private javax.swing.JMenuItem mnuAddStaff;
+    private javax.swing.JMenuItem mnuDeleteStaff;
+    private javax.swing.JMenuItem mnuEditStaff;
+    private javax.swing.JMenu mnuHR;
+    private javax.swing.JMenu mnuJob;
+    private javax.swing.JMenuItem mnuJobAssignment;
+    private javax.swing.JMenuItem mnuJobList;
+    private javax.swing.JMenu mnuStaff;
+    private javax.swing.JMenu mnuStatistical;
+    private javax.swing.JMenu mnuSystem;
+    private javax.swing.JMenuItem mnuTaskManagement;
+    private javax.swing.JMenuItem mnuTaskReport;
+    private javax.swing.JMenuItem mnuViewStaff;
+    private javax.swing.JMenuItem mnuiDepartmenjt;
+    private javax.swing.JMenuItem mnuiEditAcc;
+    private javax.swing.JMenuItem mnuiExit;
+    private javax.swing.JMenuItem mnuiInfo;
+    private javax.swing.JMenuItem mnuiLogout;
+    private javax.swing.JMenuItem mnuiS_HR;
+    private javax.swing.JMenuItem mnuiS_Job;
+    private javax.swing.JMenuItem mnuiS_Salary;
+    private javax.swing.JMenuItem mnuiSalary1;
+    private javax.swing.JMenuItem mnuiTeam;
+    private javax.swing.JMenuItem mnuiViewAcc;
     // End of variables declaration//GEN-END:variables
 }
