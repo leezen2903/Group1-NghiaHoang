@@ -55,6 +55,7 @@ public class Job extends javax.swing.JFrame {
         cbNotCompleted = new javax.swing.JCheckBox();
         txtEstimatedStartDate = new javax.swing.JTextField();
         txtEstimatedEndDate = new javax.swing.JTextField();
+        btnSaveJob = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -123,11 +124,6 @@ public class Job extends javax.swing.JFrame {
 
         jLabel10.setText("- Status ");
 
-        txtJobID.setText("jTextField1");
-
-        txtJobName.setText("jToggleButton5");
-
-        txtDescription.setText("jTextField2");
         txtDescription.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtDescriptionActionPerformed(evt);
@@ -146,9 +142,9 @@ public class Job extends javax.swing.JFrame {
         btgStatus.add(cbNotCompleted);
         cbNotCompleted.setText("Not completed");
 
-        txtEstimatedStartDate.setText("jTextField3");
-
         txtEstimatedEndDate.setText("jTextField4");
+
+        btnSaveJob.setText("Save");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -191,7 +187,7 @@ public class Job extends javax.swing.JFrame {
                                         .addComponent(txtJobID, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(34, 34, 34)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                                     .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -211,7 +207,9 @@ public class Job extends javax.swing.JFrame {
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                                 .addComponent(cbCompleted, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                        .addComponent(cbNotCompleted))))
+                                                        .addComponent(cbNotCompleted)
+                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
+                                                        .addComponent(btnSaveJob))))
                                             .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                                     .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -260,7 +258,7 @@ public class Job extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel7)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(txtDescription, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE))
+                    .addComponent(txtDescription, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
@@ -275,8 +273,9 @@ public class Job extends javax.swing.JFrame {
                     .addComponent(btnNotStartedYet)
                     .addComponent(cbInProgress)
                     .addComponent(cbCompleted)
-                    .addComponent(cbNotCompleted))
-                .addGap(37, 37, 37))
+                    .addComponent(cbNotCompleted)
+                    .addComponent(btnSaveJob))
+                .addGap(35, 35, 35))
         );
 
         pack();
@@ -333,6 +332,7 @@ public class Job extends javax.swing.JFrame {
     private javax.swing.JToggleButton btnEditJob;
     private javax.swing.JCheckBox btnNotStartedYet;
     private javax.swing.JToggleButton btnResetJob;
+    private javax.swing.JButton btnSaveJob;
     private javax.swing.JCheckBox cbCompleted;
     private javax.swing.JCheckBox cbInProgress;
     private javax.swing.JCheckBox cbNotCompleted;

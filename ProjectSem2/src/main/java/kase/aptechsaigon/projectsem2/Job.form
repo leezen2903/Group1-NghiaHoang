@@ -70,7 +70,7 @@
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                           <Group type="102" attributes="0">
                                               <Group type="103" groupAlignment="1" attributes="0">
                                                   <Component id="jLabel8" alignment="0" min="-2" pref="121" max="-2" attributes="0"/>
@@ -95,6 +95,8 @@
                                                       </Group>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="cbNotCompleted" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace pref="95" max="32767" attributes="0"/>
+                                                      <Component id="btnSaveJob" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                               </Group>
                                           </Group>
@@ -162,7 +164,7 @@
                       <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
-                  <Component id="txtDescription" pref="49" max="32767" attributes="0"/>
+                  <Component id="txtDescription" pref="55" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -181,8 +183,9 @@
                   <Component id="cbInProgress" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cbCompleted" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cbNotCompleted" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnSaveJob" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -340,19 +343,10 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtJobID">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField1"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JToggleButton" name="txtJobName">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jToggleButton5"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtDescription">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField2"/>
-      </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtDescriptionActionPerformed"/>
       </Events>
@@ -390,13 +384,15 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtEstimatedStartDate">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField3"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtEstimatedEndDate">
       <Properties>
         <Property name="text" type="java.lang.String" value="jTextField4"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnSaveJob">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Save"/>
       </Properties>
     </Component>
   </SubComponents>
