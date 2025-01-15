@@ -67,35 +67,35 @@ public class MainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        mnuAcc.setText("Tài khoản");
+        mnuAcc.setText("Account");
 
-        mnuiViewAcc.setText("Xem thông tin");
+        mnuiViewAcc.setText("Infomation");
         mnuAcc.add(mnuiViewAcc);
 
-        mnuiEditAcc.setText("Chỉnh sửa");
+        mnuiEditAcc.setText("Edit");
         mnuAcc.add(mnuiEditAcc);
 
         jMenuBar1.add(mnuAcc);
 
-        mnuHR.setText("Nhân sự");
+        mnuHR.setText("HR");
 
-        mnuDepartment.setText("Phòng ban");
+        mnuDepartment.setText("Department");
 
-        mnuiViewDept.setText("Xem danh sách phòng ban");
+        mnuiViewDept.setText("View Departments List");
         mnuDepartment.add(mnuiViewDept);
 
-        mnuiAddDept.setText("Thêm phòng ban");
+        mnuiAddDept.setText("Add Department");
         mnuDepartment.add(mnuiAddDept);
 
-        mnuiEditDept.setText("Điều chỉnh phòng ban");
+        mnuiEditDept.setText("Edit Department");
         mnuDepartment.add(mnuiEditDept);
 
-        mnuiDelDept.setText("Xóa thông tin nhân viên");
+        mnuiDelDept.setText("Delete Department");
         mnuDepartment.add(mnuiDelDept);
 
         mnuHR.add(mnuDepartment);
 
-        mnuTeam.setText("Nhóm");
+        mnuTeam.setText("Team");
 
         mnuiViewStaff1.setText("Xem danh sách nhóm");
         mnuTeam.add(mnuiViewStaff1);
@@ -116,23 +116,23 @@ public class MainFrame extends javax.swing.JFrame {
 
         mnuHR.add(mnuTeam);
 
-        mnuStaff.setText("Nhân viên");
+        mnuStaff.setText("Staff");
 
-        mnuiViewStaff.setText("Xem danh sách nhân viên");
+        mnuiViewStaff.setText("View Staff List");
         mnuStaff.add(mnuiViewStaff);
 
-        mnuiAddStaff.setText("Thêm nhân viên");
+        mnuiAddStaff.setText("Add Staff");
         mnuStaff.add(mnuiAddStaff);
 
-        mnuiEditStaff.setText("Điều chỉnh thông tin nhân viên");
+        mnuiEditStaff.setText("Edit Staff's Infomation");
         mnuStaff.add(mnuiEditStaff);
 
-        mnuiDeleteStaff.setText("Xóa thông tin nhân viên");
+        mnuiDeleteStaff.setText("Delete Staff");
         mnuStaff.add(mnuiDeleteStaff);
 
         mnuHR.add(mnuStaff);
 
-        mnuSalary.setText("Lương");
+        mnuSalary.setText("Salary");
 
         mnuiViewSalary.setText("Xem bảng lương");
         mnuSalary.add(mnuiViewSalary);
@@ -144,44 +144,44 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenuBar1.add(mnuHR);
 
-        mnuJob.setText("Công việc");
+        mnuJob.setText("Job");
 
-        mnuJobList.setText("Danh sách công việc");
+        mnuJobList.setText("Job List");
         mnuJob.add(mnuJobList);
 
-        mnuJobAssignment.setText("Phân công công việc");
+        mnuJobAssignment.setText("Job Assignment");
         mnuJob.add(mnuJobAssignment);
 
-        mnuTaskManagement.setText("Quản lý nhiệm vụ");
+        mnuTaskManagement.setText("Task Management");
         mnuJob.add(mnuTaskManagement);
 
-        mnuTaskReport.setText("Báo cáo nhiệm vụ");
+        mnuTaskReport.setText("Task Report");
         mnuJob.add(mnuTaskReport);
 
         jMenuBar1.add(mnuJob);
 
-        mnuStatistical.setText("Thống kê");
+        mnuStatistical.setText("Statistic");
 
-        mnuiS_Salary.setText("Thống kê công việc");
+        mnuiS_Salary.setText("Job Statistic");
         mnuStatistical.add(mnuiS_Salary);
 
-        mnuiS_Job.setText("Thống kê nhân sự");
+        mnuiS_Job.setText("HR Statistic");
         mnuStatistical.add(mnuiS_Job);
 
-        mnuiS_HR.setText("Thống kê lương");
+        mnuiS_HR.setText("Salary Statistic");
         mnuStatistical.add(mnuiS_HR);
 
         jMenuBar1.add(mnuStatistical);
 
-        mnuSystem.setText("Hệ thống");
+        mnuSystem.setText("System");
 
-        mnuiInfo.setText("Thông tin ứng dụng");
+        mnuiInfo.setText("Info");
         mnuSystem.add(mnuiInfo);
 
-        mnuiLogout.setText("Đăng xuất");
+        mnuiLogout.setText("Logout");
         mnuSystem.add(mnuiLogout);
 
-        mnuiExit.setText("Thoát chương trình");
+        mnuiExit.setText("Exit App");
         mnuSystem.add(mnuiExit);
 
         jMenuBar1.add(mnuSystem);
