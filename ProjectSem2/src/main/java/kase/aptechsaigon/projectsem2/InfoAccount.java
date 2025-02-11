@@ -1,21 +1,19 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package kase.aptechsaigon.projectsem2;
-
-import javax.swing.JFrame;
 
 /**
  *
  * @author Moiiii
  */
-public class InfoAcc extends javax.swing.JFrame {
+public class InfoAccount extends javax.swing.JPanel {
 
     /**
-     * Creates new form MainFrame
+     * Creates new form InfoAccount
      */
-    public InfoAcc() {
+    public InfoAccount() {
         initComponents();
     }
 
@@ -28,6 +26,12 @@ public class InfoAcc extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel20 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jLabel24 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -48,50 +52,30 @@ public class InfoAcc extends javax.swing.JFrame {
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
-        jLabel22 = new javax.swing.JLabel();
-        jLabel23 = new javax.swing.JLabel();
-        jLabel24 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        mnuAcc = new javax.swing.JMenu();
-        mnuiViewAcc = new javax.swing.JMenuItem();
-        mnuiEditAcc = new javax.swing.JMenuItem();
-        mnuHR = new javax.swing.JMenu();
-        mnuDepartment = new javax.swing.JMenu();
-        mnuiViewDept = new javax.swing.JMenuItem();
-        mnuiAddDept = new javax.swing.JMenuItem();
-        mnuiEditDept = new javax.swing.JMenuItem();
-        mnuiDelDept = new javax.swing.JMenuItem();
-        mnuTeam = new javax.swing.JMenu();
-        mnuiViewStaff1 = new javax.swing.JMenuItem();
-        mnuiAddStaff1 = new javax.swing.JMenuItem();
-        mnuiEditStaff1 = new javax.swing.JMenuItem();
-        mnuiDeleteStaff1 = new javax.swing.JMenuItem();
-        mnuStaff = new javax.swing.JMenu();
-        mnuiViewStaff = new javax.swing.JMenuItem();
-        mnuiAddStaff = new javax.swing.JMenuItem();
-        mnuiEditStaff = new javax.swing.JMenuItem();
-        mnuiDeleteStaff = new javax.swing.JMenuItem();
-        mnuSalary = new javax.swing.JMenu();
-        mnuiViewSalary = new javax.swing.JMenuItem();
-        mnuiCalSalaray = new javax.swing.JMenuItem();
-        mnuJob = new javax.swing.JMenu();
-        mnuJobList = new javax.swing.JMenuItem();
-        mnuJobAssignment = new javax.swing.JMenuItem();
-        mnuTaskManagement = new javax.swing.JMenuItem();
-        mnuTaskReport = new javax.swing.JMenuItem();
-        mnuStatistical = new javax.swing.JMenu();
-        mnuiS_Salary = new javax.swing.JMenuItem();
-        mnuiS_Job = new javax.swing.JMenuItem();
-        mnuiS_HR = new javax.swing.JMenuItem();
-        mnuSystem = new javax.swing.JMenu();
-        mnuiInfo = new javax.swing.JMenuItem();
-        mnuiLogout = new javax.swing.JMenuItem();
-        mnuiExit = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        jLabel20.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel20.setText("****************");
+
+        jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel22.setText("Tên vị trí");
+
+        jLabel23.setText("Tên tài khoản");
+
+        jLabel24.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel24.setText("Tên đăng nhập ở đây");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 105, Short.MAX_VALUE)
+        );
+
+        jButton1.setText("jButton1");
 
         jLabel1.setText("Mã nhân viên:");
 
@@ -142,157 +126,12 @@ public class InfoAcc extends javax.swing.JFrame {
 
         jLabel21.setText("Vị trí");
 
-        jLabel20.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel20.setText("****************");
-
-        jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel22.setText("Tên vị trí");
-
-        jLabel23.setText("Tên tài khoản");
-
-        jLabel24.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel24.setText("Tên đăng nhập ở đây");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 105, Short.MAX_VALUE)
-        );
-
-        jButton1.setText("jButton1");
-
-        mnuAcc.setText("Tài khoản");
-
-        mnuiViewAcc.setText("Xem thông tin");
-        mnuAcc.add(mnuiViewAcc);
-
-        mnuiEditAcc.setText("Chỉnh sửa");
-        mnuAcc.add(mnuiEditAcc);
-
-        jMenuBar1.add(mnuAcc);
-
-        mnuHR.setText("Nhân sự");
-
-        mnuDepartment.setText("Phòng ban");
-
-        mnuiViewDept.setText("Xem danh sách phòng ban");
-        mnuDepartment.add(mnuiViewDept);
-
-        mnuiAddDept.setText("Thêm phòng ban");
-        mnuDepartment.add(mnuiAddDept);
-
-        mnuiEditDept.setText("Điều chỉnh phòng ban");
-        mnuDepartment.add(mnuiEditDept);
-
-        mnuiDelDept.setText("Xóa thông tin nhân viên");
-        mnuDepartment.add(mnuiDelDept);
-
-        mnuHR.add(mnuDepartment);
-
-        mnuTeam.setText("Nhóm");
-
-        mnuiViewStaff1.setText("Xem danh sách nhóm");
-        mnuTeam.add(mnuiViewStaff1);
-
-        mnuiAddStaff1.setText("Thêm nhóm");
-        mnuTeam.add(mnuiAddStaff1);
-
-        mnuiEditStaff1.setText("Điều chỉnh thông tin nhóm");
-        mnuiEditStaff1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mnuiEditStaff1ActionPerformed(evt);
-            }
-        });
-        mnuTeam.add(mnuiEditStaff1);
-
-        mnuiDeleteStaff1.setText("Xóa nhóm");
-        mnuTeam.add(mnuiDeleteStaff1);
-
-        mnuHR.add(mnuTeam);
-
-        mnuStaff.setText("Nhân viên");
-
-        mnuiViewStaff.setText("Xem danh sách nhân viên");
-        mnuStaff.add(mnuiViewStaff);
-
-        mnuiAddStaff.setText("Thêm nhân viên");
-        mnuStaff.add(mnuiAddStaff);
-
-        mnuiEditStaff.setText("Điều chỉnh thông tin nhân viên");
-        mnuStaff.add(mnuiEditStaff);
-
-        mnuiDeleteStaff.setText("Xóa thông tin nhân viên");
-        mnuStaff.add(mnuiDeleteStaff);
-
-        mnuHR.add(mnuStaff);
-
-        mnuSalary.setText("Lương");
-
-        mnuiViewSalary.setText("Xem bảng lương");
-        mnuSalary.add(mnuiViewSalary);
-
-        mnuiCalSalaray.setText("Tính lương");
-        mnuSalary.add(mnuiCalSalaray);
-
-        mnuHR.add(mnuSalary);
-
-        jMenuBar1.add(mnuHR);
-
-        mnuJob.setText("Công việc");
-
-        mnuJobList.setText("Danh sách công việc");
-        mnuJob.add(mnuJobList);
-
-        mnuJobAssignment.setText("Phân công công việc");
-        mnuJob.add(mnuJobAssignment);
-
-        mnuTaskManagement.setText("Quản lý nhiệm vụ");
-        mnuJob.add(mnuTaskManagement);
-
-        mnuTaskReport.setText("Báo cáo nhiệm vụ");
-        mnuJob.add(mnuTaskReport);
-
-        jMenuBar1.add(mnuJob);
-
-        mnuStatistical.setText("Thống kê");
-
-        mnuiS_Salary.setText("Thống kê công việc");
-        mnuStatistical.add(mnuiS_Salary);
-
-        mnuiS_Job.setText("Thống kê nhân sự");
-        mnuStatistical.add(mnuiS_Job);
-
-        mnuiS_HR.setText("Thống kê lương");
-        mnuStatistical.add(mnuiS_HR);
-
-        jMenuBar1.add(mnuStatistical);
-
-        mnuSystem.setText("Hệ thống");
-
-        mnuiInfo.setText("Thông tin ứng dụng");
-        mnuSystem.add(mnuiInfo);
-
-        mnuiLogout.setText("Đăng xuất");
-        mnuSystem.add(mnuiLogout);
-
-        mnuiExit.setText("Thoát chương trình");
-        mnuSystem.add(mnuiExit);
-
-        jMenuBar1.add(mnuSystem);
-
-        setJMenuBar(jMenuBar1);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(38, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton1)
@@ -328,7 +167,7 @@ public class InfoAcc extends javax.swing.JFrame {
                             .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(185, 185, 185)))
-                .addContainerGap(154, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -386,39 +225,7 @@ public class InfoAcc extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void mnuiEditStaff1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuiEditStaff1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mnuiEditStaff1ActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-public static void main(String args[]) {
-    try {
-        // Set the Nimbus look and feel
-        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                break;
-            }
-        }
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-        java.util.logging.Logger.getLogger(InfoAcc.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-
-    // Create and display the Login form first
-    java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-            Login loginFrame = new Login(); // Hiển thị cửa sổ Login đầu tiên
-            loginFrame.setVisible(true); // Hiển thị cửa sổ Login
-        }
-    });
-}
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -447,42 +254,6 @@ public static void main(String args[]) {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JMenu mnuAcc;
-    private javax.swing.JMenu mnuDepartment;
-    private javax.swing.JMenu mnuHR;
-    private javax.swing.JMenu mnuJob;
-    private javax.swing.JMenuItem mnuJobAssignment;
-    private javax.swing.JMenuItem mnuJobList;
-    private javax.swing.JMenu mnuSalary;
-    private javax.swing.JMenu mnuStaff;
-    private javax.swing.JMenu mnuStatistical;
-    private javax.swing.JMenu mnuSystem;
-    private javax.swing.JMenuItem mnuTaskManagement;
-    private javax.swing.JMenuItem mnuTaskReport;
-    private javax.swing.JMenu mnuTeam;
-    private javax.swing.JMenuItem mnuiAddDept;
-    private javax.swing.JMenuItem mnuiAddStaff;
-    private javax.swing.JMenuItem mnuiAddStaff1;
-    private javax.swing.JMenuItem mnuiCalSalaray;
-    private javax.swing.JMenuItem mnuiDelDept;
-    private javax.swing.JMenuItem mnuiDeleteStaff;
-    private javax.swing.JMenuItem mnuiDeleteStaff1;
-    private javax.swing.JMenuItem mnuiEditAcc;
-    private javax.swing.JMenuItem mnuiEditDept;
-    private javax.swing.JMenuItem mnuiEditStaff;
-    private javax.swing.JMenuItem mnuiEditStaff1;
-    private javax.swing.JMenuItem mnuiExit;
-    private javax.swing.JMenuItem mnuiInfo;
-    private javax.swing.JMenuItem mnuiLogout;
-    private javax.swing.JMenuItem mnuiS_HR;
-    private javax.swing.JMenuItem mnuiS_Job;
-    private javax.swing.JMenuItem mnuiS_Salary;
-    private javax.swing.JMenuItem mnuiViewAcc;
-    private javax.swing.JMenuItem mnuiViewDept;
-    private javax.swing.JMenuItem mnuiViewSalary;
-    private javax.swing.JMenuItem mnuiViewStaff;
-    private javax.swing.JMenuItem mnuiViewStaff1;
     // End of variables declaration//GEN-END:variables
 }

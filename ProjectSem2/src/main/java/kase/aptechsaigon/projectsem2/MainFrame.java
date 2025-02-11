@@ -135,10 +135,10 @@ public class MainFrame extends javax.swing.JFrame {
 
         
         //Gán event cho từng nút khi click vào
-        btnNhanSu.addActionListener(e -> openFrame(new HRLayout()));
-        btnCongViec.addActionListener(e -> openFrame(new Job()));
-        btnTask.addActionListener(e -> openFrame(new Task()));
-        btnBoPhan.addActionListener(e -> openFrame(new AddEmployee()));
+//        btnNhanSu.addActionListener(e -> openFrame(new HRLayout()));
+//        btnCongViec.addActionListener(e -> openFrame(new Job()));
+//        btnTask.addActionListener(e -> openFrame(new Task()));
+//        btnBoPhan.addActionListener(e -> openFrame(new AddEmployee()));
          
         
         //Thêm các nút vào panel

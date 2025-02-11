@@ -1,25 +1,23 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package kase.aptechsaigon.projectsem2;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Moiiii
  */
-public class HRLayout extends javax.swing.JFrame {
+public class HRLayout extends javax.swing.JPanel {
 
     /**
-     * Creates new form MainFrame
+     * Creates new form HRLayout
      */
     public HRLayout() {
-    initComponents();
+        initComponents();
     }
 
     /**
@@ -57,49 +55,6 @@ public class HRLayout extends javax.swing.JFrame {
         Team = new javax.swing.JPanel();
         Staff = new javax.swing.JPanel();
         jSeparator1 = new javax.swing.JSeparator();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        mnuAcc = new javax.swing.JMenu();
-        mnuiViewAcc = new javax.swing.JMenuItem();
-        mnuiEditAcc = new javax.swing.JMenuItem();
-        mnuHR = new javax.swing.JMenu();
-        mnuDepartment = new javax.swing.JMenu();
-        mnuiViewDept = new javax.swing.JMenuItem();
-        mnuiAddDept = new javax.swing.JMenuItem();
-        mnuiEditDept = new javax.swing.JMenuItem();
-        mnuiDelDept = new javax.swing.JMenuItem();
-        mnuTeam = new javax.swing.JMenu();
-        mnuiViewStaff1 = new javax.swing.JMenuItem();
-        mnuiAddStaff1 = new javax.swing.JMenuItem();
-        mnuiEditStaff1 = new javax.swing.JMenuItem();
-        mnuiDeleteStaff1 = new javax.swing.JMenuItem();
-        mnuStaff = new javax.swing.JMenu();
-        mnuiViewStaff = new javax.swing.JMenuItem();
-        mnuiAddStaff = new javax.swing.JMenuItem();
-        mnuiEditStaff = new javax.swing.JMenuItem();
-        mnuiDeleteStaff = new javax.swing.JMenuItem();
-        mnuSalary = new javax.swing.JMenu();
-        mnuiViewSalary = new javax.swing.JMenuItem();
-        mnuiCalSalaray = new javax.swing.JMenuItem();
-        mnuJob = new javax.swing.JMenu();
-        mnuJobList = new javax.swing.JMenuItem();
-        mnuJobAssignment = new javax.swing.JMenuItem();
-        mnuTaskManagement = new javax.swing.JMenuItem();
-        mnuTaskReport = new javax.swing.JMenuItem();
-        mnuStatistical = new javax.swing.JMenu();
-        mnuiS_Salary = new javax.swing.JMenuItem();
-        mnuiS_Job = new javax.swing.JMenuItem();
-        mnuiS_HR = new javax.swing.JMenuItem();
-        mnuSystem = new javax.swing.JMenu();
-        mnuiInfo = new javax.swing.JMenuItem();
-        mnuiLogout = new javax.swing.JMenuItem();
-        mnuiExit = new javax.swing.JMenuItem();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
-            }
-        });
 
         CompanyName.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         CompanyName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -295,129 +250,8 @@ public class HRLayout extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Staff", Staff);
 
-        mnuAcc.setText("Account");
-
-        mnuiViewAcc.setText("Infomation");
-        mnuAcc.add(mnuiViewAcc);
-
-        mnuiEditAcc.setText("Edit");
-        mnuAcc.add(mnuiEditAcc);
-
-        jMenuBar1.add(mnuAcc);
-
-        mnuHR.setText("HR");
-
-        mnuDepartment.setText("Department");
-
-        mnuiViewDept.setText("View Departments List");
-        mnuDepartment.add(mnuiViewDept);
-
-        mnuiAddDept.setText("Add Department");
-        mnuDepartment.add(mnuiAddDept);
-
-        mnuiEditDept.setText("Edit Department");
-        mnuDepartment.add(mnuiEditDept);
-
-        mnuiDelDept.setText("Delete Department");
-        mnuDepartment.add(mnuiDelDept);
-
-        mnuHR.add(mnuDepartment);
-
-        mnuTeam.setText("Team");
-
-        mnuiViewStaff1.setText("Xem danh sách nhóm");
-        mnuTeam.add(mnuiViewStaff1);
-
-        mnuiAddStaff1.setText("Thêm nhóm");
-        mnuTeam.add(mnuiAddStaff1);
-
-        mnuiEditStaff1.setText("Điều chỉnh thông tin nhóm");
-        mnuiEditStaff1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mnuiEditStaff1ActionPerformed(evt);
-            }
-        });
-        mnuTeam.add(mnuiEditStaff1);
-
-        mnuiDeleteStaff1.setText("Xóa nhóm");
-        mnuTeam.add(mnuiDeleteStaff1);
-
-        mnuHR.add(mnuTeam);
-
-        mnuStaff.setText("Staff");
-
-        mnuiViewStaff.setText("View Staff List");
-        mnuStaff.add(mnuiViewStaff);
-
-        mnuiAddStaff.setText("Add Staff");
-        mnuStaff.add(mnuiAddStaff);
-
-        mnuiEditStaff.setText("Edit Staff's Infomation");
-        mnuStaff.add(mnuiEditStaff);
-
-        mnuiDeleteStaff.setText("Delete Staff");
-        mnuStaff.add(mnuiDeleteStaff);
-
-        mnuHR.add(mnuStaff);
-
-        mnuSalary.setText("Salary");
-
-        mnuiViewSalary.setText("Xem bảng lương");
-        mnuSalary.add(mnuiViewSalary);
-
-        mnuiCalSalaray.setText("Tính lương");
-        mnuSalary.add(mnuiCalSalaray);
-
-        mnuHR.add(mnuSalary);
-
-        jMenuBar1.add(mnuHR);
-
-        mnuJob.setText("Job");
-
-        mnuJobList.setText("Job List");
-        mnuJob.add(mnuJobList);
-
-        mnuJobAssignment.setText("Job Assignment");
-        mnuJob.add(mnuJobAssignment);
-
-        mnuTaskManagement.setText("Task Management");
-        mnuJob.add(mnuTaskManagement);
-
-        mnuTaskReport.setText("Task Report");
-        mnuJob.add(mnuTaskReport);
-
-        jMenuBar1.add(mnuJob);
-
-        mnuStatistical.setText("Statistic");
-
-        mnuiS_Salary.setText("Job Statistic");
-        mnuStatistical.add(mnuiS_Salary);
-
-        mnuiS_Job.setText("HR Statistic");
-        mnuStatistical.add(mnuiS_Job);
-
-        mnuiS_HR.setText("Salary Statistic");
-        mnuStatistical.add(mnuiS_HR);
-
-        jMenuBar1.add(mnuStatistical);
-
-        mnuSystem.setText("System");
-
-        mnuiInfo.setText("Info");
-        mnuSystem.add(mnuiInfo);
-
-        mnuiLogout.setText("Logout");
-        mnuSystem.add(mnuiLogout);
-
-        mnuiExit.setText("Exit App");
-        mnuSystem.add(mnuiExit);
-
-        jMenuBar1.add(mnuSystem);
-
-        setJMenuBar(jMenuBar1);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
@@ -431,7 +265,7 @@ public class HRLayout extends javax.swing.JFrame {
                         .addComponent(jButton1)
                         .addGap(26, 26, 26)
                         .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1306, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(92, Short.MAX_VALUE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addGroup(layout.createSequentialGroup()
                 .addGap(585, 585, 585)
                 .addComponent(CompanyName, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -457,98 +291,51 @@ public class HRLayout extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 448, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(132, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void mnuiEditStaff1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuiEditStaff1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mnuiEditStaff1ActionPerformed
-
-    private void btnAssDepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAssDepActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnAssDepActionPerformed
-
-    private void btnAssManActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAssManActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnAssManActionPerformed
-
     private void btnAddTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddTaskActionPerformed
-     //Lấy dữ liệu từ các ô nhập
-     String departmentID = txtDeptID.getText().trim();
-     String departmentName = txtDeptName.getText().trim();
-     String managerID = txtManID.getText().trim();
-     String deputyManagerID = txtDManID.getText().trim();
-     
-     //Kiễm tra data có bị trống không? 
-    if (departmentID.isEmpty() || departmentName.isEmpty()) {
-         JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin","Lỗi!", JOptionPane.ERROR_MESSAGE);
-         return;
-    }
-    
-    //Thêm vào bảng danh sách.
-    DefaultTableModel model = (DefaultTableModel) tblDept.getModel();
-    model.addRow(new Object[] {departmentID,departmentName,managerID,deputyManagerID});
-    
-    //Xóa data trong ô nhập sau khi thêm thành công:
-    txtDeptID.setText("");
-    txtDeptName.setText("");
-    txtManID.setText("");
-    txtDManID.setText("");
-    
-    JOptionPane.showMessageDialog(this, "Thêm phòng ban thành công","Thành công", JOptionPane.INFORMATION_MESSAGE);
+        //Lấy dữ liệu từ các ô nhập
+        String departmentID = txtDeptID.getText().trim();
+        String departmentName = txtDeptName.getText().trim();
+        String managerID = txtManID.getText().trim();
+        String deputyManagerID = txtDManID.getText().trim();
+
+        //Kiễm tra data có bị trống không?
+        if (departmentID.isEmpty() || departmentName.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin","Lỗi!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        //Thêm vào bảng danh sách.
+        DefaultTableModel model = (DefaultTableModel) tblDept.getModel();
+        model.addRow(new Object[] {departmentID,departmentName,managerID,deputyManagerID});
+
+        //Xóa data trong ô nhập sau khi thêm thành công:
+        txtDeptID.setText("");
+        txtDeptName.setText("");
+        txtManID.setText("");
+        txtDManID.setText("");
+
+        JOptionPane.showMessageDialog(this, "Thêm phòng ban thành công","Thành công", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnAddTaskActionPerformed
 
     private void txtDeptIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDeptIDActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtDeptIDActionPerformed
 
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(jLabel2.CENTER);
+    private void btnAssManActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAssManActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAssManActionPerformed
 
-    for (int i = 0; i < tblDept.getColumnCount(); i++) {
-        tblDept.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);}
-    }//GEN-LAST:event_formWindowOpened
-
-    /**
-     * @param args the command line arguments
-     */
-/*public static void main(String args[]) {
-    try {
-        // Set the Nimbus look and feel
-        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                break;
-            }
-        }
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-        java.util.logging.Logger.getLogger(HRLayout.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-
-    // Create and display the Login form first
-    java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-            
-            //Giả lập login thành công:
-            boolean isLoggedIn = true;
-            
-            if (isLoggedIn) {
-                HRLayout hrLayout = new HRLayout();
-                hrLayout.setVisible(true);
-            } else {
-            Login loginFrame = new Login(); // Hiển thị cửa sổ Login đầu tiên
-            loginFrame.setVisible(true); // Hiển thị cửa sổ Login
-        }
-    }});
-}*/
+    private void btnAssDepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAssDepActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAssDepActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -569,46 +356,10 @@ public class HRLayout extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JMenu mnuAcc;
-    private javax.swing.JMenu mnuDepartment;
-    private javax.swing.JMenu mnuHR;
-    private javax.swing.JMenu mnuJob;
-    private javax.swing.JMenuItem mnuJobAssignment;
-    private javax.swing.JMenuItem mnuJobList;
-    private javax.swing.JMenu mnuSalary;
-    private javax.swing.JMenu mnuStaff;
-    private javax.swing.JMenu mnuStatistical;
-    private javax.swing.JMenu mnuSystem;
-    private javax.swing.JMenuItem mnuTaskManagement;
-    private javax.swing.JMenuItem mnuTaskReport;
-    private javax.swing.JMenu mnuTeam;
-    private javax.swing.JMenuItem mnuiAddDept;
-    private javax.swing.JMenuItem mnuiAddStaff;
-    private javax.swing.JMenuItem mnuiAddStaff1;
-    private javax.swing.JMenuItem mnuiCalSalaray;
-    private javax.swing.JMenuItem mnuiDelDept;
-    private javax.swing.JMenuItem mnuiDeleteStaff;
-    private javax.swing.JMenuItem mnuiDeleteStaff1;
-    private javax.swing.JMenuItem mnuiEditAcc;
-    private javax.swing.JMenuItem mnuiEditDept;
-    private javax.swing.JMenuItem mnuiEditStaff;
-    private javax.swing.JMenuItem mnuiEditStaff1;
-    private javax.swing.JMenuItem mnuiExit;
-    private javax.swing.JMenuItem mnuiInfo;
-    private javax.swing.JMenuItem mnuiLogout;
-    private javax.swing.JMenuItem mnuiS_HR;
-    private javax.swing.JMenuItem mnuiS_Job;
-    private javax.swing.JMenuItem mnuiS_Salary;
-    private javax.swing.JMenuItem mnuiViewAcc;
-    private javax.swing.JMenuItem mnuiViewDept;
-    private javax.swing.JMenuItem mnuiViewSalary;
-    private javax.swing.JMenuItem mnuiViewStaff;
-    private javax.swing.JMenuItem mnuiViewStaff1;
     private javax.swing.JTable tblDept;
     private javax.swing.JTextField txtDManID;
     private javax.swing.JTextField txtDeptID;

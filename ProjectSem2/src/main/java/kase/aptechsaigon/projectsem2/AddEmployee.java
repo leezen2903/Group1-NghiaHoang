@@ -1,6 +1,6 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package kase.aptechsaigon.projectsem2;
 
@@ -8,7 +8,7 @@ package kase.aptechsaigon.projectsem2;
  *
  * @author Moiiii
  */
-public class AddEmployee extends javax.swing.JFrame {
+public class AddEmployee extends javax.swing.JPanel {
 
     /**
      * Creates new form AddEmployee
@@ -26,16 +26,29 @@ public class AddEmployee extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btnReset = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
         txtPhoneNumber = new javax.swing.JTextField();
+        jSeparator3 = new javax.swing.JSeparator();
         txtStartDate = new javax.swing.JTextField();
+        cbxPosition = new javax.swing.JComboBox<>();
         txtContractDuration = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
         txtWorkExperience = new javax.swing.JTextField();
+        jLabel12 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
         txtPasswordHash = new javax.swing.JTextField();
+        txtEmployeeID = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
+        txtBirthDate = new javax.swing.JTextField();
         txtFullname = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        txtIDCardNumber = new javax.swing.JTextField();
+        txtAddress = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
+        txtEmail = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         rdbMale = new javax.swing.JRadioButton();
         jLabel5 = new javax.swing.JLabel();
@@ -45,24 +58,28 @@ public class AddEmployee extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         btnCreate = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
-        btnReset = new javax.swing.JButton();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jSeparator3 = new javax.swing.JSeparator();
-        cbxPosition = new javax.swing.JComboBox<>();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        txtEmployeeID = new javax.swing.JTextField();
-        txtBirthDate = new javax.swing.JTextField();
-        txtIDCardNumber = new javax.swing.JTextField();
-        txtAddress = new javax.swing.JTextField();
-        txtEmail = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        btnReset.setText("Đặt lại");
+
+        jLabel9.setText("StartDate: ");
+
+        jLabel10.setText("WorkExperience: ");
+
+        cbxPosition.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbxPosition.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxPositionActionPerformed(evt);
+            }
+        });
+
+        jLabel11.setText("PasswordHash");
+
+        jLabel12.setText("ContractDuration: ");
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Add Employee");
+
+        jLabel13.setText("Position: ");
 
         txtPasswordHash.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -105,30 +122,11 @@ public class AddEmployee extends javax.swing.JFrame {
 
         jLabel8.setText("PhoneNumber: ");
 
-        btnReset.setText("Đặt lại");
-
-        jLabel9.setText("StartDate: ");
-
-        jLabel10.setText("WorkExperience: ");
-
-        cbxPosition.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cbxPosition.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbxPositionActionPerformed(evt);
-            }
-        });
-
-        jLabel11.setText("PasswordHash");
-
-        jLabel12.setText("ContractDuration: ");
-
-        jLabel13.setText("Position: ");
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 772, Short.MAX_VALUE)
+            .addGap(0, 763, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(15, 15, 15)
@@ -187,11 +185,11 @@ public class AddEmployee extends javax.swing.JFrame {
                         .addGroup(layout.createSequentialGroup()
                             .addGap(268, 268, 268)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addContainerGap(15, Short.MAX_VALUE)))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 502, Short.MAX_VALUE)
+            .addGap(0, 476, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(10, 10, 10)
@@ -256,11 +254,13 @@ public class AddEmployee extends javax.swing.JFrame {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnCreate)
                         .addComponent(btnReset))
-                    .addContainerGap(32, Short.MAX_VALUE)))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void cbxPositionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxPositionActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxPositionActionPerformed
 
     private void txtPasswordHashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordHashActionPerformed
         // TODO add your handling code here:
@@ -274,46 +274,6 @@ public class AddEmployee extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnCreateActionPerformed
 
-    private void cbxPositionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxPositionActionPerformed
-        // TODO add your handling code here:
-
-    }//GEN-LAST:event_cbxPositionActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AddEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AddEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AddEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AddEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AddEmployee().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreate;

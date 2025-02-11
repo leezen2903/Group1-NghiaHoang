@@ -221,8 +221,8 @@ if (isLoggedIn) {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jForgotPasswordMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jForgotPasswordMouseClicked
-       ChangePassword changePasswordFrame = new ChangePassword();
-      changePasswordFrame.setVisible(true);
+//       ChangePasswordd changePasswordFrame = new ChangePasswordd();
+//      changePasswordFrame.setVisible(true);
       this.dispose();
     }//GEN-LAST:event_jForgotPasswordMouseClicked
 
