@@ -13,9 +13,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectDatabase {
-    private static final String URL = "jdbc:mysql://localhost:3306/companyData"; 
-    private static final String USER = "root";
-    private static final String PASSWORD = "123123"; 
+    private static final String URL = "jdbc:mysql://suv8q.h.filess.io:3307/companydata_mountainto"; 
+    private static final String USER = "companydata_mountainto";
+    private static final String PASSWORD = "2d26a5dedaad77c1f83b0e604581c9bb84d12ad9"; 
 
     // Phương thức kết nối cơ sở dữ liệu
     public static Connection getConnection() {
