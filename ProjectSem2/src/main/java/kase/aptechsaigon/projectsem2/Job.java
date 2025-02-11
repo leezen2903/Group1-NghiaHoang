@@ -101,8 +101,6 @@ public class Job extends javax.swing.JFrame {
                 }
             }
         });
-
-
     }   
         private boolean isAdding = false;
         private boolean isEditing = false;
