@@ -23,17 +23,6 @@ public class Job extends javax.swing.JFrame {
     public Job() {
         initComponents();
         loadJobs(); 
-        
-       cbNotStartedYet = new JCheckBox("Not Started Yet");
-       cbInProgress = new JCheckBox("In Progress");
-       cbCompleted = new JCheckBox("Completed");
-       cbNotCompleted = new JCheckBox("Not Completed");
-
-       btgStatus = new ButtonGroup();
-       btgStatus.add(cbNotStartedYet);
-       btgStatus.add(cbInProgress);
-       btgStatus.add(cbCompleted);
-       btgStatus.add(cbNotCompleted);
     }
 
     public void loadJobs() {
@@ -80,25 +69,8 @@ public class Job extends javax.swing.JFrame {
                 txtJobID.setText(tbJob.getValueAt(selectedRow, 0).toString());
                 txtJobName.setText(tbJob.getValueAt(selectedRow, 1).toString());
                 txtDescription.setText(tbJob.getValueAt(selectedRow, 2).toString());
-                txtEstimatedStartDate.setText(tbJob.getValueAt(selectedRow, 3).toString());
-                txtEstimatedEndDate.setText(tbJob.getValueAt(selectedRow, 4).toString());
-
-                String status = tbJob.getValueAt(selectedRow, 5).toString().trim();
-
-                cbNotStartedYet.setSelected(false);
-                cbInProgress.setSelected(false);
-                cbCompleted.setSelected(false);
-                cbNotCompleted.setSelected(false);
-
-                if (status.equalsIgnoreCase("Not Started Yet")) {
-                    cbNotStartedYet.setSelected(true);
-                } else if (status.equalsIgnoreCase("In Progress")) {
-                    cbInProgress.setSelected(true);
-                } else if (status.equalsIgnoreCase("Completed")) {
-                    cbCompleted.setSelected(true);
-                } else if (status.equalsIgnoreCase("Not Completed")) {
-                    cbNotCompleted.setSelected(true);
-                }
+//                txtEstimatedStartDate.setText(tbJob.getValueAt(selectedRow, 3).toString());
+//                txtEstimatedEndDate.setText(tbJob.getValueAt(selectedRow, 4).toString());
             }
         });
     }   
@@ -125,9 +97,8 @@ public class Job extends javax.swing.JFrame {
                 txtJobID.setText(""); 
                 txtJobName.setText("");
                 txtDescription.setText("");
-                txtEstimatedStartDate.setText("");
-                txtEstimatedEndDate.setText("");
-                btgStatus.clearSelection();
+//                txtEstimatedStartDate.setText("");
+//                txtEstimatedEndDate.setText("");
             }
         }
 
@@ -151,21 +122,9 @@ public class Job extends javax.swing.JFrame {
                 txtJobID.setText(tbJob.getValueAt(selectedRow, 0).toString());
                 txtJobName.setText(tbJob.getValueAt(selectedRow, 1).toString());
                 txtDescription.setText(tbJob.getValueAt(selectedRow, 2).toString());
-                txtEstimatedStartDate.setText(tbJob.getValueAt(selectedRow, 3).toString());
-                txtEstimatedEndDate.setText(tbJob.getValueAt(selectedRow, 4).toString());
+//                txtEstimatedStartDate.setText(tbJob.getValueAt(selectedRow, 3).toString());
+//                txtEstimatedEndDate.setText(tbJob.getValueAt(selectedRow, 4).toString());
 
-                String status = tbJob.getValueAt(selectedRow, 5).toString();
-                btgStatus.clearSelection();
-
-                if (status.equalsIgnoreCase("Not Started Yet")) {
-                    cbNotStartedYet.setSelected(true);
-                } else if (status.equalsIgnoreCase("In Progress")) {
-                    cbInProgress.setSelected(true);
-                } else if (status.equalsIgnoreCase("Completed")) {
-                    cbCompleted.setSelected(true);
-                } else if (status.equalsIgnoreCase("Not Completed")) {
-                    cbNotCompleted.setSelected(true);
-                }
             }
         }
 
@@ -210,16 +169,10 @@ public class Job extends javax.swing.JFrame {
             String jobID = txtJobID.getText().trim();
             String jobName = txtJobName.getText().trim();
             String description = txtDescription.getText().trim();
-            String startDate = txtEstimatedStartDate.getText().trim();
-            String endDate = txtEstimatedEndDate.getText().trim();
+//            String startDate = txtEstimatedStartDate.getText().trim();
+//            String endDate = txtEstimatedEndDate.getText().trim();
 
-            String status = "";
-            if (cbNotStartedYet.isSelected()) status = "Not Started Yet";
-            else if (cbInProgress.isSelected()) status = "In Progress";
-            else if (cbCompleted.isSelected()) status = "Completed";
-            else if (cbNotCompleted.isSelected()) status = "Not Completed";
-
-            if (jobName.isEmpty() || description.isEmpty() || startDate.isEmpty() || endDate.isEmpty() || status.isEmpty()) {
+            if (jobName.isEmpty() || description.isEmpty() /*|| startDate.isEmpty() || endDate.isEmpty*/ ) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -232,9 +185,8 @@ public class Job extends javax.swing.JFrame {
 
                     pstmt.setString(1, jobName);
                     pstmt.setString(2, description);
-                    pstmt.setString(3, startDate);
-                    pstmt.setString(4, endDate);
-                    pstmt.setString(5, status);
+//                    pstmt.setString(3, startDate);
+//                    pstmt.setString(4, endDate);
                     pstmt.executeUpdate();
 
                     JOptionPane.showMessageDialog(this, "Thêm công việc thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
@@ -253,9 +205,8 @@ public class Job extends javax.swing.JFrame {
 
                     pstmt.setString(1, jobName);
                     pstmt.setString(2, description);
-                    pstmt.setString(3, startDate);
-                    pstmt.setString(4, endDate);
-                    pstmt.setString(5, status);
+//                    pstmt.setString(3, startDate);
+//                    pstmt.setString(4, endDate);
                     pstmt.setInt(6, Integer.parseInt(jobID));
                     pstmt.executeUpdate();
 
@@ -277,9 +228,8 @@ public class Job extends javax.swing.JFrame {
         txtJobID.setText("");
         txtJobName.setText("");
         txtDescription.setText("");
-        txtEstimatedStartDate.setText("");
-        txtEstimatedEndDate.setText("");
-        btgStatus.clearSelection(); 
+//        txtEstimatedStartDate.setText("");
+//        txtEstimatedEndDate.setText("");
         }
             
     /**
@@ -293,7 +243,6 @@ public class Job extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btgStatus = new javax.swing.ButtonGroup();
         popupMenu1 = new java.awt.PopupMenu();
         jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
@@ -313,17 +262,13 @@ public class Job extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
         txtJobID = new javax.swing.JTextField();
         txtDescription = new javax.swing.JTextField();
-        txtEstimatedStartDate = new javax.swing.JTextField();
-        txtEstimatedEndDate = new javax.swing.JTextField();
         btnSaveJob = new javax.swing.JButton();
         txtJobName = new javax.swing.JTextField();
-        cbNotStartedYet = new javax.swing.JCheckBox();
-        cbInProgress = new javax.swing.JCheckBox();
-        cbCompleted = new javax.swing.JCheckBox();
-        cbNotCompleted = new javax.swing.JCheckBox();
+        btnCancel = new javax.swing.JButton();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        jDateChooser2 = new com.toedter.calendar.JDateChooser();
 
         popupMenu1.setLabel("popupMenu1");
 
@@ -508,8 +453,6 @@ public class Job extends javax.swing.JFrame {
 
         jLabel9.setText("- EstimatedEndDate ");
 
-        jLabel10.setText("- Status ");
-
         txtDescription.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtDescriptionActionPerformed(evt);
@@ -523,17 +466,12 @@ public class Job extends javax.swing.JFrame {
             }
         });
 
-        btgStatus.add(cbNotStartedYet);
-        cbNotStartedYet.setText("NotStartedYet");
-
-        btgStatus.add(cbInProgress);
-        cbInProgress.setText("InProgress");
-
-        btgStatus.add(cbCompleted);
-        cbCompleted.setText("Completed");
-
-        btgStatus.add(cbNotCompleted);
-        cbNotCompleted.setText("NotCompleted");
+        btnCancel.setText("Cancel");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -559,63 +497,52 @@ public class Job extends javax.swing.JFrame {
                                 .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(0, 15, Short.MAX_VALUE)
+                                        .addGap(0, 0, Short.MAX_VALUE)
                                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 817, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGap(34, 34, 34)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                    .addGroup(layout.createSequentialGroup()
-                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                                        .addGap(18, 18, 18)
-                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                                .addComponent(txtEstimatedEndDate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)
-                                                                .addComponent(txtEstimatedStartDate))
-                                                            .addGroup(layout.createSequentialGroup()
-                                                                .addComponent(cbNotStartedYet, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                .addComponent(cbInProgress, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                .addComponent(cbCompleted, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                .addComponent(cbNotCompleted)))
-                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(btnSaveJob))
-                                                    .addGroup(layout.createSequentialGroup()
-                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                            .addGroup(layout.createSequentialGroup()
-                                                                .addGap(18, 18, 18)
-                                                                .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 561, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                            .addGroup(layout.createSequentialGroup()
-                                                                .addGap(18, 18, 18)
-                                                                .addComponent(txtJobName, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                                        .addGap(27, 27, 27))))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(btnAddJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(btnEditJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(btnDeleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(btnResetJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(34, 34, 34)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addComponent(jLabel4))
-                                                .addGap(76, 76, 76)
-                                                .addComponent(txtJobID, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addGap(0, 0, Short.MAX_VALUE)))))
+                                                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addGroup(layout.createSequentialGroup()
+                                                        .addGap(18, 18, 18)
+                                                        .addComponent(txtJobName, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                    .addGroup(layout.createSequentialGroup()
+                                                        .addGap(18, 18, 18)
+                                                        .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 579, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGap(18, 18, 18)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addGroup(layout.createSequentialGroup()
+                                                        .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(btnCancel)
+                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(btnSaveJob)
+                                                        .addGap(10, 10, 10))))))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnAddJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnEditJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnDeleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnResetJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel4))
+                                        .addGap(76, 76, 76)
+                                        .addComponent(txtJobID, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addGap(14, 14, 14)))
                 .addContainerGap())
         );
@@ -655,23 +582,20 @@ public class Job extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel7)
                     .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 16, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(txtEstimatedStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(9, 9, 9)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(txtEstimatedEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(btnSaveJob)
-                    .addComponent(cbNotStartedYet)
-                    .addComponent(cbInProgress)
-                    .addComponent(cbNotCompleted)
-                    .addComponent(cbCompleted))
-                .addGap(35, 35, 35))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel8)
+                            .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel9)
+                            .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnCancel)
+                        .addComponent(btnSaveJob)))
+                .addContainerGap(67, Short.MAX_VALUE))
         );
 
         pack();
@@ -716,6 +640,10 @@ public class Job extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnAddJobMouseClicked
 
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCancelActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -753,18 +681,15 @@ public class Job extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup btgStatus;
     private javax.swing.JToggleButton btnAddJob;
+    private javax.swing.JButton btnCancel;
     private javax.swing.JToggleButton btnDeleteJob;
     private javax.swing.JToggleButton btnEditJob;
     private javax.swing.JToggleButton btnResetJob;
     private javax.swing.JButton btnSaveJob;
-    private javax.swing.JCheckBox cbCompleted;
-    private javax.swing.JCheckBox cbInProgress;
-    private javax.swing.JCheckBox cbNotCompleted;
-    private javax.swing.JCheckBox cbNotStartedYet;
+    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private com.toedter.calendar.JDateChooser jDateChooser2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -780,8 +705,6 @@ public class Job extends javax.swing.JFrame {
     private java.awt.PopupMenu popupMenu1;
     private javax.swing.JTable tbJob;
     private javax.swing.JTextField txtDescription;
-    private javax.swing.JTextField txtEstimatedEndDate;
-    private javax.swing.JTextField txtEstimatedStartDate;
     private javax.swing.JTextField txtJobID;
     private javax.swing.JTextField txtJobName;
     // End of variables declaration//GEN-END:variables
