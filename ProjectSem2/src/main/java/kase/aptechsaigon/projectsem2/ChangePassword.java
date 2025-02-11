@@ -2,7 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
+
+
 package kase.aptechsaigon.projectsem2;
+
+import java.awt.Color;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import javax.swing.JTextField;
 
 /**
  *
@@ -15,6 +22,34 @@ public class ChangePassword extends javax.swing.JFrame {
      */
     public ChangePassword() {
         initComponents();
+        
+        //Gán placeholder cho từng ô:
+        setPlaceholder(jOldpass, "Old Password");
+        setPlaceholder(jNewpass, "New Password");
+        setPlaceholder(jRetype, "Retype Password");
+    }
+    
+        //Phương thức thêm placeholder
+    private void setPlaceholder(JTextField textField, String placeholder) {
+        textField.setText(placeholder);
+        textField.setForeground(Color.GRAY);
+        
+        textField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if(textField.getText().equals(placeholder)) {
+                    textField.setText(""); //Xóa placeholder khi click vào
+                    textField.setForeground(Color.BLACK);
+                }
+            }
+            
+            @Override
+            public void focusLost(FocusEvent e) {
+            if (textField.getText().trim().isEmpty()) {
+                    textField.setText(placeholder); //Hiện lại nếu rỗng
+                    textField.setForeground(Color.GRAY);
+            }}
+        });
     }
 
     /**
