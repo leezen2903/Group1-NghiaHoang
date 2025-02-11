@@ -1,14 +1,33 @@
+package kase.aptechsaigon.projectsem2;
+
+
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package kase.aptechsaigon.projectsem2;
-
-import javax.swing.JFrame;
 
 /**
  *
- * @author Moiiii
+ * @author Admin
  */
 public class MainFrame extends javax.swing.JFrame {
 
@@ -16,517 +35,206 @@ public class MainFrame extends javax.swing.JFrame {
      * Creates new form MainFrame
      */
     public MainFrame() {
-        initComponents();
-    }
+         setTitle("Ứng dụng Quản Lý Nhân Viên");
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        
+        //Tạo MENU Bar:
+         // Tạo thanh menu bar
+        JMenuBar menuBar = new JMenuBar();
 
+    // Tạo menu "Account"
+    JMenu mnuAcc = new JMenu("Account");
+    JMenuItem mnuiViewAcc = new JMenuItem("Information");
+    JMenuItem mnuiEditAcc = new JMenuItem("Edit");
+    mnuAcc.add(mnuiViewAcc);
+    mnuAcc.add(mnuiEditAcc);
+    menuBar.add(mnuAcc);
+
+    // Tạo menu "HR"
+    JMenu mnuHR = new JMenu("HR");
+    JMenu mnuDepartment = new JMenu("Department");
+    JMenuItem mnuiViewDept = new JMenuItem("View Departments List");
+    JMenuItem mnuiAddDept = new JMenuItem("Add Department");
+    JMenuItem mnuiEditDept = new JMenuItem("Edit Department");
+    JMenuItem mnuiDelDept = new JMenuItem("Delete Department");
+
+    mnuDepartment.add(mnuiViewDept);
+    mnuDepartment.add(mnuiAddDept);
+    mnuDepartment.add(mnuiEditDept);
+    mnuDepartment.add(mnuiDelDept);
+    mnuHR.add(mnuDepartment);
+    menuBar.add(mnuHR);
+
+    // Tạo menu "Job"
+    JMenu mnuJob = new JMenu("Job");
+    JMenuItem mnuJobList = new JMenuItem("Job List");
+    JMenuItem mnuJobAssignment = new JMenuItem("Job Assignment");
+    JMenuItem mnuTaskManagement = new JMenuItem("Task Management");
+    JMenuItem mnuTaskReport = new JMenuItem("Task Report");
+
+    mnuJob.add(mnuJobList);
+    mnuJob.add(mnuJobAssignment);
+    mnuJob.add(mnuTaskManagement);
+    mnuJob.add(mnuTaskReport);
+    menuBar.add(mnuJob);
+
+    // Tạo menu "Statistic"
+    JMenu mnuStatistical = new JMenu("Statistic");
+    JMenuItem mnuiS_Salary = new JMenuItem("Salary Statistic");
+    JMenuItem mnuiS_Job = new JMenuItem("Job Statistic");
+    JMenuItem mnuiS_HR = new JMenuItem("HR Statistic");
+
+    mnuStatistical.add(mnuiS_Salary);
+    mnuStatistical.add(mnuiS_Job);
+    mnuStatistical.add(mnuiS_HR);
+    menuBar.add(mnuStatistical);
+
+    // Tạo menu "System"
+        JMenu mnuSystem = new JMenu("System");
+        JMenuItem mnuiInfo = new JMenuItem("Info");
+        JMenuItem mnuiLogout = new JMenuItem("Logout");
+        JMenuItem mnuiExit = new JMenuItem("Exit App");
+
+    mnuSystem.add(mnuiInfo);
+    mnuSystem.add(mnuiLogout);
+    mnuSystem.add(mnuiExit);
+    menuBar.add(mnuSystem);
+
+    // Đặt menu bar cho MainFrame
+    setJMenuBar(menuBar);
+        
+        JLabel companyName = new JLabel("SQUARE ENIX", SwingConstants.CENTER);
+        companyName.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 24));
+        
+        JLabel slogan = new JLabel("Welcome to SQUARE ENIX Company!", SwingConstants.CENTER);
+        slogan.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 10));
+        slogan.setForeground(new java.awt.Color(102, 102, 102));
+        
+         // Tạo panel chứa 2 dòng chữ này
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.add(companyName, BorderLayout.NORTH);
+        headerPanel.add(slogan, BorderLayout.CENTER);
+
+        // Thêm vào giao diện MainFrame (ở trên cùng)
+        add(headerPanel, BorderLayout.NORTH);
+
+    
+        //Tạo 4 nút
+        JButton btnNhanSu = new JButton("Nhân sự");
+        JButton btnCongViec = new JButton("Công việc");
+        JButton btnTask = new JButton("Task");
+        JButton btnBoPhan = new JButton("Bộ phận");
+
+        
+        //Gán event cho từng nút khi click vào
+        btnNhanSu.addActionListener(e -> openFrame(new HRLayout()));
+        btnCongViec.addActionListener(e -> openFrame(new Job()));
+        btnTask.addActionListener(e -> openFrame(new Task()));
+        btnBoPhan.addActionListener(e -> openFrame(new AddEmployee()));
+         
+        
+        //Thêm các nút vào panel
+        gbc.gridx = 0; gbc.gridy = 0;
+        panel.add(btnNhanSu, gbc);
+
+        gbc.gridx = 1; gbc.gridy = 0;
+        panel.add(btnCongViec, gbc);
+        
+        gbc.gridx = 0; gbc.gridy = 1;
+        panel.add(btnTask, gbc);
+
+        gbc.gridx = 1; gbc.gridy = 1;
+        panel.add(btnBoPhan, gbc);
+        
+        //Thêm panel vào mainframe
+        JPanel container = new JPanel(new GridBagLayout());
+        container.add(panel);
+        add(container, BorderLayout.CENTER);
+        //HIển thị cửa sổ
+        setVisible(true);
+    }
+     private void openFrame(JFrame frame) {
+        frame.setVisible(true);
+    }
+    
+     
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-        CompanyName = new javax.swing.JLabel();
-        Slogan = new javax.swing.JLabel();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblListTask = new javax.swing.JTable();
-        jLabel2 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        btnResetTask = new javax.swing.JButton();
-        btnAddTask = new javax.swing.JButton();
-        btnEditTask = new javax.swing.JButton();
-        btnDeleteTask = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        txtTaskID = new javax.swing.JTextField();
-        txtTaskName = new javax.swing.JTextField();
-        txtTaskDate = new javax.swing.JTextField();
-        txtTaskDate1 = new javax.swing.JTextField();
-        btnResetTask1 = new javax.swing.JButton();
-        btnResetTask2 = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JSeparator();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        mnuAcc = new javax.swing.JMenu();
-        mnuiViewAcc = new javax.swing.JMenuItem();
-        mnuiEditAcc = new javax.swing.JMenuItem();
-        mnuHR = new javax.swing.JMenu();
-        mnuDepartment = new javax.swing.JMenu();
-        mnuiViewDept = new javax.swing.JMenuItem();
-        mnuiAddDept = new javax.swing.JMenuItem();
-        mnuiEditDept = new javax.swing.JMenuItem();
-        mnuiDelDept = new javax.swing.JMenuItem();
-        mnuTeam = new javax.swing.JMenu();
-        mnuiViewStaff1 = new javax.swing.JMenuItem();
-        mnuiAddStaff1 = new javax.swing.JMenuItem();
-        mnuiEditStaff1 = new javax.swing.JMenuItem();
-        mnuiDeleteStaff1 = new javax.swing.JMenuItem();
-        mnuStaff = new javax.swing.JMenu();
-        mnuiViewStaff = new javax.swing.JMenuItem();
-        mnuiAddStaff = new javax.swing.JMenuItem();
-        mnuiEditStaff = new javax.swing.JMenuItem();
-        mnuiDeleteStaff = new javax.swing.JMenuItem();
-        mnuSalary = new javax.swing.JMenu();
-        mnuiViewSalary = new javax.swing.JMenuItem();
-        mnuiCalSalaray = new javax.swing.JMenuItem();
-        mnuJob = new javax.swing.JMenu();
-        mnuJobList = new javax.swing.JMenuItem();
-        mnuJobAssignment = new javax.swing.JMenuItem();
-        mnuTaskManagement = new javax.swing.JMenuItem();
-        mnuTaskReport = new javax.swing.JMenuItem();
-        mnuStatistical = new javax.swing.JMenu();
-        mnuiS_Salary = new javax.swing.JMenuItem();
-        mnuiS_Job = new javax.swing.JMenuItem();
-        mnuiS_HR = new javax.swing.JMenuItem();
-        mnuSystem = new javax.swing.JMenu();
-        mnuiInfo = new javax.swing.JMenuItem();
-        mnuiLogout = new javax.swing.JMenuItem();
-        mnuiExit = new javax.swing.JMenuItem();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(800, 600));
-
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton1.setText("Dept");
-        jButton1.setHideActionText(true);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        CompanyName.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        CompanyName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        CompanyName.setText("SQUARE ENIX");
-
-        Slogan.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-        Slogan.setForeground(new java.awt.Color(102, 102, 102));
-        Slogan.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Slogan.setText("Welcome to SQUARE ENIX Company!");
-        Slogan.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-
-        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        tblListTask.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "DepartmentID", "DepartmentName", "ManagerID", "DeputyManagerID"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, true, true, true
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane1.setViewportView(tblListTask);
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel2.setText("Departments:");
-
-        btnResetTask.setText("Reset");
-
-        btnAddTask.setText("Add");
-
-        btnEditTask.setText("Edit");
-
-        btnDeleteTask.setText("Delete");
-
-        jLabel5.setText("DepartmentID:");
-
-        jLabel6.setText("DepartmentName :");
-
-        jLabel7.setText("ManagerID:");
-
-        jLabel8.setText("DeputyManagerID:");
-
-        btnResetTask1.setText("AssignManager");
-        btnResetTask1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnResetTask1ActionPerformed(evt);
-            }
-        });
-
-        btnResetTask2.setText("Assign Deputy");
-        btnResetTask2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnResetTask2ActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(691, Short.MAX_VALUE)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(289, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel8))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(txtTaskDate1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtTaskDate, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtTaskName, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtTaskID, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnAddTask)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnEditTask)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnDeleteTask)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnResetTask)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnResetTask1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnResetTask2)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(9, 9, 9)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAddTask)
-                    .addComponent(btnEditTask)
-                    .addComponent(btnDeleteTask)
-                    .addComponent(btnResetTask)
-                    .addComponent(btnResetTask1)
-                    .addComponent(btnResetTask2, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtTaskID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(txtTaskName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(txtTaskDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(txtTaskDate1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(9, Short.MAX_VALUE))
-        );
-
-        jTabbedPane1.addTab("tab1", jPanel1);
-
-        mnuAcc.setText("Account");
-
-        mnuiViewAcc.setText("Infomation");
-        mnuAcc.add(mnuiViewAcc);
-
-        mnuiEditAcc.setText("Edit");
-        mnuAcc.add(mnuiEditAcc);
-
-        jMenuBar1.add(mnuAcc);
-
-        mnuHR.setText("HR");
-
-        mnuDepartment.setText("Department");
-
-        mnuiViewDept.setText("View Departments List");
-        mnuDepartment.add(mnuiViewDept);
-
-        mnuiAddDept.setText("Add Department");
-        mnuDepartment.add(mnuiAddDept);
-
-        mnuiEditDept.setText("Edit Department");
-        mnuDepartment.add(mnuiEditDept);
-
-        mnuiDelDept.setText("Delete Department");
-        mnuDepartment.add(mnuiDelDept);
-
-        mnuHR.add(mnuDepartment);
-
-        mnuTeam.setText("Team");
-
-        mnuiViewStaff1.setText("Xem danh sách nhóm");
-        mnuTeam.add(mnuiViewStaff1);
-
-        mnuiAddStaff1.setText("Thêm nhóm");
-        mnuTeam.add(mnuiAddStaff1);
-
-        mnuiEditStaff1.setText("Điều chỉnh thông tin nhóm");
-        mnuiEditStaff1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mnuiEditStaff1ActionPerformed(evt);
-            }
-        });
-        mnuTeam.add(mnuiEditStaff1);
-
-        mnuiDeleteStaff1.setText("Xóa nhóm");
-        mnuTeam.add(mnuiDeleteStaff1);
-
-        mnuHR.add(mnuTeam);
-
-        mnuStaff.setText("Staff");
-
-        mnuiViewStaff.setText("View Staff List");
-        mnuStaff.add(mnuiViewStaff);
-
-        mnuiAddStaff.setText("Add Staff");
-        mnuStaff.add(mnuiAddStaff);
-
-        mnuiEditStaff.setText("Edit Staff's Infomation");
-        mnuStaff.add(mnuiEditStaff);
-
-        mnuiDeleteStaff.setText("Delete Staff");
-        mnuStaff.add(mnuiDeleteStaff);
-
-        mnuHR.add(mnuStaff);
-
-        mnuSalary.setText("Salary");
-
-        mnuiViewSalary.setText("Xem bảng lương");
-        mnuSalary.add(mnuiViewSalary);
-
-        mnuiCalSalaray.setText("Tính lương");
-        mnuSalary.add(mnuiCalSalaray);
-
-        mnuHR.add(mnuSalary);
-
-        jMenuBar1.add(mnuHR);
-
-        mnuJob.setText("Job");
-
-        mnuJobList.setText("Job List");
-        mnuJob.add(mnuJobList);
-
-        mnuJobAssignment.setText("Job Assignment");
-        mnuJob.add(mnuJobAssignment);
-
-        mnuTaskManagement.setText("Task Management");
-        mnuJob.add(mnuTaskManagement);
-
-        mnuTaskReport.setText("Task Report");
-        mnuJob.add(mnuTaskReport);
-
-        jMenuBar1.add(mnuJob);
-
-        mnuStatistical.setText("Statistic");
-
-        mnuiS_Salary.setText("Job Statistic");
-        mnuStatistical.add(mnuiS_Salary);
-
-        mnuiS_Job.setText("HR Statistic");
-        mnuStatistical.add(mnuiS_Job);
-
-        mnuiS_HR.setText("Salary Statistic");
-        mnuStatistical.add(mnuiS_HR);
-
-        jMenuBar1.add(mnuStatistical);
-
-        mnuSystem.setText("System");
-
-        mnuiInfo.setText("Info");
-        mnuSystem.add(mnuiInfo);
-
-        mnuiLogout.setText("Logout");
-        mnuSystem.add(mnuiLogout);
-
-        mnuiExit.setText("Exit App");
-        mnuSystem.add(mnuiExit);
-
-        jMenuBar1.add(mnuSystem);
-
-        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addGap(18, 18, 18)
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1306, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(Slogan, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(100, 100, 100))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(585, 585, 585)
-                .addComponent(CompanyName, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jSeparator1)
-                .addContainerGap())
+            .addGap(0, 400, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addComponent(CompanyName)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Slogan)
-                .addGap(2, 2, 2)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(48, 48, 48)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 448, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(136, Short.MAX_VALUE))
+            .addGap(0, 300, Short.MAX_VALUE)
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
-    private void mnuiEditStaff1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuiEditStaff1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mnuiEditStaff1ActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void btnResetTask1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetTask1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnResetTask1ActionPerformed
-
-    private void btnResetTask2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetTask2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnResetTask2ActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-public static void main(String args[]) {
-    try {
-        // Set the Nimbus look and feel
-        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                break;
+ 
+    
+    
+    public static void main(String args[]) {
+     /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
             }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-        java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        //</editor-fold>
+     /*    SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new MainFrame();
+            }
+        });
+        /* Create and display the form */
+       /* java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new MainFrame().setVisible(true);
+            }
+        }); */
+        SwingUtilities.invokeLater(() -> {
+            Login login = new Login();
+            login.setVisible(true);
+        });
     }
 
-    // Create and display the Login form first
-    java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-            Login loginFrame = new Login(); // Hiển thị cửa sổ Login đầu tiên
-            loginFrame.setVisible(true); // Hiển thị cửa sổ Login
-        }
-    });
-}
-
-
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel CompanyName;
-    private javax.swing.JLabel Slogan;
-    private javax.swing.JButton btnAddTask;
-    private javax.swing.JButton btnDeleteTask;
-    private javax.swing.JButton btnEditTask;
-    private javax.swing.JButton btnResetTask;
-    private javax.swing.JButton btnResetTask1;
-    private javax.swing.JButton btnResetTask2;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JMenu mnuAcc;
-    private javax.swing.JMenu mnuDepartment;
-    private javax.swing.JMenu mnuHR;
-    private javax.swing.JMenu mnuJob;
-    private javax.swing.JMenuItem mnuJobAssignment;
-    private javax.swing.JMenuItem mnuJobList;
-    private javax.swing.JMenu mnuSalary;
-    private javax.swing.JMenu mnuStaff;
-    private javax.swing.JMenu mnuStatistical;
-    private javax.swing.JMenu mnuSystem;
-    private javax.swing.JMenuItem mnuTaskManagement;
-    private javax.swing.JMenuItem mnuTaskReport;
-    private javax.swing.JMenu mnuTeam;
-    private javax.swing.JMenuItem mnuiAddDept;
-    private javax.swing.JMenuItem mnuiAddStaff;
-    private javax.swing.JMenuItem mnuiAddStaff1;
-    private javax.swing.JMenuItem mnuiCalSalaray;
-    private javax.swing.JMenuItem mnuiDelDept;
-    private javax.swing.JMenuItem mnuiDeleteStaff;
-    private javax.swing.JMenuItem mnuiDeleteStaff1;
-    private javax.swing.JMenuItem mnuiEditAcc;
-    private javax.swing.JMenuItem mnuiEditDept;
-    private javax.swing.JMenuItem mnuiEditStaff;
-    private javax.swing.JMenuItem mnuiEditStaff1;
-    private javax.swing.JMenuItem mnuiExit;
-    private javax.swing.JMenuItem mnuiInfo;
-    private javax.swing.JMenuItem mnuiLogout;
-    private javax.swing.JMenuItem mnuiS_HR;
-    private javax.swing.JMenuItem mnuiS_Job;
-    private javax.swing.JMenuItem mnuiS_Salary;
-    private javax.swing.JMenuItem mnuiViewAcc;
-    private javax.swing.JMenuItem mnuiViewDept;
-    private javax.swing.JMenuItem mnuiViewSalary;
-    private javax.swing.JMenuItem mnuiViewStaff;
-    private javax.swing.JMenuItem mnuiViewStaff1;
-    private javax.swing.JTable tblListTask;
-    private javax.swing.JTextField txtTaskDate;
-    private javax.swing.JTextField txtTaskDate1;
-    private javax.swing.JTextField txtTaskID;
-    private javax.swing.JTextField txtTaskName;
-    // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify                     
+    // End of variables declaration                   
 }
