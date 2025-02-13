@@ -11,12 +11,12 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Moiiii
  */
-public class HRLayout extends javax.swing.JPanel {
+public class Department extends javax.swing.JPanel {
 
     /**
      * Creates new form HRLayout
      */
-    public HRLayout() {
+    public Department() {
         initComponents();
     }
 
@@ -29,9 +29,6 @@ public class HRLayout extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        CompanyName = new javax.swing.JLabel();
-        Slogan = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         Dept = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -55,25 +52,6 @@ public class HRLayout extends javax.swing.JPanel {
         Team = new javax.swing.JPanel();
         Staff = new javax.swing.JPanel();
         jSeparator1 = new javax.swing.JSeparator();
-
-        CompanyName.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        CompanyName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        CompanyName.setText("SQUARE ENIX");
-
-        Slogan.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-        Slogan.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Slogan.setText("Welcome to SQUARE ENIX Company!");
-        Slogan.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton1.setText("HR");
-        jButton1.setHideActionText(true);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
 
         Dept.setBackground(new java.awt.Color(204, 204, 204));
         Dept.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -255,20 +233,8 @@ public class HRLayout extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(Slogan, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addGap(26, 26, 26)
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1306, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(585, 585, 585)
-                .addComponent(CompanyName, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(104, 104, 104)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1306, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
@@ -278,26 +244,13 @@ public class HRLayout extends javax.swing.JPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addComponent(CompanyName)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Slogan)
-                .addGap(2, 2, 2)
+                .addGap(66, 66, 66)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(48, 48, 48)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 448, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 448, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnAddTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddTaskActionPerformed
         //Lấy dữ liệu từ các ô nhập
@@ -339,9 +292,7 @@ public class HRLayout extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel CompanyName;
     private javax.swing.JPanel Dept;
-    private javax.swing.JLabel Slogan;
     private javax.swing.JPanel Staff;
     private javax.swing.JPanel Team;
     private javax.swing.JButton btnAddTask;
@@ -350,7 +301,6 @@ public class HRLayout extends javax.swing.JPanel {
     private javax.swing.JButton btnDeleteTask;
     private javax.swing.JButton btnEditTask;
     private javax.swing.JButton btnResetTask;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;

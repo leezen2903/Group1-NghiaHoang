@@ -24,12 +24,12 @@ public class ConnectDatabase {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Kết nối cơ sở dữ liệu thành công!");
+            System.out.println("Ket noi CDSL thanh cong");
         } catch (ClassNotFoundException e) {
-            System.out.println("Không tìm thấy Driver JDBC.");
+            System.out.println("Khong tim thay Driver JDBC.");
             e.printStackTrace();
         } catch (SQLException e) {
-            System.out.println("Kết nối cơ sở dữ liệu thất bại.");
+            System.out.println("Ket noi CSDL that bai.");
             e.printStackTrace();
         }
         return connection;
