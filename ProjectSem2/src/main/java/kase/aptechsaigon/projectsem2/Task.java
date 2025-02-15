@@ -39,7 +39,6 @@ public class Task extends javax.swing.JPanel {
     };
     tbTask.setModel(model);
 
-    // Luôn lấy toàn bộ dữ liệu từ bảng Tasks
     String sql = "SELECT TaskID, TaskName, TaskDate, AssignedTo, AssignmentID, JobID, Status FROM Tasks";
 
     try (Connection conn = ConnectDatabase.getConnection();
@@ -68,7 +67,6 @@ public class Task extends javax.swing.JPanel {
     tbTask.setDefaultEditor(Object.class, null);
     tbTask.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-    // Nếu có dữ liệu, chọn dòng đầu tiên
     if (tbTask.getRowCount() > 0) {
         tbTask.setRowSelectionInterval(0, 0);
         showSelectedTask(0);
@@ -83,9 +81,7 @@ public class Task extends javax.swing.JPanel {
     setTaskFieldsEditable(false);
 }
 
-   // Hàm hiển thị chi tiết Task khi chọn một dòng trên bảng
     private void showSelectedTask(int row) {
-        // Hiển thị TaskID vào txtTaskID
         txtTaskID.setText(tbTask.getValueAt(row, 0).toString()); 
 
         txtTaskName.setText(tbTask.getValueAt(row, 1).toString());
@@ -104,7 +100,6 @@ public class Task extends javax.swing.JPanel {
         
         setTaskFieldsEditable(true); 
     }
-   // Hàm lấy danh sách status từ database và đổ vào combobox
    private void loadTaskStatuses() {
        cbbStatusTask.removeAllItems();
        String sql = "SELECT DISTINCT Status FROM Tasks";
@@ -128,8 +123,8 @@ public class Task extends javax.swing.JPanel {
         txtAssignedTo.setEditable(editable);
         txtAssignmentID.setEditable(editable);
         txtJobID.setEditable(editable);
-        jcdDateTask.setEnabled(editable); // Cho phép chọn ngày
-        cbbStatusTask.setEnabled(editable); // Cho phép chọn trạng thái
+        jcdDateTask.setEnabled(editable); 
+        cbbStatusTask.setEnabled(editable);
     }
     
     private boolean isAdding = false;
@@ -189,14 +184,12 @@ public class Task extends javax.swing.JPanel {
        isEditing = true;
        isAdding = false;
 
-       // Vô hiệu hóa các nút không cần thiết khi sửa
        btnAddTask.setEnabled(false);
        btnDeleteTask.setEnabled(false);
        btnResetTask.setEnabled(false);
        btnSaveTask.setEnabled(true);
        btnCancelTask.setEnabled(true);
 
-       // Kích hoạt các ô nhập dữ liệu
        txtTaskName.setEnabled(true);
        txtAssignedTo.setEnabled(true);
        txtAssignmentID.setEnabled(true);
@@ -230,7 +223,7 @@ public class Task extends javax.swing.JPanel {
                 pstmt.setInt(1, Integer.parseInt(taskID));
                 pstmt.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Xóa thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                loadTasks(); // Cập nhật lại danh sách
+                loadTasks(); 
 
             } catch (SQLException e) {
                 e.printStackTrace();

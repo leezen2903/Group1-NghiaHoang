@@ -28,7 +28,7 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
         initComponents();
         setExtendedState(JFrame.MAXIMIZED_BOTH); //Full màn hình
-        jpJob = new Job(); //Khởi tạo từ clas Job
+        jpJob = new Job();
         jpTask = new Task();
         jpDept = new Department();
     }
