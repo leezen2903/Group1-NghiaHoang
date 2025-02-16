@@ -263,7 +263,6 @@ private void resetJob() {
     jcdEstimatedStartDate.setDate(null);
     jcdEstimatedEndDate.setDate(null);
 
-    resetButtons();
 }
 
 
