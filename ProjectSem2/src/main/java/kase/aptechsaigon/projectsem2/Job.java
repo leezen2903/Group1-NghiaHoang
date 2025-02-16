@@ -628,11 +628,9 @@ private void resetJob() {
     jcdEstimatedStartDate.setDate(null);
     jcdEstimatedEndDate.setDate(null);
 
-    // Bật chế độ chỉnh sửa
     setEditStatus(true);
     isEditMode = true;
 
-    // Xóa các ActionListener cũ trước khi thêm mới
     for (ActionListener al : btnSaveJob.getActionListeners()) {
         btnSaveJob.removeActionListener(al);
     }
@@ -731,14 +729,11 @@ private void resetJob() {
         return;
     }
 
-    // Lấy dữ liệu của hàng được chọn và hiển thị trong các textfield
     showSelectedJob(selectedRow);
 
-    // Bật chế độ chỉnh sửa
     setEditStatus(true);
     isEditMode = true;
 
-    // Xóa các ActionListener cũ trước khi thêm mới
     for (ActionListener al : btnSaveJob.getActionListeners()) {
         btnSaveJob.removeActionListener(al);
     }
@@ -787,14 +782,13 @@ private void resetJob() {
 
     private void btnSaveJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveJobActionPerformed
         // TODO add your handling code here:
-     // Vô hiệu hóa nút để tránh bị gọi nhiều lần liên tiếp
     btnSaveJob.setEnabled(false);
 
     int selectedRow = tbJob.getSelectedRow();
 
     if (selectedRow == -1) {
         JOptionPane.showMessageDialog(this, "Không có công việc nào được chọn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        btnSaveJob.setEnabled(true); // Kích hoạt lại nút
+        btnSaveJob.setEnabled(true); 
         return;
     }
     for (ActionListener al : btnSaveJob.getActionListeners()) {
@@ -802,7 +796,7 @@ private void resetJob() {
     }   
 
 
-    int jobId = Integer.parseInt(tbJob.getValueAt(selectedRow, 0).toString()); // Lấy JobID của dòng được chọn
+    int jobId = Integer.parseInt(tbJob.getValueAt(selectedRow, 0).toString()); 
     String jobName = txtJobName.getText().trim();
     String description = txtDescription.getText().trim();
     java.util.Date startDate = jcdEstimatedStartDate.getDate();
@@ -810,7 +804,7 @@ private void resetJob() {
 
     if (jobName.isEmpty() || description.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        btnSaveJob.setEnabled(true); // Kích hoạt lại nút
+        btnSaveJob.setEnabled(true); 
         return;
     }
 
@@ -828,7 +822,7 @@ private void resetJob() {
         int affectedRows = pstmt.executeUpdate();
         if (affectedRows > 0) {
             JOptionPane.showMessageDialog(this, "Cập nhật thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            loadJobs(); // Load lại dữ liệu sau khi cập nhật
+            loadJobs(); 
         } else {
             JOptionPane.showMessageDialog(this, "Không thể cập nhật dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
@@ -837,28 +831,23 @@ private void resetJob() {
         ex.printStackTrace();
         JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
     } finally {
-        btnSaveJob.setEnabled(true); // Kích hoạt lại nút sau khi hoàn thành xử lý
+        btnSaveJob.setEnabled(true);
     }
     }//GEN-LAST:event_btnSaveJobActionPerformed
 
     private void btnResetJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetJobActionPerformed
-        // TODO add your handling code here:
         resetJob();
 
     }//GEN-LAST:event_btnResetJobActionPerformed
 
     private void btnCancelJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelJobActionPerformed
         // TODO add your handling code here:
-    // Vô hiệu hóa nút tạm thời tránh nhấn nhiều lần
     btnCancelJob.setEnabled(false);
 
-    // Gọi hàm hủy bỏ công việc
     cancelJob();
 
-    // Load lại danh sách công việc và chọn dòng đầu tiên
     loadJobs();
 
-    // Kích hoạt lại nút Cancel sau khi hoàn tất
     btnCancelJob.setEnabled(true);
     }//GEN-LAST:event_btnCancelJobActionPerformed
 
