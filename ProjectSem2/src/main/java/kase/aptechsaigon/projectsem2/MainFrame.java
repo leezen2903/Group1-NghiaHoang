@@ -31,6 +31,7 @@ public class MainFrame extends javax.swing.JFrame {
         jpJob = new Job();
         jpTask = new Task();
         jpDept = new Department();
+        jpStaff = new Employee();
     }
     
       private void showPanel(JPanel panel) {
@@ -53,11 +54,9 @@ public class MainFrame extends javax.swing.JFrame {
 
         jpBackground = new javax.swing.JPanel();
         jpTask = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
         jpJob = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         jpDept = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
+        jpStaff = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jmSystem = new javax.swing.JMenu();
         jmiHome = new javax.swing.JMenuItem();
@@ -81,106 +80,71 @@ public class MainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel2.setText("jLabel1");
-
         javax.swing.GroupLayout jpTaskLayout = new javax.swing.GroupLayout(jpTask);
         jpTask.setLayout(jpTaskLayout);
         jpTaskLayout.setHorizontalGroup(
             jpTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 804, Short.MAX_VALUE)
-            .addGroup(jpTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jpTaskLayout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(jLabel2)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 842, Short.MAX_VALUE)
         );
         jpTaskLayout.setVerticalGroup(
             jpTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 454, Short.MAX_VALUE)
-            .addGroup(jpTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jpTaskLayout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(jLabel2)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 480, Short.MAX_VALUE)
         );
-
-        jLabel1.setText("jLabel1");
 
         javax.swing.GroupLayout jpJobLayout = new javax.swing.GroupLayout(jpJob);
         jpJob.setLayout(jpJobLayout);
         jpJobLayout.setHorizontalGroup(
             jpJobLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpJobLayout.createSequentialGroup()
-                .addGap(0, 389, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(0, 389, Short.MAX_VALUE))
+            .addGap(0, 854, Short.MAX_VALUE)
         );
         jpJobLayout.setVerticalGroup(
             jpJobLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpJobLayout.createSequentialGroup()
-                .addGap(0, 219, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(0, 219, Short.MAX_VALUE))
+            .addGap(0, 492, Short.MAX_VALUE)
         );
-
-        jLabel3.setText("jLabel1");
 
         javax.swing.GroupLayout jpDeptLayout = new javax.swing.GroupLayout(jpDept);
         jpDept.setLayout(jpDeptLayout);
         jpDeptLayout.setHorizontalGroup(
             jpDeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 816, Short.MAX_VALUE)
-            .addGroup(jpDeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jpDeptLayout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(jLabel3)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 852, Short.MAX_VALUE)
         );
         jpDeptLayout.setVerticalGroup(
             jpDeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 454, Short.MAX_VALUE)
-            .addGroup(jpDeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jpDeptLayout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(jLabel3)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 490, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout jpStaffLayout = new javax.swing.GroupLayout(jpStaff);
+        jpStaff.setLayout(jpStaffLayout);
+        jpStaffLayout.setHorizontalGroup(
+            jpStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 854, Short.MAX_VALUE)
+        );
+        jpStaffLayout.setVerticalGroup(
+            jpStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 492, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jpBackgroundLayout = new javax.swing.GroupLayout(jpBackground);
         jpBackground.setLayout(jpBackgroundLayout);
         jpBackgroundLayout.setHorizontalGroup(
             jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpBackgroundLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jpJob, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jpJob, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jpBackgroundLayout.createSequentialGroup()
-                    .addGap(22, 22, 22)
-                    .addComponent(jpDept, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGap(2, 2, 2)))
+                .addComponent(jpDept, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jpBackgroundLayout.createSequentialGroup()
-                    .addGap(12, 12, 12)
-                    .addComponent(jpTask, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGap(12, 12, 12)))
+                .addComponent(jpStaff, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jpTask, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jpBackgroundLayout.setVerticalGroup(
             jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpBackgroundLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jpJob, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jpJob, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jpBackgroundLayout.createSequentialGroup()
-                    .addGap(22, 22, 22)
-                    .addComponent(jpDept, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGap(2, 2, 2)))
+                .addComponent(jpDept, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jpBackgroundLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jpTask, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
+                .addComponent(jpStaff, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jpTask, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jmSystem.setText("System");
@@ -218,6 +182,11 @@ public class MainFrame extends javax.swing.JFrame {
         jmHR.add(jmiTeam);
 
         jmiStaff.setText("Staff");
+        jmiStaff.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiStaffActionPerformed(evt);
+            }
+        });
         jmHR.add(jmiStaff);
 
         jmiContract.setText("Contract");
@@ -306,6 +275,10 @@ public class MainFrame extends javax.swing.JFrame {
         showPanel(jpDept);
     }//GEN-LAST:event_jmiDeptActionPerformed
 
+    private void jmiStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiStaffActionPerformed
+        showPanel(jpStaff);
+    }//GEN-LAST:event_jmiStaffActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -345,9 +318,6 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenu jmHR;
     private javax.swing.JMenu jmHelp;
@@ -371,6 +341,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jpBackground;
     private javax.swing.JPanel jpDept;
     private javax.swing.JPanel jpJob;
+    private javax.swing.JPanel jpStaff;
     private javax.swing.JPanel jpTask;
     // End of variables declaration//GEN-END:variables
 }
