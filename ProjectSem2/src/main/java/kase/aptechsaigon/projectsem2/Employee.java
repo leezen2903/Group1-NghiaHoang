@@ -8,9 +8,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+import java.util.Date;
 
 /**
  *
@@ -24,11 +29,19 @@ public class Employee extends javax.swing.JPanel {
     public Employee() {
     
         initComponents();
+        modifyJDateChoosers();
         loadStaffs(); 
+    }
+    private void modifyJDateChoosers() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        jdBirthDate.setDateFormatString(sdf.toPattern());
+        jdStartDate.setDateFormatString(sdf.toPattern());
     }
 
     public void loadStaffs() {
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"EmployeeID", "FullName", "BirthDate", "Gender", "IDCardNumber", "Address", "Email", "PhoneNumber", "StartDate" ,"ContractDuration"}, 0) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // Định dạng theo DB
+        
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"EmployeeID", "FullName", "BirthDate", "Gender", "IDCardNumber", "Address", "Email", "PhoneNumber", "StartDate" ,"ContractDuration","WorkExperience"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -36,7 +49,7 @@ public class Employee extends javax.swing.JPanel {
         };
         tbStaff.setModel(model);
 
-        String sql = "SELECT EmployeeID, FullName, BirthDate, Gender, IDCardNumber, Address, Email, PhoneNumber, StartDate, ContractDuration FROM Employees";
+        String sql = "SELECT EmployeeID, FullName, BirthDate, Gender, IDCardNumber, Address, Email, PhoneNumber, StartDate, ContractDuration, WorkExperience FROM Employees";
 
         try (Connection conn = ConnectDatabase.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -44,17 +57,19 @@ public class Employee extends javax.swing.JPanel {
 
             while (rs.next()) {
                 int id = rs.getInt("EmployeeID");
-                String fullName = rs.getString("JobName");
+                String fullName = rs.getString("FullName");
                 String BirthDate = rs.getString("BirthDate");
-                String Gender = rs.getString("Gendder");
+                String Gender = rs.getString("Gender");
+                if (Gender == null) Gender = "other";
                 String IDCardNumber = rs.getString("IDCardNumber");
                 String Address = rs.getString("Address");
                 String Email = rs.getString("Email");
                 String PhoneNumber = rs.getString("PhoneNumber");
                 String StartDate = rs.getString("StartDate");
                 String ContractDuration = rs.getString("ContractDuration");
+                String WorkExperience = rs.getString("WorkExperience");
                 
-                model.addRow(new Object[]{id, fullName, BirthDate, Gender, IDCardNumber, Address, Email, PhoneNumber, StartDate, ContractDuration});
+                model.addRow(new Object[]{id, fullName, BirthDate, Gender, IDCardNumber, Address, Email, PhoneNumber, StartDate, ContractDuration, WorkExperience});
             }
             
             tbStaff.getColumnModel().getColumn(0).setCellEditor(null);
@@ -74,12 +89,117 @@ public class Employee extends javax.swing.JPanel {
 
                 txtEmployeeID.setText(tbStaff.getValueAt(selectedRow, 0).toString());
                 txtFullName.setText(tbStaff.getValueAt(selectedRow, 1).toString());
-                jEmail.setText(tbStaff.getValueAt(selectedRow, 2).toString());
+                txtEmail.setText(tbStaff.getValueAt(selectedRow, 6).toString());
 //                txtEstimatedStartDate.setText(tbJob.getValueAt(selectedRow, 3).toString());
 //                txtEstimatedEndDate.setText(tbJob.getValueAt(selectedRow, 4).toString());
             }
         });
-    }   
+        // Nếu có dữ liệu, chọn dòng đầu tiên
+    if (tbStaff.getRowCount() > 0) {
+        tbStaff.setRowSelectionInterval(0, 0);
+        showSelectedStaff(0);
+    }
+
+    tbStaff.getSelectionModel().addListSelectionListener(event -> {
+        if (!event.getValueIsAdjusting() && tbStaff.getSelectedRow() != -1) {
+            showSelectedStaff(tbStaff.getSelectedRow());
+        }
+    });
+        
+        setStaffFieldsEditable(false);
+    } 
+    
+    // Hàm hiển thị chi tiết Staff khi chọn một dòng trên bảng:
+    private void showSelectedStaff(int row) {
+    
+        txtEmployeeID.setText(tbStaff.getValueAt(row, 0).toString()); 
+        txtFullName.setText(tbStaff.getValueAt(row, 1).toString());        
+        //Lấy dữ liệu ngày tháng
+        Object birthDateObj = tbStaff.getValueAt(row, 2);
+        if (birthDateObj != null) {
+            String birthDateStr = birthDateObj.toString();           
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date birthDate = sdf.parse(birthDateStr);
+                jdBirthDate.setDate(birthDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        //Gender - Row 3 
+            //Reset tất cả các nút Gender rbtn
+            rbtnMale.setSelected(false);
+            rbtnFemale.setSelected(false);
+            rbtnOther.setSelected(false);       
+            //Ktra giá trị Gender
+            Object genderObj = tbStaff.getValueAt(row, 3);
+            String Gender = (genderObj != null) ? genderObj.toString().toLowerCase() : "other";
+        
+            if (Gender.equalsIgnoreCase("male")) {
+                 rbtnMale.setSelected(true);
+            } else if (Gender.equalsIgnoreCase("female")) {
+                rbtnFemale.setSelected(true);
+                } else {
+                rbtnOther.setSelected(true);
+                }
+                
+        txtIDCard.setText(tbStaff.getValueAt(row, 4).toString());
+        txtAddress.setText(tbStaff.getValueAt(row, 5).toString());
+        txtEmail.setText(tbStaff.getValueAt(row, 6).toString());
+        txtPhoneNum.setText(tbStaff.getValueAt(row, 7).toString());
+        
+        //Xử lý ngày tháng
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Object startDateObj = tbStaff.getValueAt(row, 8);
+        if (startDateObj != null) {
+        String startDateStr = startDateObj.toString();        
+        try {
+            Date startDate = sdf.parse(startDateStr);
+            jdStartDate.setDate(startDate);            
+            } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        txtContractDuration.setText(tbStaff.getValueAt(row, 9).toString());
+        txtWorkExp.setText(tbStaff.getValueAt(row, 10).toString());
+        
+        //setStaffFieldsEditable(true); 
+        
+        //Vô hiệu hóa các nút 
+        txtEmployeeID.setEnabled(false);
+        txtFullName.setEnabled(false);
+        txtIDCard.setEnabled(false);
+        jdBirthDate.setEnabled(false);
+        txtAddress.setEnabled(false);
+        txtEmail.setEnabled(false);
+        txtPhoneNum.setEnabled(false);
+        txtWorkExp.setEnabled(false);
+        jdStartDate.setEnabled(false);
+        rbtnMale.setEnabled(false);
+        rbtnFemale.setEnabled(false);
+        rbtnOther.setEnabled(false);
+        
+        }
+    }
+    
+    public void setStaffFieldsEditable(boolean editable) {
+        txtFullName.setEditable(editable);       
+        txtIDCard.setEditable(editable);
+        txtAddress.setEditable(editable);
+        
+        rbtnMale.setEnabled(editable);
+        rbtnFemale.setEnabled(editable);
+        rbtnOther.setEnabled(editable);
+        
+        txtEmail.setEditable(editable);
+        txtPhoneNum.setEditable(editable);       
+        txtWorkExp.setEditable(editable);
+        txtContractDuration.setEditable(editable);
+        
+        jdBirthDate.setEnabled(editable);
+        jdBirthDate.getDateEditor().setEnabled(editable);
+        jdStartDate.setEnabled(editable);
+        jdStartDate.getDateEditor().setEnabled(editable);
+    }
         private boolean isAdding = false;
         private boolean isEditing = false;
 
@@ -102,7 +222,7 @@ public class Employee extends javax.swing.JPanel {
 
                 txtEmployeeID.setText(""); 
                 txtFullName.setText("");
-                jEmail.setText("");
+                txtEmail.setText("");
 //                txtEstimatedStartDate.setText("");
 //                txtEstimatedEndDate.setText("");
             }
@@ -115,22 +235,37 @@ public class Employee extends javax.swing.JPanel {
             } else {
                 int selectedRow = tbStaff.getSelectedRow();
                 if (selectedRow == -1) {
-                    JOptionPane.showMessageDialog(this, "Vui lòng chọn một công việc để chỉnh sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhân viên để chỉnh sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
                 isEditing = true;
                 isAdding = false;
-
+                showSelectedStaff(selectedRow);
+                
+                txtFullName.setEnabled(true);
+                txtIDCard.setEnabled(true);                 
+                txtAddress.setEnabled(true);
+                txtEmail.setEnabled(true);
+                txtPhoneNum.setEnabled(true);
+                txtWorkExp.setEnabled(true);
+                txtContractDuration.setEnabled(true);
+                jdBirthDate.setEnabled(true);
+                jdStartDate.setEnabled(true);
+                rbtnMale.setEnabled(true);
+                rbtnFemale.setEnabled(true);
+                rbtnOther.setEnabled(true);
+                
+                //Tắt 2 nút add và delete
                 btnAddJob.setEnabled(false);
                 btnDeleteJob.setEnabled(false);
-
-                txtEmployeeID.setText(tbStaff.getValueAt(selectedRow, 0).toString());
-                txtFullName.setText(tbStaff.getValueAt(selectedRow, 1).toString());
-                jEmail.setText(tbStaff.getValueAt(selectedRow, 2).toString());
+                
+                //txtEmployeeID.setText(tbStaff.getValueAt(selectedRow, 0).toString());
+                //txtFullName.setText(tbStaff.getValueAt(selectedRow, 1).toString());
+                //txtEmail.setText(tbStaff.getValueAt(selectedRow, 6).toString());
 //                txtEstimatedStartDate.setText(tbJob.getValueAt(selectedRow, 3).toString());
 //                txtEstimatedEndDate.setText(tbJob.getValueAt(selectedRow, 4).toString());
-
+                setStaffFieldsEditable(true);
             }
         }
 
@@ -174,28 +309,50 @@ public class Employee extends javax.swing.JPanel {
 
             String employeeID = txtEmployeeID.getText().trim();
             String fullName = txtFullName.getText().trim();
+            String idCard = txtIDCard.getText().trim();
+            String address = txtAddress.getText().trim();            
             String email = jEmail.getText().trim();
-//            String startDate = txtEstimatedStartDate.getText().trim();
-//            String endDate = txtEstimatedEndDate.getText().trim();
-
-            if (fullName.isEmpty() || email.isEmpty() /*|| startDate.isEmpty() || endDate.isEmpty*/ ) {
+            String phone = txtPhoneNum.getText().trim();
+            String contractDuration = txtContractDuration.getText().trim();
+            String workExperience = txtWorkExp.getText().trim();
+            String gender = "other";
+                if (rbtnMale.isSelected()) {
+                    gender = "male";
+                } else if (rbtnFemale.isSelected()) {
+                    gender = "female";
+                }
+            Date birthDate = jdBirthDate.getDate();
+            Date startDate = jdStartDate.getDate();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            
+            
+            if (fullName.isEmpty() || idCard.isEmpty() || address.isEmpty() || email.isEmpty() || phone.isEmpty() || birthDate == null || startDate == null || contractDuration.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             if (isAdding) {
-                String sql = "INSERT INTO Jobs (JobName, Description, EstimatedStartDate, EstimatedEndDate, Status) VALUES (?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO Employees "
+                        + "(FullName, BirthDate, Gender,"
+                        + " IDCardNumber, Address, Email,"
+                        + " PhoneNumber, StartDate, ContracDuration, WorkExperience)"
+                        + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
                 try (Connection conn = ConnectDatabase.getConnection();
                      PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
                     pstmt.setString(1, fullName);
-                    pstmt.setString(2, email);
-//                    pstmt.setString(3, startDate);
-//                    pstmt.setString(4, endDate);
+                    pstmt.setString(2, sdf.format(birthDate));
+                    pstmt.setString(3, gender);
+                    pstmt.setString(4, idCard);
+                    pstmt.setString(5, address);
+                    pstmt.setString(6, email);
+                    pstmt.setString(7, phone);
+                    pstmt.setString(8, sdf.format(startDate));
+                    pstmt.setString(10, workExperience);
+                    pstmt.setString(9, contractDuration);
                     pstmt.executeUpdate();
-
-                    JOptionPane.showMessageDialog(this, "Thêm công việc thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Thêm nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                     loadStaffs();
 
                 } catch (SQLException e) {
@@ -204,20 +361,31 @@ public class Employee extends javax.swing.JPanel {
                 }
 
             } else if (isEditing) {
-                String sql = "UPDATE Jobs SET JobName = ?, Description = ?, EstimatedStartDate = ?, EstimatedEndDate = ?, Status = ? WHERE JobID = ?";
+                String sql = "UPDATE Employees SET "
+                        + "FullName = ?, BirthDate = ?, Gender = ?,"
+                        + "IDCardNumber = ?, Address = ?, Email = ?,"
+                        + "PhoneNumber = ?, StartDate = ?, ContractDuration = ?,"
+                        + "WorkExperience = ?"
+                        + " WHERE EmployeeID = ?";
 
                 try (Connection conn = ConnectDatabase.getConnection();
                      PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
                     pstmt.setString(1, fullName);
-                    pstmt.setString(2, email);
-//                    pstmt.setString(3, startDate);
-//                    pstmt.setString(4, endDate);
-                    pstmt.setInt(6, Integer.parseInt(employeeID));
+                    pstmt.setString(2, sdf.format(birthDate));
+                    pstmt.setString(3, gender);
+                    pstmt.setString(4, idCard);
+                    pstmt.setString(5, address);
+                    pstmt.setString(6, email);
+                    pstmt.setString(7, phone);
+                    pstmt.setString(8, sdf.format(startDate));
+                    pstmt.setString(9, contractDuration);
+                    pstmt.setString(10, workExperience);
+                    pstmt.setInt(11, Integer.parseInt(employeeID));
                     pstmt.executeUpdate();
 
                     JOptionPane.showMessageDialog(this, "Cập nhật thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                    loadStaffs();
+                    
 
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -228,6 +396,7 @@ public class Employee extends javax.swing.JPanel {
             isAdding = false;
             isEditing = false;
             resetButtons();
+            loadStaffs();
         }
 
             private void resetJob() {
@@ -262,15 +431,17 @@ public class Employee extends javax.swing.JPanel {
         txtAddress = new javax.swing.JTextField();
         jEmail = new javax.swing.JLabel();
         txtEmail = new javax.swing.JTextField();
-        jPhoneNum = new javax.swing.JLabel();
+        jWorkExp = new javax.swing.JLabel();
         txtPhoneNum = new javax.swing.JTextField();
-        jContractDuration = new javax.swing.JLabel();
-        txtContractDuration = new javax.swing.JTextField();
+        txtWorkExp = new javax.swing.JTextField();
         btnSaveJob = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
-        jrMale = new javax.swing.JRadioButton();
-        jrFemale = new javax.swing.JRadioButton();
-        jrOther = new javax.swing.JRadioButton();
+        rbtnMale = new javax.swing.JRadioButton();
+        rbtnFemale = new javax.swing.JRadioButton();
+        rbtnOther = new javax.swing.JRadioButton();
+        txtContractDuration = new javax.swing.JTextField();
+        jContractDuration = new javax.swing.JLabel();
+        jPhoneNum1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbStaff = new javax.swing.JTable();
         jSeparator2 = new javax.swing.JSeparator();
@@ -285,37 +456,54 @@ public class Employee extends javax.swing.JPanel {
         jStartDate = new javax.swing.JLabel();
         jdStartDate = new com.toedter.calendar.JDateChooser();
 
+        setPreferredSize(new java.awt.Dimension(1000, 857));
+
         jPanel1.setPreferredSize(new java.awt.Dimension(800, 300));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jEmployeeID.setText("EmployeeID");
+        jPanel1.add(jEmployeeID, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 9, 110, -1));
 
         txtEmployeeID.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtEmployeeIDActionPerformed(evt);
             }
         });
+        jPanel1.add(txtEmployeeID, new org.netbeans.lib.awtextra.AbsoluteConstraints(139, 6, 369, -1));
 
         jFullName.setText("FullName");
+        jPanel1.add(jFullName, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 40, 110, -1));
+        jPanel1.add(txtFullName, new org.netbeans.lib.awtextra.AbsoluteConstraints(139, 37, 369, -1));
 
         jBirthdate.setText("BirthDate");
+        jPanel1.add(jBirthdate, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 71, 110, -1));
+        jPanel1.add(jdBirthDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(139, 71, 369, -1));
 
         jGender.setText("Gender");
+        jPanel1.add(jGender, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 99, 110, -1));
 
         jIDCard.setText("IDCardNumber");
+        jPanel1.add(jIDCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 127, 110, -1));
 
         txtIDCard.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtIDCardActionPerformed(evt);
             }
         });
+        jPanel1.add(txtIDCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(139, 124, 369, -1));
 
         jAddress.setText("Address");
+        jPanel1.add(jAddress, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 158, 110, -1));
+        jPanel1.add(txtAddress, new org.netbeans.lib.awtextra.AbsoluteConstraints(139, 155, 369, -1));
 
         jEmail.setText("Email");
+        jPanel1.add(jEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 189, 110, -1));
+        jPanel1.add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(139, 186, 369, -1));
 
-        jPhoneNum.setText("Phone Number");
-
-        jContractDuration.setText("ContractDuration");
+        jWorkExp.setText("Work Experience");
+        jPanel1.add(jWorkExp, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 280, 110, -1));
+        jPanel1.add(txtPhoneNum, new org.netbeans.lib.awtextra.AbsoluteConstraints(139, 217, 369, -1));
+        jPanel1.add(txtWorkExp, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 280, 369, -1));
 
         btnSaveJob.setText("Save");
         btnSaveJob.addActionListener(new java.awt.event.ActionListener() {
@@ -323,6 +511,7 @@ public class Employee extends javax.swing.JPanel {
                 btnSaveJobActionPerformed(evt);
             }
         });
+        jPanel1.add(btnSaveJob, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 310, -1, -1));
 
         btnCancel.setText("Cancel");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
@@ -330,138 +519,28 @@ public class Employee extends javax.swing.JPanel {
                 btnCancelActionPerformed(evt);
             }
         });
+        jPanel1.add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, -1, -1));
 
-        jrMale.setText("Male");
+        rbtnMale.setText("Male");
+        jPanel1.add(rbtnMale, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 100, -1, -1));
 
-        jrFemale.setText("Female");
-        jrFemale.addActionListener(new java.awt.event.ActionListener() {
+        rbtnFemale.setText("Female");
+        rbtnFemale.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jrFemaleActionPerformed(evt);
+                rbtnFemaleActionPerformed(evt);
             }
         });
+        jPanel1.add(rbtnFemale, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 100, -1, -1));
 
-        jrOther.setText("Other");
+        rbtnOther.setText("Other");
+        jPanel1.add(rbtnOther, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 100, -1, -1));
+        jPanel1.add(txtContractDuration, new org.netbeans.lib.awtextra.AbsoluteConstraints(139, 248, 369, -1));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jEmployeeID, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(23, 23, 23)
-                        .addComponent(txtEmployeeID, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jFullName, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(23, 23, 23)
-                        .addComponent(txtFullName, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(23, 23, 23)
-                        .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(23, 23, 23)
-                        .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jPhoneNum, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(23, 23, 23)
-                        .addComponent(txtPhoneNum, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jContractDuration, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(23, 23, 23)
-                        .addComponent(txtContractDuration, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(140, 140, 140)
-                        .addComponent(btnSaveJob)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnCancel))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jIDCard, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jGender, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jBirthdate, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(23, 23, 23)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jrMale)
-                                .addGap(18, 18, 18)
-                                .addComponent(jrFemale)
-                                .addGap(18, 18, 18)
-                                .addComponent(jrOther))
-                            .addComponent(txtIDCard)
-                            .addComponent(jdBirthDate, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE))))
-                .addGap(20, 20, 20))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(9, 9, 9)
-                        .addComponent(jEmployeeID))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(txtEmployeeID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(9, 9, 9)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addComponent(jFullName))
-                    .addComponent(txtFullName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(12, 12, 12)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jBirthdate)
-                    .addComponent(jdBirthDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jGender)
-                    .addComponent(jrMale)
-                    .addComponent(jrFemale)
-                    .addComponent(jrOther))
-                .addGap(6, 6, 6)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addComponent(jIDCard))
-                    .addComponent(txtIDCard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(9, 9, 9)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addComponent(jAddress))
-                    .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(9, 9, 9)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addComponent(jEmail))
-                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(9, 9, 9)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addComponent(jPhoneNum))
-                    .addComponent(txtPhoneNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(9, 9, 9)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addComponent(jContractDuration))
-                    .addComponent(txtContractDuration, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnSaveJob)
-                    .addComponent(btnCancel)))
-        );
+        jContractDuration.setText("Contract Duration");
+        jPanel1.add(jContractDuration, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 251, 110, -1));
+
+        jPhoneNum1.setText("Phone Number");
+        jPanel1.add(jPhoneNum1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 220, 110, 20));
 
         tbStaff.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -632,66 +711,62 @@ public class Employee extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 546, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jStartDate)
+                        .addGap(18, 18, 18)
+                        .addComponent(jdStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 187, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jSeparator2)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addGap(78, 78, 78)
-                                .addComponent(btnAddJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnEditJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnDeleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnResetJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jLabel1)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 528, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jStartDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jdStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(1277, 1277, 1277)))))
+                    .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3)
+                .addGap(79, 79, 79)
+                .addComponent(btnAddJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnEditJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnDeleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnResetJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jSeparator1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(11, 11, 11)
+                .addContainerGap(11, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnResetJob)
-                    .addComponent(btnDeleteJob)
-                    .addComponent(btnEditJob)
+                    .addComponent(jLabel3)
                     .addComponent(btnAddJob, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
+                    .addComponent(btnEditJob)
+                    .addComponent(btnDeleteJob)
+                    .addComponent(btnResetJob))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jdStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                    .addComponent(jStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jdStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -712,9 +787,9 @@ public class Employee extends javax.swing.JPanel {
     }//GEN-LAST:event_btnDeleteJobActionPerformed
 
     private void btnEditJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditJobActionPerformed
-        // TODO add your handling code here:
+      
         editEmployee();
-        loadStaffs();
+        //loadStaffs();
     }//GEN-LAST:event_btnEditJobActionPerformed
 
     private void btnResetJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetJobActionPerformed
@@ -724,7 +799,7 @@ public class Employee extends javax.swing.JPanel {
     }//GEN-LAST:event_btnResetJobActionPerformed
 
     private void btnSaveJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveJobActionPerformed
-        // TODO add your handling code here:
+
         saveEmployee();
         loadStaffs();
     }//GEN-LAST:event_btnSaveJobActionPerformed
@@ -741,9 +816,9 @@ public class Employee extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtEmployeeIDActionPerformed
 
-    private void jrFemaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrFemaleActionPerformed
+    private void rbtnFemaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbtnFemaleActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jrFemaleActionPerformed
+    }//GEN-LAST:event_rbtnFemaleActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -764,17 +839,18 @@ public class Employee extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JLabel jPhoneNum;
+    private javax.swing.JLabel jPhoneNum1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JLabel jStartDate;
+    private javax.swing.JLabel jWorkExp;
     private com.toedter.calendar.JDateChooser jdBirthDate;
     private com.toedter.calendar.JDateChooser jdStartDate;
-    private javax.swing.JRadioButton jrFemale;
-    private javax.swing.JRadioButton jrMale;
-    private javax.swing.JRadioButton jrOther;
+    private javax.swing.JRadioButton rbtnFemale;
+    private javax.swing.JRadioButton rbtnMale;
+    private javax.swing.JRadioButton rbtnOther;
     private javax.swing.JTable tbStaff;
     private javax.swing.JTextField txtAddress;
     private javax.swing.JTextField txtContractDuration;
@@ -783,5 +859,6 @@ public class Employee extends javax.swing.JPanel {
     private javax.swing.JTextField txtFullName;
     private javax.swing.JTextField txtIDCard;
     private javax.swing.JTextField txtPhoneNum;
+    private javax.swing.JTextField txtWorkExp;
     // End of variables declaration//GEN-END:variables
 }
