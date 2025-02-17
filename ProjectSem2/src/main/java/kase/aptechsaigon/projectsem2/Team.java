@@ -22,40 +22,40 @@ import kase.aptechsaigon.projectsem2.ConnectDatabase;
  *
  * @author Moiiii
  */
-public class Department extends javax.swing.JPanel {
+public class Team extends javax.swing.JPanel {
 
 
     /**
      * Creates new form Jobb
      */
-    public Department() {
+    public Team() {
         
             initComponents();
-            loadJobs();
+            loadTeams();
         }
 
-public void loadJobs() {
+public void loadTeams() {
     DefaultTableModel model = new DefaultTableModel(
-        new Object[]{"DepartmentID", "DepartmentName", "ManagerID", "DeputyManagerID"}, 0) {
+        new Object[]{"TeamID", "TeamName", "DepartmentID", "TeamLeaderID"}, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
         }
     };
-    tbDept.setModel(model);
+    tbTeam.setModel(model);
 
-    String sql = "SELECT DepartmentID, DepartmentName, ManagerID, DeputyManagerID FROM Departments";
+    String sql = "SELECT TeamID, TeamName, DepartmentID, TeamLeaderID FROM Teams";
 
     try (Connection conn = ConnectDatabase.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql);
          ResultSet rs = pstmt.executeQuery()) {
 
         while (rs.next()) {
-            int departmentID = rs.getInt("DepartmentID");
-            String departmentName = rs.getString("DepartmentName");
-            String managerID = rs.getString("ManagerID");
-            String deputyManagerID = rs.getString("DeputyManagerID"); 
-            model.addRow(new Object[]{departmentID, departmentName, managerID, deputyManagerID});
+            int teamID = rs.getInt("TeamID");
+            String teamName = rs.getString("TeamName");
+            String departmentID = rs.getString("DepartmentID");
+            String teamLeaderID = rs.getString("TeamLeaderID"); 
+            model.addRow(new Object[]{teamID, teamName, departmentID, teamLeaderID});
         }
 
     } catch (SQLException e) {
@@ -63,8 +63,8 @@ public void loadJobs() {
         JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
     }
 
-    tbDept.setDefaultEditor(Object.class, null);
-    tbDept.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    tbTeam.setDefaultEditor(Object.class, null);
+    tbTeam.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     if (isEditMode) {
         setEditStatus(true);
@@ -72,14 +72,14 @@ public void loadJobs() {
         setEditStatus(false);
     }
 
-    if (tbDept.getRowCount() > 0 && tbDept.getSelectedRow() == -1) {
-        tbDept.setRowSelectionInterval(0, 0);
+    if (tbTeam.getRowCount() > 0 && tbTeam.getSelectedRow() == -1) {
+        tbTeam.setRowSelectionInterval(0, 0);
         showSelectedJob(0);
     }
 
-    tbDept.getSelectionModel().addListSelectionListener(event -> {
-        if (!event.getValueIsAdjusting() && tbDept.getSelectedRow() != -1) {
-            showSelectedJob(tbDept.getSelectedRow());
+    tbTeam.getSelectionModel().addListSelectionListener(event -> {
+        if (!event.getValueIsAdjusting() && tbTeam.getSelectedRow() != -1) {
+            showSelectedJob(tbTeam.getSelectedRow());
 
             if (isEditMode) {
                 setEditStatus(true);
@@ -89,9 +89,9 @@ public void loadJobs() {
 }
 
 private void showSelectedJob(int row) {
-    txtDeptName.setText(tbDept.getValueAt(row, 1).toString());
-    txtManID.setText(tbDept.getValueAt(row, 2).toString());
-    txtDManID.setText(tbDept.getValueAt(row, 3).toString());
+    txtTeamName.setText(tbTeam.getValueAt(row, 1).toString());
+    txtDeptID.setText(tbTeam.getValueAt(row, 2).toString());
+    txtTeamLeadID.setText(tbTeam.getValueAt(row, 3).toString());
     /*Object startDateObj = tbJob.getValueAt(row, 3);
     if (startDateObj != null) {
         jcdEstimatedStartDate.setDate((java.util.Date) startDateObj);
@@ -114,9 +114,9 @@ private void showSelectedJob(int row) {
     public void setEditStatus(boolean editable) {
         isEditMode = editable;
         
-        txtDeptName.setEnabled(editable);
-        txtManID.setEnabled(editable);
-        txtDManID.setEnabled(editable);
+        txtTeamName.setEnabled(editable);
+        txtDeptID.setEnabled(editable);
+        txtTeamLeadID.setEnabled(editable);
        /* jcdEstimatedStartDate.setEnabled(editable);
         jcdEstimatedEndDate.setEnabled(editable); */
         btnSaveJob.setEnabled(editable);
@@ -138,7 +138,7 @@ private void showSelectedJob(int row) {
     
     
     private void deleteJob() {
-    int selectedRow = tbDept.getSelectedRow();
+    int selectedRow = tbTeam.getSelectedRow();
     if (selectedRow == -1) {
         JOptionPane.showMessageDialog(this, "Vui lòng chọn một công việc để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
         return;
@@ -151,23 +151,23 @@ private void showSelectedJob(int row) {
 
     int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa công việc này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
     if (confirm == JOptionPane.YES_OPTION) {
-        String DeptID = tbDept.getValueAt(selectedRow, 0).toString();
+        String DeptID = tbTeam.getValueAt(selectedRow, 0).toString();
 
-        String sql = "DELETE FROM Departments WHERE DepartmentID = ?";
+        String sql = "DELETE FROM Teams WHERE TeamID = ?";
         try (Connection conn = ConnectDatabase.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, Integer.parseInt(DeptID));
             pstmt.executeUpdate();
             JOptionPane.showMessageDialog(this, "Xóa thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            loadJobs();
+            loadTeams();
 
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi xóa dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
-        loadJobs();
+        loadTeams();
         btnCancelJob.setEnabled(false);
 }
 
@@ -179,37 +179,37 @@ private boolean isEditing = false;
 private int selectedDeptId = -1;
 
 private void saveJob() {
-    int selectedRow = tbDept.getSelectedRow();
+    int selectedRow = tbTeam.getSelectedRow();
     
     if (selectedRow == -1) {
         JOptionPane.showMessageDialog(this, "Vui lòng chọn một công việc để lưu!", "Lỗi", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
-    Object deptIdObj = tbDept.getValueAt(selectedRow, 0);
-    String deptName = txtDeptName.getText().trim();
-    String manID = txtManID.getText().trim();
-    String dManID = txtDManID.getText().trim();
+    Object teamIdObj = tbTeam.getValueAt(selectedRow, 0);
+    String teamName = txtTeamName.getText().trim();
+    String deptID = txtDeptID.getText().trim();
+    String teamLeadID = txtTeamLeadID.getText().trim();
     /* java.util.Date startDate = jcdEstimatedStartDate.getDate();
     java.util.Date endDate = jcdEstimatedEndDate.getDate(); */
 
-    if (deptName.isEmpty() || manID.isEmpty() || dManID.isEmpty()) {
+    if (teamName.isEmpty() || deptID.isEmpty() || teamLeadID.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
-   /* java.sql.Date deputyManagerID = new java.sql.Date(startDate.getTime());
+   /* java.sql.Date teamLeaderID = new java.sql.Date(startDate.getTime());
     java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime()); */
 
     try (Connection conn = ConnectDatabase.getConnection()) {
-        if (deptIdObj == null) { 
-            String insertSQL = "INSERT INTO Departments (DepartmentName, ManagerID, DeputyManagerID) VALUES (?, ?, ?, ?)";
+        if (teamIdObj == null) { 
+            String insertSQL = "INSERT INTO Teams (TeamName, DepartmentID, TeamLeaderID) VALUES (?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
-                pstmt.setString(1, deptName);
-                pstmt.setString(2, manID);
-                /*pstmt.setDate(3, deputyManagerID);
+                pstmt.setString(1, teamName);
+                pstmt.setString(2, deptID);
+                /*pstmt.setDate(3, teamLeaderID);
                 pstmt.setDate(4, sqlEndDate);*/
-                pstmt.setString(3, dManID);
+                pstmt.setString(3, teamLeadID);
                
 
                 int affectedRows = pstmt.executeUpdate();
@@ -217,20 +217,20 @@ private void saveJob() {
                     try (ResultSet rs = pstmt.getGeneratedKeys()) {
                         if (rs.next()) {
                             int newDeptId = rs.getInt(1);
-                            tbDept.setValueAt(newDeptId, selectedRow, 0);
+                            tbTeam.setValueAt(newDeptId, selectedRow, 0);
                         }
                     }
                     JOptionPane.showMessageDialog(this, "Thêm cơ sở mới thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         } else { 
-            int deptId = (int) deptIdObj;
-            String updateSQL = "UPDATE Departments SET DepartmentName=?, ManagerID=?, DeputyManagerID=? WHERE DepartmentID=?";
+            int teamId = (int) teamIdObj;
+            String updateSQL = "UPDATE Teams SET TeamName=?, DepartmentID=?, TeamLeaderID=? WHERE TeamID=?";
             try (PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
-                pstmt.setString(1, deptName);
-                pstmt.setString(2, manID);
-                pstmt.setString(3, dManID);              
-                pstmt.setInt(4, deptId);
+                pstmt.setString(1, teamName);
+                pstmt.setString(2, deptID);
+                pstmt.setString(3, teamLeadID);              
+                pstmt.setInt(4, teamId);
 
                 int affectedRows = pstmt.executeUpdate();
                 if (affectedRows > 0) {
@@ -239,10 +239,10 @@ private void saveJob() {
             }
         }
 
-        tbDept.setValueAt(deptName, selectedRow, 1);
-        tbDept.setValueAt(manID, selectedRow, 2);
-        tbDept.setValueAt(dManID, selectedRow, 3);
-        tbDept.setValueAt(deptIdObj, selectedRow, 4);
+        tbTeam.setValueAt(teamName, selectedRow, 1);
+        tbTeam.setValueAt(deptID, selectedRow, 2);
+        tbTeam.setValueAt(teamLeadID, selectedRow, 3);
+        tbTeam.setValueAt(teamIdObj, selectedRow, 4);
         setEditStatus(false);
 
     } catch (SQLException e) {
@@ -252,9 +252,9 @@ private void saveJob() {
 }
 
 private void resetJob() {
-    txtDeptName.setText("");
-    txtManID.setText("");
-    txtDManID.setText("");
+    txtTeamName.setText("");
+    txtDeptID.setText("");
+    txtTeamLeadID.setText("");
 }
 
 
@@ -267,32 +267,34 @@ private void resetJob() {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jSeparator4 = new javax.swing.JSeparator();
+        jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tbDept = new javax.swing.JTable();
+        tbTeam = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jSeparator2 = new javax.swing.JSeparator();
         jLabel8 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         btnAddJob = new javax.swing.JToggleButton();
-        btnDeleteJob = new javax.swing.JToggleButton();
-        txtManID = new javax.swing.JTextField();
         btnEditJob = new javax.swing.JToggleButton();
+        btnDeleteJob = new javax.swing.JToggleButton();
+        txtTeamName = new javax.swing.JTextField();
+        txtDeptID = new javax.swing.JTextField();
+        txtTeamLeadID = new javax.swing.JTextField();
         btnSaveJob = new javax.swing.JButton();
         btnResetJob = new javax.swing.JToggleButton();
-        txtDeptName = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        jSeparator3 = new javax.swing.JSeparator();
         btnCancelJob = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JSeparator();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jSeparator4 = new javax.swing.JSeparator();
         jSeparator5 = new javax.swing.JSeparator();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
-        txtDManID = new javax.swing.JTextField();
 
-        tbDept.setModel(new javax.swing.table.DefaultTableModel(
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setText("Team");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel2.setText("Team list:");
+
+        tbTeam.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -395,11 +397,11 @@ private void resetJob() {
                 {null, null, null}
             },
             new String [] {
-                "DepartentName", "ManagerID", "DeputyManagerID"
+                "TeamName", "DepartmentID", "TeamLeaderID"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
                 true, true, false
@@ -413,22 +415,32 @@ private void resetJob() {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(tbDept);
-
-        jLabel6.setText("Department Name");
-
-        jLabel7.setText("Manager ID");
-
-        jLabel8.setText("Deputy Manager ID");
+        jScrollPane1.setViewportView(tbTeam);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("Function :");
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel4.setText("Data entry form :");
+
+        jLabel6.setText("Team Name");
+
+        jLabel7.setText("DepartmentID");
+
+        jLabel8.setText("TeamLeaderID");
 
         btnAddJob.setText("Add");
         btnAddJob.setToolTipText("");
         btnAddJob.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAddJobActionPerformed(evt);
+            }
+        });
+
+        btnEditJob.setText("Edit");
+        btnEditJob.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditJobActionPerformed(evt);
             }
         });
 
@@ -439,16 +451,21 @@ private void resetJob() {
             }
         });
 
-        txtManID.addActionListener(new java.awt.event.ActionListener() {
+        txtTeamName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtManIDActionPerformed(evt);
+                txtTeamNameActionPerformed(evt);
             }
         });
 
-        btnEditJob.setText("Edit");
-        btnEditJob.addActionListener(new java.awt.event.ActionListener() {
+        txtDeptID.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditJobActionPerformed(evt);
+                txtDeptIDActionPerformed(evt);
+            }
+        });
+
+        txtTeamLeadID.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtTeamLeadIDActionPerformed(evt);
             }
         });
 
@@ -466,15 +483,6 @@ private void resetJob() {
             }
         });
 
-        txtDeptName.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtDeptNameActionPerformed(evt);
-            }
-        });
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("Department");
-
         btnCancelJob.setText("Cancel");
         btnCancelJob.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -482,85 +490,55 @@ private void resetJob() {
             }
         });
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel4.setText("Data entry form :");
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel2.setText("Department list:");
-
-        txtDManID.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtDManIDActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 1, Short.MAX_VALUE)
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(194, 194, 194)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(180, 180, 180)
-                                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSeparator5)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSeparator4))))
             .addComponent(jScrollPane1)
+            .addComponent(jSeparator5)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnResetJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnSaveJob)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnCancelJob))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(227, 227, 227)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(227, 227, 227)
+                                .addComponent(btnAddJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnEditJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnDeleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(43, 43, 43))
+                            .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtDeptID, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtTeamLeadID, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtTeamName, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(btnAddJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(btnSaveJob)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnEditJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnDeleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(43, 43, 43))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txtManID, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(txtDManID, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(txtDeptName, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel2)))
-                        .addGap(0, 393, Short.MAX_VALUE)))
-                .addContainerGap())
+                                        .addComponent(btnResetJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(12, 12, 12)
+                                        .addComponent(btnCancelJob))))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel2)))
+                .addContainerGap(393, Short.MAX_VALUE))
+            .addComponent(jSeparator4)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(195, 195, 195)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addGap(462, 462, 462))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -568,63 +546,49 @@ private void resetJob() {
                 .addGap(17, 17, 17)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
+                .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(59, 59, 59)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(41, 41, 41)
-                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(3, 3, 3)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(btnAddJob)
-                                        .addComponent(btnEditJob)
-                                        .addComponent(btnDeleteJob))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(28, 28, 28)
-                        .addComponent(jLabel4)))
+                    .addComponent(jLabel3)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnAddJob)
+                        .addComponent(btnEditJob)
+                        .addComponent(btnDeleteJob)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(txtDeptName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTeamName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(9, 9, 9)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(txtManID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDeptID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
-                    .addComponent(txtDManID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 103, Short.MAX_VALUE)
+                    .addComponent(txtTeamLeadID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnResetJob)
                     .addComponent(btnSaveJob)
-                    .addComponent(btnCancelJob))
-                .addContainerGap())
+                    .addComponent(btnCancelJob)
+                    .addComponent(btnResetJob))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddJobActionPerformed
         // TODO add your handling code here:
     // Xóa dữ liệu cũ trong các ô nhập liệu
-    txtDeptName.setText("");
-    txtManID.setText("");
-    txtDManID.setText("");
+    txtTeamName.setText("");
+    txtDeptID.setText("");
+    txtTeamLeadID.setText("");
 
     setEditStatus(true);
     isEditMode = true;
@@ -634,32 +598,32 @@ private void resetJob() {
     }
 
     btnSaveJob.addActionListener(e -> {
-        String deptName = txtDeptName.getText().trim();
-        String manID = txtManID.getText().trim();
-        String dManID = txtDManID.getText().trim();
+        String teamName = txtTeamName.getText().trim();
+        String deptID = txtDeptID.getText().trim();
+        String teamLeadID = txtTeamLeadID.getText().trim();
         
 
-        if (deptName.isEmpty() || manID.isEmpty() || dManID.isEmpty()) {
+        if (teamName.isEmpty() || deptID.isEmpty() || teamLeadID.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
       
 
-        String insertSQL = "INSERT INTO Departments (DepartmentName, ManagerID, DeputyManagerID) VALUES (?, ?, ?)";
+        String insertSQL = "INSERT INTO Teams (TeamName, DepartmentID, TeamLeaderID) VALUES (?, ?, ?)";
 
         try (Connection conn = ConnectDatabase.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
 
-            pstmt.setString(1, deptName);
-            pstmt.setString(2, manID);
-            pstmt.setString(3, dManID);
+            pstmt.setString(1, teamName);
+            pstmt.setString(2, deptID);
+            pstmt.setString(3, teamLeadID);
             
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
                 JOptionPane.showMessageDialog(this, "Thêm công việc thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                loadJobs();
+                loadTeams();
                 setEditStatus(false);
             } else {
                 JOptionPane.showMessageDialog(this, "Lỗi khi thêm công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -681,24 +645,24 @@ private void resetJob() {
     }
 
     btnDeleteJob.addActionListener(e -> {
-        int selectedRow = tbDept.getSelectedRow();
+        int selectedRow = tbTeam.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn một công việc để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        int DeptID = (int) tbDept.getValueAt(selectedRow, 0);
+        int DeptID = (int) tbTeam.getValueAt(selectedRow, 0);
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa công việc này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
             try (Connection conn = ConnectDatabase.getConnection();
-                 PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Departments WHERE DeptID = ?")) {
+                 PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Teams WHERE DeptID = ?")) {
                 pstmt.setInt(1, DeptID);
                 int affectedRows = pstmt.executeUpdate();
 
                 if (affectedRows > 0) {
                     JOptionPane.showMessageDialog(this, "Xóa công việc thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                    loadJobs();
+                    loadTeams();
                 } else {
                     JOptionPane.showMessageDialog(this, "Không thể xóa công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
@@ -712,14 +676,14 @@ private void resetJob() {
 
     }//GEN-LAST:event_btnDeleteJobActionPerformed
 
-    private void txtManIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtManIDActionPerformed
+    private void txtDeptIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDeptIDActionPerformed
         // TODO add your handling code here:
 
-    }//GEN-LAST:event_txtManIDActionPerformed
+    }//GEN-LAST:event_txtDeptIDActionPerformed
 
     private void btnEditJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditJobActionPerformed
         // TODO add your handling code here:
-    int selectedRow = tbDept.getSelectedRow();
+    int selectedRow = tbTeam.getSelectedRow();
     if (selectedRow == -1) {
         JOptionPane.showMessageDialog(this, "Vui lòng chọn một công việc để chỉnh sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
         return;
@@ -735,28 +699,28 @@ private void resetJob() {
     }
 
     btnSaveJob.addActionListener(e -> {
-        int DeptId = (int) tbDept.getValueAt(selectedRow, 0);
-        String deptName = txtDeptName.getText().trim();
-        String manID = txtManID.getText().trim();
-        String dManID = txtDManID.getText().trim();
-        if (deptName.isEmpty() || manID.isEmpty() || dManID.isEmpty()) {
+        int DeptId = (int) tbTeam.getValueAt(selectedRow, 0);
+        String teamName = txtTeamName.getText().trim();
+        String deptID = txtDeptID.getText().trim();
+        String teamLeadID = txtTeamLeadID.getText().trim();
+        if (teamName.isEmpty() || deptID.isEmpty() || teamLeadID.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        String updateSQL = "UPDATE Departments SET DepartmentName=?, ManagerID=?, DeputyManagerID=? WHERE DepartmentID=?";
+        String updateSQL = "UPDATE Teams SET TeamName=?, DepartmentID=?, TeamLeaderID=? WHERE TeamID=?";
 
         try (Connection conn = ConnectDatabase.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
 
-            pstmt.setString(1, deptName);
-            pstmt.setString(2, manID);
-            pstmt.setString(3, dManID);
+            pstmt.setString(1, teamName);
+            pstmt.setString(2, deptID);
+            pstmt.setString(3, teamLeadID);
             pstmt.setInt(4, DeptId);
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
                 JOptionPane.showMessageDialog(this, "Cập nhật công việc thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                loadJobs();
+                loadTeams();
                 setEditStatus(false);
             } else {
                 JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -773,7 +737,7 @@ private void resetJob() {
 
     btnSaveJob.setEnabled(false);
 
-    int selectedRow = tbDept.getSelectedRow();
+    int selectedRow = tbTeam.getSelectedRow();
 
     if (selectedRow == -1) {
         JOptionPane.showMessageDialog(this, "Không có công việc nào được chọn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -785,30 +749,30 @@ private void resetJob() {
     }   
 
 
-    int deptID = Integer.parseInt(tbDept.getValueAt(selectedRow, 0).toString()); 
-    String deptName = txtDeptName.getText().trim();
-    String manID = txtManID.getText().trim();
-    String dManID = txtDManID.getText().trim();
+    int deptID = Integer.parseInt(tbTeam.getValueAt(selectedRow, 0).toString()); 
+    String teamName = txtTeamName.getText().trim();
+    String txtdeptID = txtDeptID.getText().trim();
+    String teamLeadID = txtTeamLeadID.getText().trim();
 
-    if (deptName.isEmpty() || manID.isEmpty() || dManID.isEmpty()) {
+    if (teamName.isEmpty() || txtdeptID.isEmpty() || teamLeadID.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         btnSaveJob.setEnabled(true); 
         return;
     }
 
-    String sql = "UPDATE Departments SET DepartmentName = ?, ManagerID = ?, DeputyManagerID = ? WHERE DepartmentID = ?";
+    String sql = "UPDATE Teams SET TeamName = ?, DepartmentID = ?, TeamLeaderID = ? WHERE TeamID = ?";
 
     try (Connection conn = ConnectDatabase.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-        pstmt.setString(1, deptName);
-        pstmt.setString(2, manID);      
-        pstmt.setString(3, dManID);
+        pstmt.setString(1, teamName);
+        pstmt.setString(2, txtdeptID);      
+        pstmt.setString(3, teamLeadID);
 
         int affectedRows = pstmt.executeUpdate();
         if (affectedRows > 0) {
             JOptionPane.showMessageDialog(this, "Cập nhật thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            loadJobs(); 
+            loadTeams(); 
         } else {
             JOptionPane.showMessageDialog(this, "Không thể cập nhật dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
@@ -832,18 +796,18 @@ private void resetJob() {
 
     cancelJob();
 
-    loadJobs();
+    loadTeams();
 
     btnCancelJob.setEnabled(true);
     }//GEN-LAST:event_btnCancelJobActionPerformed
 
-    private void txtDManIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDManIDActionPerformed
+    private void txtTeamLeadIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTeamLeadIDActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtDManIDActionPerformed
+    }//GEN-LAST:event_txtTeamLeadIDActionPerformed
 
-    private void txtDeptNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDeptNameActionPerformed
+    private void txtTeamNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTeamNameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtDeptNameActionPerformed
+    }//GEN-LAST:event_txtTeamNameActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -853,7 +817,6 @@ private void resetJob() {
     private javax.swing.JToggleButton btnEditJob;
     private javax.swing.JToggleButton btnResetJob;
     private javax.swing.JButton btnSaveJob;
-    private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -862,14 +825,11 @@ private void resetJob() {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
-    private javax.swing.JTable tbDept;
-    private javax.swing.JTextField txtDManID;
-    private javax.swing.JTextField txtDeptName;
-    private javax.swing.JTextField txtManID;
+    private javax.swing.JTable tbTeam;
+    private javax.swing.JTextField txtDeptID;
+    private javax.swing.JTextField txtTeamLeadID;
+    private javax.swing.JTextField txtTeamName;
     // End of variables declaration//GEN-END:variables
 }
