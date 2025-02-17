@@ -589,7 +589,6 @@ private void resetTask() {
 
     private void btnAddTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddTaskActionPerformed
         // TODO add your handling code here:
-            // Xóa dữ liệu cũ trong các ô nhập liệu
     txtTaskName.setText("");
     txtAssignedTo.setText("");
     txtAssignmentID.setText("");
@@ -600,12 +599,10 @@ private void resetTask() {
     setEditStatus(true);
     isEditMode = true;
 
-    // Xóa tất cả các sự kiện cũ trên btnSaveTask
     for (ActionListener al : btnSaveTask.getActionListeners()) {
         btnSaveTask.removeActionListener(al);
     }
 
-    // Thêm sự kiện mới cho btnSaveTask
     btnSaveTask.addActionListener(e -> {
         String taskName = txtTaskName.getText().trim();
         String assignedTo = txtAssignedTo.getText().trim();
