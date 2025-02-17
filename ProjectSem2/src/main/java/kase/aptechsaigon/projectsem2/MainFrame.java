@@ -53,10 +53,13 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jpBackground = new javax.swing.JPanel();
-        jpTask = new javax.swing.JPanel();
         jpJob = new javax.swing.JPanel();
+        jpTask = new javax.swing.JPanel();
+        jpHR = new javax.swing.JPanel();
         jpDept = new javax.swing.JPanel();
         jpStaff = new javax.swing.JPanel();
+        jpSalary = new javax.swing.JPanel();
+        jpAttendanceTracking = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jmSystem = new javax.swing.JMenu();
         jmiHome = new javax.swing.JMenuItem();
@@ -74,6 +77,7 @@ public class MainFrame extends javax.swing.JFrame {
         jmSalary = new javax.swing.JMenu();
         jmiStaffSalary = new javax.swing.JMenuItem();
         jmiCalculateSalary = new javax.swing.JMenuItem();
+        jmiAttendanceTracking = new javax.swing.JMenuItem();
         jmHelp = new javax.swing.JMenu();
         jmiManual = new javax.swing.JMenuItem();
         jmiAbout = new javax.swing.JMenuItem();
@@ -84,22 +88,25 @@ public class MainFrame extends javax.swing.JFrame {
         jpTask.setLayout(jpTaskLayout);
         jpTaskLayout.setHorizontalGroup(
             jpTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 842, Short.MAX_VALUE)
+            .addGap(0, 856, Short.MAX_VALUE)
         );
         jpTaskLayout.setVerticalGroup(
             jpTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 480, Short.MAX_VALUE)
+            .addGap(0, 492, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jpJobLayout = new javax.swing.GroupLayout(jpJob);
         jpJob.setLayout(jpJobLayout);
         jpJobLayout.setHorizontalGroup(
             jpJobLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 854, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpJobLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jpTask, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jpJobLayout.setVerticalGroup(
             jpJobLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 492, Short.MAX_VALUE)
+            .addComponent(jpTask, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jpDeptLayout = new javax.swing.GroupLayout(jpDept);
@@ -124,27 +131,86 @@ public class MainFrame extends javax.swing.JFrame {
             .addGap(0, 492, Short.MAX_VALUE)
         );
 
+        javax.swing.GroupLayout jpHRLayout = new javax.swing.GroupLayout(jpHR);
+        jpHR.setLayout(jpHRLayout);
+        jpHRLayout.setHorizontalGroup(
+            jpHRLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 854, Short.MAX_VALUE)
+            .addGroup(jpHRLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jpHRLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jpDept, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+            .addGroup(jpHRLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jpHRLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jpStaff, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        jpHRLayout.setVerticalGroup(
+            jpHRLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 492, Short.MAX_VALUE)
+            .addGroup(jpHRLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jpHRLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jpDept, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+            .addGroup(jpHRLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jpHRLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jpStaff, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+
+        javax.swing.GroupLayout jpAttendanceTrackingLayout = new javax.swing.GroupLayout(jpAttendanceTracking);
+        jpAttendanceTracking.setLayout(jpAttendanceTrackingLayout);
+        jpAttendanceTrackingLayout.setHorizontalGroup(
+            jpAttendanceTrackingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 856, Short.MAX_VALUE)
+        );
+        jpAttendanceTrackingLayout.setVerticalGroup(
+            jpAttendanceTrackingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout jpSalaryLayout = new javax.swing.GroupLayout(jpSalary);
+        jpSalary.setLayout(jpSalaryLayout);
+        jpSalaryLayout.setHorizontalGroup(
+            jpSalaryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 856, Short.MAX_VALUE)
+            .addGroup(jpSalaryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jpAttendanceTracking, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jpSalaryLayout.setVerticalGroup(
+            jpSalaryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
+            .addGroup(jpSalaryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jpAttendanceTracking, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jpBackgroundLayout = new javax.swing.GroupLayout(jpBackground);
         jpBackground.setLayout(jpBackgroundLayout);
         jpBackgroundLayout.setHorizontalGroup(
             jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jpJob, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jpDept, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jpHR, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jpStaff, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jpTask, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jpBackgroundLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jpSalary, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
         jpBackgroundLayout.setVerticalGroup(
             jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jpJob, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jpDept, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jpHR, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jpStaff, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jpTask, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jpBackgroundLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jpSalary, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
 
         jmSystem.setText("System");
@@ -222,6 +288,14 @@ public class MainFrame extends javax.swing.JFrame {
         jmiCalculateSalary.setText("Calculate Salary");
         jmSalary.add(jmiCalculateSalary);
 
+        jmiAttendanceTracking.setText("Attendance Tracking");
+        jmiAttendanceTracking.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiAttendanceTrackingActionPerformed(evt);
+            }
+        });
+        jmSalary.add(jmiAttendanceTracking);
+
         jMenuBar1.add(jmSalary);
 
         jmHelp.setText("Help");
@@ -279,6 +353,10 @@ public class MainFrame extends javax.swing.JFrame {
         showPanel(jpStaff);
     }//GEN-LAST:event_jmiStaffActionPerformed
 
+    private void jmiAttendanceTrackingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiAttendanceTrackingActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jmiAttendanceTrackingActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -325,6 +403,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jmSalary;
     private javax.swing.JMenu jmSystem;
     private javax.swing.JMenuItem jmiAbout;
+    private javax.swing.JMenuItem jmiAttendanceTracking;
     private javax.swing.JMenuItem jmiCalculateSalary;
     private javax.swing.JMenuItem jmiContract;
     private javax.swing.JMenuItem jmiDept;
@@ -338,9 +417,12 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jmiStaffSalary;
     private javax.swing.JMenuItem jmiTaskManagement;
     private javax.swing.JMenuItem jmiTeam;
+    private javax.swing.JPanel jpAttendanceTracking;
     private javax.swing.JPanel jpBackground;
     private javax.swing.JPanel jpDept;
+    private javax.swing.JPanel jpHR;
     private javax.swing.JPanel jpJob;
+    private javax.swing.JPanel jpSalary;
     private javax.swing.JPanel jpStaff;
     private javax.swing.JPanel jpTask;
     // End of variables declaration//GEN-END:variables

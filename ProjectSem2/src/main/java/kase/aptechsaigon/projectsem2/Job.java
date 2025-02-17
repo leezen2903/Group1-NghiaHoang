@@ -417,6 +417,10 @@ private void resetJob() {
             }
         });
         jScrollPane1.setViewportView(tbJob);
+        if (tbJob.getColumnModel().getColumnCount() > 0) {
+            tbJob.getColumnModel().getColumn(3).setHeaderValue("EstimatedEndDate");
+            tbJob.getColumnModel().getColumn(4).setHeaderValue("Status");
+        }
 
         jLabel6.setText("- JobName");
 
