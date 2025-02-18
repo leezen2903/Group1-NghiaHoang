@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -19,105 +20,152 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Moiiii
  */
-public class AttendanceTracking extends javax.swing.JPanel {
+public class SalaryManager extends javax.swing.JPanel {
 
     /**
      * Creates new form AttendanceTracking
      */
-    public AttendanceTracking() {
-        initComponents();
-        loadSalaries();
-    }
-    
-    public void loadSalaries() {
-        DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"SalaryID", "Month", "Year", "PositionID", "DailyRate", "WorkDays", "TotalSalary", "YearsOfWork"}, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        tbSalary.setModel(model);
+public SalaryManager() {
+    initComponents();
+    loadSalaries();
+}
+public void loadSalaries() {
+    DefaultTableModel model = new DefaultTableModel(
+        new Object[]{"SalaryID", "Month", "Year", "PositionName", "DailyRate", "WorkDays", "TotalSalary", "YearsOfWork"}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+    tbSalary.setModel(model);
 
-        String sql = "SELECT SalaryID, Month, Year, PositionID, DailyRate, WorkDays, TotalSalary, YearsOfWork FROM Salaries";
+    String sql = "SELECT SalaryID, Month, Year, PositionID, DailyRate, WorkDays, TotalSalary, YearsOfWork FROM Salaries";
 
-        try (Connection conn = ConnectDatabase.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+    Connection conn = ConnectDatabase.getConnection();
+    try (
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        ResultSet rs = pstmt.executeQuery()) {
 
-            while (rs.next()) {
-                int salaryID = rs.getInt("SalaryID");
-                String month = rs.getString("Month");
-                int year = rs.getInt("Year");
-                int positionID = rs.getInt("PositionID");
-                double dailyRate = rs.getDouble("DailyRate");
-                int workDays = rs.getInt("WorkDays");
-                double totalSalary = rs.getDouble("TotalSalary");
-                int yearsOfWork = rs.getInt("YearsOfWork");
+        while (rs.next()) {
+            int salaryID = rs.getInt("SalaryID");
+            String month = rs.getString("Month");
+            int year = rs.getInt("Year");
+            int positionID = rs.getInt("PositionID");
+            double dailyRate = rs.getDouble("DailyRate");
+            int workDays = rs.getInt("WorkDays");
+            double totalSalary = rs.getDouble("TotalSalary");
+            int yearsOfWork = rs.getInt("YearsOfWork");
 
-                // Thêm dữ liệu vào bảng
-                model.addRow(new Object[]{salaryID, month, year, positionID, dailyRate, workDays, totalSalary, yearsOfWork});
-            }
+            // Lấy PositionName từ bảng Positions
+            String positionName = getPositionNameByID(positionID);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Lỗi khi tải dữ liệu từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            // Thêm dữ liệu vào bảng
+            model.addRow(new Object[]{salaryID, month, year, positionName, dailyRate, workDays, totalSalary, yearsOfWork});
         }
 
-        tbSalary.setDefaultEditor(Object.class, null);
-        tbSalary.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        ConnectDatabase.closeConnection(conn);
+    }
 
-        tbSalary.getSelectionModel().addListSelectionListener(event -> {
-            if (!event.getValueIsAdjusting() && tbSalary.getSelectedRow() != -1) {
-                showSelectedSalary(tbSalary.getSelectedRow());
-            
-//    if (isEditMode) {
-//        setEditStatus(true);
-//    } else {
-//        setEditStatus(false);
-//    }
+    tbSalary.setDefaultEditor(Object.class, null);
+    tbSalary.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-//    if (tblSalary.getRowCount() > 0 && tblSalary.getSelectedRow() == -1) {
-//        tblSalary.setRowSelectionInterval(0, 0);
-//        showSelectedSalary(0);
-//    }
-//
-//    tblSalary.getSelectionModel().addListSelectionListener(event -> {
-//        if (!event.getValueIsAdjusting() && tblSalary.getSelectedRow() != -1) {
-//            showSelectedSalary(tblSalary.getSelectedRow());
-//
-//            if (isEditMode) {
-//                setEditStatus(true);
-//            }
-//        }
-//    });
-         }
+    // Tải dữ liệu cho ComboBox
+    loadComboBoxData();
+
+    // Tự động chọn dòng đầu tiên nếu có dữ liệu
+    if (tbSalary.getRowCount() > 0 && tbSalary.getSelectedRow() == -1) {
+        tbSalary.setRowSelectionInterval(0, 0);
+        showSelectedSalary(0);
+    }
+
+    // Xử lý chọn dòng để hiển thị thông tin chi tiết
+    tbSalary.getSelectionModel().addListSelectionListener(event -> {
+        if (!event.getValueIsAdjusting() && tbSalary.getSelectedRow() != -1) {
+            showSelectedSalary(tbSalary.getSelectedRow());
+        }
     });
-    }     
-        
+}
+
+// Tải dữ liệu cho các ComboBox từ database
+private void loadComboBoxData() {
+    loadComboBox(cbxMonth, "SELECT DISTINCT Month FROM Salaries");
+    loadComboBox(cbxPositionID, "SELECT DISTINCT PositionID FROM Salaries");
+}
+
+// Hàm chung để tải dữ liệu cho ComboBox
+private void loadComboBox(JComboBox<String> comboBox, String query) {
+    comboBox.removeAllItems();
+    try (Connection conn = ConnectDatabase.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(query);
+         ResultSet rs = pstmt.executeQuery()) {
+        while (rs.next()) {
+            comboBox.addItem(rs.getString(1));
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
 
 private void showSelectedSalary(int row) {
-        cbxMonth.setSelectedItem(tbSalary.getValueAt(row, 1).toString());
-        txtYear.setText(tbSalary.getValueAt(row, 2).toString());
-        cbxPositionID.setSelectedItem(tbSalary.getValueAt(row, 3).toString());
-        
-        Object DateObj = tbSalary.getValueAt(row, 2);
-        if (DateObj != null) {
-            jdcWorkDay.setDate((java.util.Date) DateObj);
-        } else {
-            jdcWorkDay.setDate(null);
-        }
+    cbxMonth.setSelectedItem(tbSalary.getValueAt(row, 1).toString());
+    txtYear.setText(tbSalary.getValueAt(row, 2).toString());
 
-        Object WorkDateObj = tbSalary.getValueAt(row, 3);
-        if (WorkDateObj != null) {
-            jdcWorkDay.setDate((java.util.Date) WorkDateObj);
-        } else {
-            jdcWorkDay.setDate(null);
-        }
-        txtTotalSalary.setText(tbSalary.getValueAt(row, 6).toString());
-        txtYearsOfWork.setText(tbSalary.getValueAt(row, 7).toString());
-//    setEditStatus(false);
+    // Lấy PositionName từ bảng tbSalary và sử dụng trực tiếp
+    String positionName = tbSalary.getValueAt(row, 3).toString();
+
+    // Gán PositionName vào ComboBox cbxPositionID
+    cbxPositionID.setSelectedItem(positionName);
+
+    txtDailyRate.setText(tbSalary.getValueAt(row, 4).toString());
+    txtWorkDay.setText(tbSalary.getValueAt(row, 5).toString());
+    txtTotalSalary.setText(tbSalary.getValueAt(row, 6).toString());
+    txtYearsOfWork.setText(tbSalary.getValueAt(row, 7).toString());
 }
+
+
+// Hàm lấy PositionName từ PositionID
+private String getPositionNameByID(int positionID) {
+    String positionName = "";
+    String query = "SELECT PositionName FROM Positions WHERE PositionID = ?";
+    try (Connection conn = ConnectDatabase.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(query)) {
+        pstmt.setInt(1, positionID);
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                positionName = rs.getString("PositionName");
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return positionName;
+}
+
+
+private boolean isEditMode = false;
+
+public void setEditStatus(boolean editable) {
+    isEditMode = editable;
+    
+    cbxMonth.setEnabled(editable);
+    txtYear.setEnabled(editable);
+    cbxPositionID.setEnabled(editable);
+    txtWorkDay.setEnabled(editable);
+    txtDailyRate.setEnabled(editable);
+    txtTotalSalary.setEnabled(editable);
+    txtYearsOfWork.setEnabled(editable);
+
+    btnSaveSalary.setEnabled(editable);
+    btnCancelSalary.setEnabled(editable);
+
+    btnAddSalary.setEnabled(!editable);
+    btnEditSalary.setEnabled(!editable);
+}
+
 
 
     /**
@@ -139,18 +187,20 @@ private void showSelectedSalary(int row) {
         jScrollPane1 = new javax.swing.JScrollPane();
         tbSalary = new javax.swing.JTable();
         txtTotalSalary = new javax.swing.JTextField();
-        btnAdd = new javax.swing.JButton();
+        btnAddSalary = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        btnEdit = new javax.swing.JButton();
+        btnEditSalary = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        jdcDailyRate = new com.toedter.calendar.JDateChooser();
-        jdcWorkDay = new com.toedter.calendar.JDateChooser();
         jSeparator3 = new javax.swing.JSeparator();
         jLabel3 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         txtYearsOfWork = new javax.swing.JTextField();
+        btnSaveSalary = new javax.swing.JButton();
+        btnCancelSalary = new javax.swing.JButton();
+        txtDailyRate = new javax.swing.JTextField();
+        txtWorkDay = new javax.swing.JTextField();
 
         jLabel5.setText("Position ID :");
 
@@ -281,11 +331,11 @@ private void showSelectedSalary(int row) {
         });
         jScrollPane1.setViewportView(tbSalary);
 
-        btnAdd.setText("Add");
+        btnAddSalary.setText("Add");
 
         jLabel2.setText("Month :");
 
-        btnEdit.setText("Edit");
+        btnEditSalary.setText("Edit");
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel1.setText("Attendance Tracking by Month");
@@ -293,6 +343,10 @@ private void showSelectedSalary(int row) {
         jLabel4.setText("Year :");
 
         jLabel9.setText("Years of work :");
+
+        btnSaveSalary.setText("Save");
+
+        btnCancelSalary.setText("Cancel");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -329,14 +383,21 @@ private void showSelectedSalary(int row) {
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                             .addComponent(cbxMonth, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addComponent(txtYear, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
-                                            .addComponent(jdcWorkDay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jdcDailyRate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(cbxPositionID, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                                .addGap(85, 85, 85)
+                                            .addComponent(cbxPositionID, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(txtDailyRate, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(txtWorkDay, javax.swing.GroupLayout.Alignment.LEADING))))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnAdd)
-                                    .addComponent(btnEdit))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 322, Short.MAX_VALUE))))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(56, 56, 56)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(btnAddSalary)
+                                            .addComponent(btnEditSalary)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(41, 41, 41)
+                                        .addComponent(btnSaveSalary)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnCancelSalary)))
+                                .addGap(0, 276, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(313, 313, 313)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -361,25 +422,25 @@ private void showSelectedSalary(int row) {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(txtYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15)
+                    .addComponent(txtYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnAddSalary))
+                .addGap(14, 14, 14)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbxPositionID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
+                    .addComponent(btnEditSalary))
+                .addGap(9, 9, 9)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(txtDailyRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cbxPositionID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel6)
-                            .addComponent(jdcDailyRate, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jdcWorkDay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnAdd)
-                        .addGap(25, 25, 25)
-                        .addComponent(btnEdit)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel7)
+                        .addComponent(txtWorkDay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnSaveSalary)
+                        .addComponent(btnCancelSalary)))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtTotalSalary, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -394,14 +455,16 @@ private void showSelectedSalary(int row) {
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAdd;
-    private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnAddSalary;
+    private javax.swing.JButton btnCancelSalary;
+    private javax.swing.JButton btnEditSalary;
+    private javax.swing.JButton btnSaveSalary;
     private javax.swing.JComboBox<String> cbxMonth;
     private javax.swing.JComboBox<String> cbxPositionID;
     private javax.swing.JLabel jLabel1;
@@ -416,10 +479,10 @@ private void showSelectedSalary(int row) {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator3;
-    private com.toedter.calendar.JDateChooser jdcDailyRate;
-    private com.toedter.calendar.JDateChooser jdcWorkDay;
     private javax.swing.JTable tbSalary;
+    private javax.swing.JTextField txtDailyRate;
     private javax.swing.JTextField txtTotalSalary;
+    private javax.swing.JTextField txtWorkDay;
     private javax.swing.JTextField txtYear;
     private javax.swing.JTextField txtYearsOfWork;
     // End of variables declaration//GEN-END:variables

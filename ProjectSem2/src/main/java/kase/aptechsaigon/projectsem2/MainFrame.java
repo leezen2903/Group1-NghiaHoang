@@ -33,6 +33,7 @@ public class MainFrame extends javax.swing.JFrame {
         jpDept = new Department();
         jpStaff = new Employee();
         jpTeam = new Team();
+        jpSalary = new SalaryManager();
     }
     
       private void showPanel(JPanel panel) {
@@ -508,6 +509,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void jmiAttendanceTrackingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiAttendanceTrackingActionPerformed
         // TODO add your handling code here:
+        showPanel(jpSalary);
     }//GEN-LAST:event_jmiAttendanceTrackingActionPerformed
 
     private void jmiTeamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiTeamActionPerformed

@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
@@ -21,6 +22,7 @@ import javax.swing.table.DefaultTableModel;
  * @author Moiiii
  */
 public class Task extends javax.swing.JPanel {
+    
 
     /**
      * Creates new form Task
@@ -28,9 +30,10 @@ public class Task extends javax.swing.JPanel {
     public Task() {
         initComponents();
         loadTasks();
+        
     }
     
- public void loadTasks() {
+public void loadTasks() {
     DefaultTableModel model = new DefaultTableModel(
         new Object[]{"TaskID", "TaskName", "TaskStartDate", "TaskEndDate", "AssignedTo", "AssignmentID", "JobID", "Status"}, 0) {
         @Override
@@ -40,9 +43,14 @@ public class Task extends javax.swing.JPanel {
     };
     tbTask.setModel(model);
 
-    String sql = "SELECT TaskID, TaskName, TaskStartDate, TaskEndDate, AssignedTo, AssignmentID, JobID, Status FROM Tasks";
+    String sql = "SELECT t.TaskID, t.TaskName, t.TaskStartDate, t.TaskEndDate, " +
+                 "e.FullName AS AssignedTo, t.AssignmentID, j.JobName AS JobID, t.Status " +
+                 "FROM Tasks t " +
+                 "LEFT JOIN Employees e ON t.AssignedTo = e.EmployeeID " +
+                 "LEFT JOIN Jobs j ON t.JobID = j.JobID";
 
-    try (Connection conn = ConnectDatabase.getConnection();
+    Connection conn = ConnectDatabase.getConnection();
+    try (
          PreparedStatement pstmt = conn.prepareStatement(sql);
          ResultSet rs = pstmt.executeQuery()) {
 
@@ -51,26 +59,28 @@ public class Task extends javax.swing.JPanel {
             String taskName = rs.getString("TaskName");
             java.sql.Date sqlStartDate = rs.getDate("TaskStartDate");
             java.sql.Date sqlEndDate = rs.getDate("TaskEndDate");
-            int assignedTo = rs.getInt("AssignedTo");
+            String assignedTo = rs.getString("AssignedTo"); // Lấy FullName thay vì ID
             int assignmentId = rs.getInt("AssignmentID");
-            int jobId = rs.getInt("JobID");
-            String status = rs.getString("Status"); // ENUM trả về dạng chuỗi
+            String jobName = rs.getString("JobID"); // Lấy JobName thay vì ID
+            String status = rs.getString("Status");
 
-            // Chuyển đổi sang java.util.Date nếu cần thiết
             java.util.Date startDate = (sqlStartDate != null) ? new java.util.Date(sqlStartDate.getTime()) : null;
             java.util.Date endDate = (sqlEndDate != null) ? new java.util.Date(sqlEndDate.getTime()) : null;
 
-            // Thêm dữ liệu vào bảng
-            model.addRow(new Object[]{taskId, taskName, startDate, endDate, assignedTo, assignmentId, jobId, status});
+            model.addRow(new Object[]{taskId, taskName, startDate, endDate, assignedTo, assignmentId, jobName, status});
         }
 
     } catch (SQLException e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        ConnectDatabase.closeConnection(conn);
     }
 
     tbTask.setDefaultEditor(Object.class, null);
     tbTask.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+    loadComboBoxData();
 
     if (isEditMode) {
         setEditStatus(true);
@@ -94,7 +104,27 @@ public class Task extends javax.swing.JPanel {
     });
 }
 
- private void showSelectedTask(int row) {
+ 
+     private void loadComboBoxData() {
+        loadComboBox(cbAssignedTo, "SELECT DISTINCT AssignedTo FROM Tasks");
+        loadComboBox(cbAssignmentID, "SELECT DISTINCT AssignmentID FROM Tasks");
+        loadComboBox(cbJobID, "SELECT DISTINCT JobID FROM Tasks");
+    }
+     
+         private void loadComboBox(JComboBox<String> comboBox, String query) {
+        comboBox.removeAllItems();
+        try (Connection conn = ConnectDatabase.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                comboBox.addItem(rs.getString(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+private void showSelectedTask(int row) {
     txtTaskName.setText(tbTask.getValueAt(row, 1).toString());
 
     Object startDateObj = tbTask.getValueAt(row, 2);
@@ -111,14 +141,56 @@ public class Task extends javax.swing.JPanel {
         jcdTaskEndDate.setDate(null);
     }
 
-    txtAssignedTo.setText(tbTask.getValueAt(row, 4).toString());
-    txtAssignmentID.setText(tbTask.getValueAt(row, 5).toString());
-    txtJobID.setText(tbTask.getValueAt(row, 6).toString());
+    // Lấy giá trị từ bảng (TaskID, AssignmentID, JobID)
+    int taskId = (int) tbTask.getValueAt(row, 0);
+    String assignmentID = tbTask.getValueAt(row, 5).toString();
+    String jobID = tbTask.getValueAt(row, 6).toString();
 
-    String status = tbTask.getValueAt(row, 7).toString();
+    // Kết nối đến cơ sở dữ liệu để lấy danh sách các giá trị
+    Connection conn = ConnectDatabase.getConnection();
+    try {
+        // Lấy danh sách FullName từ Employees để gán vào cbAssignedTo
+        String assignedToQuery = "SELECT FullName FROM Employees";
+        PreparedStatement assignedToStmt = conn.prepareStatement(assignedToQuery);
+        ResultSet rsAssignedTo = assignedToStmt.executeQuery();
+        cbAssignedTo.removeAllItems(); // Xóa các item cũ trong ComboBox
+        while (rsAssignedTo.next()) {
+            cbAssignedTo.addItem(rsAssignedTo.getString("FullName"));
+        }
+        
+        // Lấy danh sách AssignmentID để gán vào cbAssignmentID
+        String assignmentQuery = "SELECT AssignmentID FROM Assignments";
+        PreparedStatement assignmentStmt = conn.prepareStatement(assignmentQuery);
+        ResultSet rsAssignments = assignmentStmt.executeQuery();
+        cbAssignmentID.removeAllItems(); // Xóa các item cũ trong ComboBox
+        while (rsAssignments.next()) {
+            cbAssignmentID.addItem(rsAssignments.getString("AssignmentID"));
+        }
+        
+        // Lấy danh sách JobName để gán vào cbJobID
+        String jobQuery = "SELECT JobName FROM Jobs";
+        PreparedStatement jobStmt = conn.prepareStatement(jobQuery);
+        ResultSet rsJobs = jobStmt.executeQuery();
+        cbJobID.removeAllItems(); // Xóa các item cũ trong ComboBox
+        while (rsJobs.next()) {
+            cbJobID.addItem(rsJobs.getString("JobName"));
+        }
 
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        ConnectDatabase.closeConnection(conn);
+    }
+
+    // Gán giá trị đã lưu vào các ComboBox
+    cbAssignmentID.setSelectedItem(assignmentID); // Gán trực tiếp AssignmentID
+    cbJobID.setSelectedItem(jobID); // Gán trực tiếp JobName
+
+    // Đặt trạng thái chỉnh sửa
     setEditStatus(false);
 }
+
 
      private boolean isEditMode = false; 
  
@@ -128,9 +200,9 @@ public class Task extends javax.swing.JPanel {
     txtTaskName.setEnabled(editable);
     jcdTaskStartDate.setEnabled(editable);
     jcdTaskEndDate.setEnabled(editable);
-    txtAssignedTo.setEnabled(editable);
-    txtAssignmentID.setEnabled(editable);
-    txtJobID.setEnabled(editable);
+    cbAssignedTo.setEnabled(editable);
+    cbAssignmentID.setEnabled(editable);
+    cbJobID.setEnabled(editable);
 
     btnSaveTask.setEnabled(editable);
     btnCancelTask.setEnabled(editable);
@@ -199,9 +271,10 @@ private void saveTask() {
 
     Object taskIdObj = tbTask.getValueAt(selectedRow, 0);
     String taskName = txtTaskName.getText().trim();
-    String assignedTo = txtAssignedTo.getText().trim();
-    String assignmentID = txtAssignmentID.getText().trim();
-    String jobID = txtJobID.getText().trim();
+    String assignedTo = cbAssignedTo.getSelectedItem().toString().trim();
+    String assignmentID = cbAssignmentID.getSelectedItem().toString().trim();
+    String jobID = cbJobID.getSelectedItem().toString().trim();
+
     java.util.Date startDate = jcdTaskStartDate.getDate();
     java.util.Date endDate = jcdTaskEndDate.getDate();
 
@@ -271,9 +344,10 @@ private void saveTask() {
 
 private void resetTask() {
     txtTaskName.setText("");
-    txtAssignedTo.setText("");
-    txtAssignmentID.setText("");
-    txtJobID.setText("");
+    cbAssignedTo.setSelectedIndex(0); // Chọn mục đầu tiên
+    cbAssignmentID.setSelectedIndex(0);
+    cbJobID.setSelectedIndex(0);
+
     jcdTaskStartDate.setDate(null);
     jcdTaskEndDate.setDate(null);
 }
@@ -306,18 +380,18 @@ private void resetTask() {
         jLabel1 = new javax.swing.JLabel();
         txtTaskName = new javax.swing.JTextField();
         txtJobName = new javax.swing.JTextField();
-        txtAssignedTo = new javax.swing.JTextField();
         jSeparator1 = new javax.swing.JSeparator();
-        txtAssignmentID = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbTask = new javax.swing.JTable();
-        txtJobID = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jcdTaskStartDate = new com.toedter.calendar.JDateChooser();
         btnCancelTask = new javax.swing.JButton();
         btnSearch = new javax.swing.JButton();
         jLabel12 = new javax.swing.JLabel();
         jcdTaskEndDate = new com.toedter.calendar.JDateChooser();
+        cbAssignedTo = new javax.swing.JComboBox<>();
+        cbAssignmentID = new javax.swing.JComboBox<>();
+        cbJobID = new javax.swing.JComboBox<>();
 
         btnSaveTask.setText("Save");
         btnSaveTask.addActionListener(new java.awt.event.ActionListener() {
@@ -423,6 +497,12 @@ private void resetTask() {
 
         jLabel12.setText("TaskEndDate :");
 
+        cbAssignedTo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        cbAssignmentID.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        cbJobID.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -485,21 +565,20 @@ private void resetTask() {
                                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtAssignmentID)
-                                    .addComponent(txtAssignedTo))))
+                                    .addComponent(cbJobID, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cbAssignmentID, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cbAssignedTo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addGap(337, 337, 337))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(96, 96, 96)
-                                    .addComponent(jcdTaskStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jcdTaskEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(txtJobID, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(96, 96, 96)
+                                .addComponent(jcdTaskStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jcdTaskEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnSaveTask)
                         .addGap(18, 18, 18)
@@ -542,15 +621,15 @@ private void resetTask() {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
-                    .addComponent(txtAssignedTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbAssignedTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
-                    .addComponent(txtAssignmentID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbAssignmentID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
-                    .addComponent(txtJobID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbJobID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -590,9 +669,10 @@ private void resetTask() {
     private void btnAddTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddTaskActionPerformed
         // TODO add your handling code here:
     txtTaskName.setText("");
-    txtAssignedTo.setText("");
-    txtAssignmentID.setText("");
-    txtJobID.setText("");
+    cbAssignedTo.setSelectedIndex(0); // Chọn mục đầu tiên
+    cbAssignmentID.setSelectedIndex(0);
+    cbJobID.setSelectedIndex(0);
+
     jcdTaskStartDate.setDate(null);
     jcdTaskEndDate.setDate(null);
 
@@ -605,9 +685,10 @@ private void resetTask() {
 
     btnSaveTask.addActionListener(e -> {
         String taskName = txtTaskName.getText().trim();
-        String assignedTo = txtAssignedTo.getText().trim();
-        String assignmentID = txtAssignmentID.getText().trim();
-        String jobID = txtJobID.getText().trim();
+        String assignedTo = cbAssignedTo.getSelectedItem().toString().trim();
+        String assignmentID = cbAssignmentID.getSelectedItem().toString().trim();
+        String jobID = cbJobID.getSelectedItem().toString().trim();
+
         java.util.Date startDate = jcdTaskStartDate.getDate();
         java.util.Date endDate = jcdTaskEndDate.getDate();
 
@@ -666,9 +747,10 @@ private void resetTask() {
     btnSaveTask.addActionListener(e -> {
         int taskId = (int) tbTask.getValueAt(selectedRow, 0);
         String taskName = txtTaskName.getText().trim();
-        String assignedTo = txtAssignedTo.getText().trim();
-        String assignmentID = txtAssignmentID.getText().trim();
-        String jobID = txtJobID.getText().trim();
+        String assignedTo = cbAssignedTo.getSelectedItem().toString().trim();
+        String assignmentID = cbAssignmentID.getSelectedItem().toString().trim();
+        String jobID = cbJobID.getSelectedItem().toString().trim();
+
         java.util.Date startDate = jcdTaskStartDate.getDate();
         java.util.Date endDate = jcdTaskEndDate.getDate();
 
@@ -772,9 +854,10 @@ private void resetTask() {
 
     int taskId = Integer.parseInt(tbTask.getValueAt(selectedRow, 0).toString()); 
     String taskName = txtTaskName.getText().trim();
-    String assignedTo = txtAssignedTo.getText().trim();
-    String assignmentID = txtAssignmentID.getText().trim();
-    String jobID = txtJobID.getText().trim();
+    String assignedTo = cbAssignedTo.getSelectedItem().toString().trim();
+    String assignmentID = cbAssignmentID.getSelectedItem().toString().trim();
+    String jobID = cbJobID.getSelectedItem().toString().trim();
+
     java.util.Date startDate = jcdTaskStartDate.getDate();
     java.util.Date endDate = jcdTaskEndDate.getDate();
 
@@ -822,6 +905,9 @@ private void resetTask() {
     private javax.swing.JButton btnResetTask;
     private javax.swing.JButton btnSaveTask;
     private javax.swing.JButton btnSearch;
+    private javax.swing.JComboBox<String> cbAssignedTo;
+    private javax.swing.JComboBox<String> cbAssignmentID;
+    private javax.swing.JComboBox<String> cbJobID;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
@@ -839,9 +925,6 @@ private void resetTask() {
     private com.toedter.calendar.JDateChooser jcdTaskEndDate;
     private com.toedter.calendar.JDateChooser jcdTaskStartDate;
     private javax.swing.JTable tbTask;
-    private javax.swing.JTextField txtAssignedTo;
-    private javax.swing.JTextField txtAssignmentID;
-    private javax.swing.JTextField txtJobID;
     private javax.swing.JTextField txtJobName;
     private javax.swing.JTextField txtTaskName;
     // End of variables declaration//GEN-END:variables

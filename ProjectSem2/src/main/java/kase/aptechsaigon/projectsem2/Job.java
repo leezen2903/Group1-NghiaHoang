@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import kase.aptechsaigon.projectsem2.ConnectDatabase;
+import kase.aptechsaigon.projectsem2.controller.JobValidation;
 
 /**
  *
@@ -24,6 +25,7 @@ import kase.aptechsaigon.projectsem2.ConnectDatabase;
  */
 public class Job extends javax.swing.JPanel {
 
+    private boolean isCreate = true;
 
     /**
      * Creates new form Jobb
@@ -32,6 +34,7 @@ public class Job extends javax.swing.JPanel {
         
             initComponents();
             loadJobs();
+            
         }
 
 public void loadJobs() {
@@ -45,9 +48,8 @@ public void loadJobs() {
     tbJob.setModel(model);
 
     String sql = "SELECT JobID, JobName, Description, EstimatedStartDate, EstimatedEndDate, Status FROM Jobs";
-
-    try (Connection conn = ConnectDatabase.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(sql);
+    Connection conn = ConnectDatabase.getConnection();
+    try (PreparedStatement pstmt = conn.prepareStatement(sql);
          ResultSet rs = pstmt.executeQuery()) {
 
         while (rs.next()) {
@@ -67,8 +69,12 @@ public void loadJobs() {
     } catch (SQLException e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    
+    } finally  {
+        ConnectDatabase.closeConnection(conn);
     }
 
+    
     tbJob.setDefaultEditor(Object.class, null);
     tbJob.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -182,10 +188,11 @@ private void showSelectedJob(int row) {
         setEditStatus(false);
     }
 
-private boolean isEditing = false;
-private int selectedJobId = -1;
+//private boolean isEditing = false;
+//private int selectedJobId = -1;
 
 private void saveJob() {
+    System.out.println("hàm save job");
     int selectedRow = tbJob.getSelectedRow();
     
     if (selectedRow == -1) {
@@ -199,6 +206,7 @@ private void saveJob() {
     java.util.Date startDate = jcdEstimatedStartDate.getDate();
     java.util.Date endDate = jcdEstimatedEndDate.getDate();
 
+    
     if (jobName.isEmpty() || description.isEmpty() || startDate == null || endDate == null) {
         JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
         return;
@@ -225,6 +233,7 @@ private void saveJob() {
                             tbJob.setValueAt(newJobId, selectedRow, 0);
                         }
                     }
+                    System.out.println("test thêm thành công");
                     JOptionPane.showMessageDialog(this, "Thêm công việc mới thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
@@ -637,6 +646,7 @@ private void resetJob() {
     for (ActionListener al : btnSaveJob.getActionListeners()) {
         btnSaveJob.removeActionListener(al);
     }
+        System.out.println("hàm add");
 
     btnSaveJob.addActionListener(e -> {
         String jobName = txtJobName.getText().trim();
@@ -652,6 +662,16 @@ private void resetJob() {
         java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
         java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
 
+            //value date check 
+        JobValidation jobController = new JobValidation();
+        var checkDate = jobController.checkDate(startDate, endDate);
+        if (checkDate == true){
+            // ngày bắt đầu và kết thúc là hợp lệ
+            System.out.println("Hợp lệ");
+        } else {
+            //không hợp lệ
+            System.out.println("không hợp lệ");
+        }
         String insertSQL = "INSERT INTO Jobs (JobName, Description, EstimatedStartDate, EstimatedEndDate, Status) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectDatabase.getConnection();
@@ -686,7 +706,6 @@ private void resetJob() {
     for (ActionListener al : btnDeleteJob.getActionListeners()) {
         btnDeleteJob.removeActionListener(al);
     }
-
     btnDeleteJob.addActionListener(e -> {
         int selectedRow = tbJob.getSelectedRow();
         if (selectedRow == -1) {
@@ -757,7 +776,7 @@ private void resetJob() {
         java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
 
         String updateSQL = "UPDATE Jobs SET JobName=?, Description=?, EstimatedStartDate=?, EstimatedEndDate=? WHERE JobID=?";
-
+        System.out.println("hàm updatejob");
         try (Connection conn = ConnectDatabase.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
 
@@ -787,55 +806,55 @@ private void resetJob() {
         // TODO add your handling code here:
     btnSaveJob.setEnabled(false);
 
-    int selectedRow = tbJob.getSelectedRow();
-
-    if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Không có công việc nào được chọn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        btnSaveJob.setEnabled(true); 
-        return;
-    }
-    for (ActionListener al : btnSaveJob.getActionListeners()) {
-    btnSaveJob.removeActionListener(al);
-    }   
-
-
-    int jobId = Integer.parseInt(tbJob.getValueAt(selectedRow, 0).toString()); 
-    String jobName = txtJobName.getText().trim();
-    String description = txtDescription.getText().trim();
-    java.util.Date startDate = jcdEstimatedStartDate.getDate();
-    java.util.Date endDate = jcdEstimatedEndDate.getDate();
-
-    if (jobName.isEmpty() || description.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        btnSaveJob.setEnabled(true); 
-        return;
-    }
-
-    String sql = "UPDATE Jobs SET JobName = ?, Description = ?, EstimatedStartDate = ?, EstimatedEndDate = ? WHERE JobID = ?";
-
-    try (Connection conn = ConnectDatabase.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-        pstmt.setString(1, jobName);
-        pstmt.setString(2, description);
-        pstmt.setDate(3, (startDate != null) ? new java.sql.Date(startDate.getTime()) : null);
-        pstmt.setDate(4, (endDate != null) ? new java.sql.Date(endDate.getTime()) : null);
-        pstmt.setInt(5, jobId);
-
-        int affectedRows = pstmt.executeUpdate();
-        if (affectedRows > 0) {
-            JOptionPane.showMessageDialog(this, "Cập nhật thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            loadJobs(); 
-        } else {
-            JOptionPane.showMessageDialog(this, "Không thể cập nhật dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        }
-
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-    } finally {
-        btnSaveJob.setEnabled(true);
-    }
+//    int selectedRow = tbJob.getSelectedRow();
+//
+//    if (selectedRow == -1) {
+//        JOptionPane.showMessageDialog(this, "Không có công việc nào được chọn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+//        btnSaveJob.setEnabled(true); 
+//        return;
+//    }
+//    for (ActionListener al : btnSaveJob.getActionListeners()) {
+//    btnSaveJob.removeActionListener(al);
+//    }   
+//
+//
+//    int jobId = Integer.parseInt(tbJob.getValueAt(selectedRow, 0).toString()); 
+//    String jobName = txtJobName.getText().trim();
+//    String description = txtDescription.getText().trim();
+//    java.util.Date startDate = jcdEstimatedStartDate.getDate();
+//    java.util.Date endDate = jcdEstimatedEndDate.getDate();
+//
+//    if (jobName.isEmpty() || description.isEmpty()) {
+//        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+//        btnSaveJob.setEnabled(true); 
+//        return;
+//    }
+//
+//    String sql = "UPDATE Jobs SET JobName = ?, Description = ?, EstimatedStartDate = ?, EstimatedEndDate = ? WHERE JobID = ?";
+//
+//    try (Connection conn = ConnectDatabase.getConnection();
+//         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//
+//        pstmt.setString(1, jobName);
+//        pstmt.setString(2, description);
+//        pstmt.setDate(3, (startDate != null) ? new java.sql.Date(startDate.getTime()) : null);
+//        pstmt.setDate(4, (endDate != null) ? new java.sql.Date(endDate.getTime()) : null);
+//        pstmt.setInt(5, jobId);
+//
+//        int affectedRows = pstmt.executeUpdate();
+//        if (affectedRows > 0) {
+//            JOptionPane.showMessageDialog(this, "Cập nhật thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+//            loadJobs(); 
+//        } else {
+//            JOptionPane.showMessageDialog(this, "Không thể cập nhật dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+//        }
+//
+//    } catch (SQLException ex) {
+//        ex.printStackTrace();
+//        JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+//    } finally {
+//        btnSaveJob.setEnabled(true);
+//    }
     }//GEN-LAST:event_btnSaveJobActionPerformed
 
     private void btnResetJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetJobActionPerformed

@@ -19,7 +19,7 @@ public class ConnectDatabase {
     
     private static final String URL = "jdbc:mysql://localhost:3306/companydata_mountainto";
     private static final String USER = "root";
-    private static final String PASSWORD = "Nghia@2903";
+    private static final String PASSWORD = "123123";
 
 
     public static Connection getConnection() {
@@ -51,18 +51,18 @@ public class ConnectDatabase {
         }
     } 
         
-    public static void main(String[] args) {
-        Connection connection = getConnection();
-        if (connection != null) {
-            try {
-                connection.close();
-                System.out.println("Đóng kết nối cơ sở dữ liệu.");
-            } catch (SQLException e) {
-                System.out.println("Lỗi khi đóng kết nối cơ sở dữ liệu.");
-                e.printStackTrace();
-            }
-            closeConnection(connection);
-        }
-    }
+//    public static void main(String[] args) {
+//        Connection connection = getConnection();
+//        if (connection != null) {
+//            try {
+//                connection.close();
+//                System.out.println("Đóng kết nối cơ sở dữ liệu.");
+//            } catch (SQLException e) {
+//                System.out.println("Lỗi khi đóng kết nối cơ sở dữ liệu.");
+//                e.printStackTrace();
+//            }
+//            closeConnection(connection);
+//        }
+//    }
 }
 
