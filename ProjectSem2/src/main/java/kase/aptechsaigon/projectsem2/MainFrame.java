@@ -20,7 +20,9 @@ import javax.swing.JPanel;
 
 
 public class MainFrame extends javax.swing.JFrame {
-    
+    public JPanel getJpTask() {
+        return jpTask;
+    }
     /**
      * Creates new form MainFrame
      */
