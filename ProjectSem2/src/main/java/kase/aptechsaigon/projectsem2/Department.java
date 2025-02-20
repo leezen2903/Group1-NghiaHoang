@@ -45,8 +45,8 @@ public void loadJobs() {
     tbDept.setModel(model);
 
     String sql = "SELECT DepartmentID, DepartmentName, ManagerID, DeputyManagerID FROM Departments";
-
-    try (Connection conn = ConnectDatabase.getConnection();
+    Connection conn = ConnectDatabase.getConnection();
+    try (
          PreparedStatement pstmt = conn.prepareStatement(sql);
          ResultSet rs = pstmt.executeQuery()) {
 
@@ -61,6 +61,8 @@ public void loadJobs() {
     } catch (SQLException e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        ConnectDatabase.closeConnection(conn);
     }
 
     tbDept.setDefaultEditor(Object.class, null);
@@ -154,8 +156,8 @@ private void showSelectedJob(int row) {
         String DeptID = tbDept.getValueAt(selectedRow, 0).toString();
 
         String sql = "DELETE FROM Departments WHERE DepartmentID = ?";
-        try (Connection conn = ConnectDatabase.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        Connection conn = ConnectDatabase.getConnection();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, Integer.parseInt(DeptID));
             pstmt.executeUpdate();
@@ -165,6 +167,8 @@ private void showSelectedJob(int row) {
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi xóa dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } finally {
+        ConnectDatabase.closeConnection(conn); 
         }
     }
         loadJobs();
