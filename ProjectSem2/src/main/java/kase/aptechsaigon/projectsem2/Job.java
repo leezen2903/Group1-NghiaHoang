@@ -4,6 +4,7 @@
  */
 package kase.aptechsaigon.projectsem2;
 
+import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.Date;
@@ -13,10 +14,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import kase.aptechsaigon.projectsem2.ConnectDatabase;
+import kase.aptechsaigon.projectsem2.controller.JobAssignment;
 import kase.aptechsaigon.projectsem2.controller.JobValidation;
 
 /**
@@ -35,11 +45,17 @@ public class Job extends javax.swing.JPanel {
             initComponents();
             loadJobs();
             
+            
         }
+    private JobAssignment jobAssignment = new JobAssignment();
+    Set<String> teamNames = new HashSet<>();
+    Set<String> assignedNames = new HashSet<>();
+
+
 
 public void loadJobs() {
     DefaultTableModel model = new DefaultTableModel(
-        new Object[]{"JobID", "JobName", "Description", "EstimatedStartDate", "EstimatedEndDate", "Status"}, 0) {
+        new Object[]{"JobID", "JobName", "Description", "EstimatedStartDate", "EstimatedEndDate", "Status", "TeamName", "AssignedTo"}, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
@@ -47,7 +63,16 @@ public void loadJobs() {
     };
     tbJob.setModel(model);
 
-    String sql = "SELECT JobID, JobName, Description, EstimatedStartDate, EstimatedEndDate, Status FROM Jobs";
+    String sql = """
+        SELECT j.JobID, j.JobName, j.Description, j.EstimatedStartDate, j.EstimatedEndDate, j.Status,
+               t.TeamName, e.FullName AS AssignedTo
+        FROM Jobs j
+        LEFT JOIN Assignments a ON j.JobID = a.JobID
+        LEFT JOIN Teams t ON a.TeamID = t.TeamID
+        LEFT JOIN Tasks tk ON j.JobID = tk.JobID
+        LEFT JOIN Employees e ON tk.AssignedTo = e.EmployeeID
+        """;
+
     Connection conn = ConnectDatabase.getConnection();
     try (PreparedStatement pstmt = conn.prepareStatement(sql);
          ResultSet rs = pstmt.executeQuery()) {
@@ -56,33 +81,43 @@ public void loadJobs() {
             int jobId = rs.getInt("JobID");
             String jobName = rs.getString("JobName");
             String description = rs.getString("Description");
-            java.sql.Date sqlStartDate = rs.getDate("EstimatedStartDate");
-            java.sql.Date sqlEndDate = rs.getDate("EstimatedEndDate");
+            Date startDate = rs.getDate("EstimatedStartDate");
+            Date endDate = rs.getDate("EstimatedEndDate");
             String status = rs.getString("Status");
+            String teamName = rs.getString("TeamName");
+            String assignedTo = rs.getString("AssignedTo");
 
-            java.util.Date startDate = (sqlStartDate != null) ? new java.util.Date(sqlStartDate.getTime()) : null;
-            java.util.Date endDate = (sqlEndDate != null) ? new java.util.Date(sqlEndDate.getTime()) : null;
+            model.addRow(new Object[]{jobId, jobName, description, startDate, endDate, status, teamName, assignedTo});
+            
+            if (teamName != null) {
+                teamNames.add(teamName);
+            }
+            if (assignedTo != null) {
+                assignedNames.add(assignedTo);
+            }
+        }
+        
+        cbxTeamName.removeAllItems();
+        cbxTeamName.addItem("Select Team");
+        for (String name : teamNames) {
+            cbxTeamName.addItem(name);
+        }
 
-            model.addRow(new Object[]{jobId, jobName, description, startDate, endDate, status});
+        cbxAssignedTo.removeAllItems();
+        cbxAssignedTo.addItem("Select Employee");
+        for (String name : assignedNames) {
+            cbxAssignedTo.addItem(name);
         }
 
     } catch (SQLException e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-    
-    } finally  {
+    } finally {
         ConnectDatabase.closeConnection(conn);
     }
 
-    
     tbJob.setDefaultEditor(Object.class, null);
     tbJob.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-    if (isEditMode) {
-        setEditStatus(true);
-    } else {
-        setEditStatus(false);
-    }
 
     if (tbJob.getRowCount() > 0 && tbJob.getSelectedRow() == -1) {
         tbJob.setRowSelectionInterval(0, 0);
@@ -92,13 +127,10 @@ public void loadJobs() {
     tbJob.getSelectionModel().addListSelectionListener(event -> {
         if (!event.getValueIsAdjusting() && tbJob.getSelectedRow() != -1) {
             showSelectedJob(tbJob.getSelectedRow());
-
-            if (isEditMode) {
-                setEditStatus(true);
-            }
         }
     });
 }
+
 
 private void showSelectedJob(int row) {
     txtJobName.setText(tbJob.getValueAt(row, 1).toString());
@@ -117,15 +149,32 @@ private void showSelectedJob(int row) {
     } else {
         jcdEstimatedEndDate.setDate(null);
     }
+    
+    String teamName = (String) tbJob.getValueAt(row, 6);
+    if (teamName != null) {
+        cbxTeamName.setSelectedItem(teamName);
+    } else {
+        cbxTeamName.setSelectedIndex(0); 
+    }
+
+    String assignedTo = (String) tbJob.getValueAt(row, 7);
+    if (assignedTo != null) {
+        cbxAssignedTo.setSelectedItem(assignedTo);
+    } else {
+        cbxAssignedTo.setSelectedIndex(0); 
+    }
 
     setEditStatus(false);
+    cbxAssignedTo.setEnabled(false);
+    cbxTeamName.setEnabled(false);
 }
+
 
     private boolean isEditMode = false; 
 
     public void setEditStatus(boolean editable) {
         isEditMode = editable;
-        
+
         txtJobName.setEnabled(editable);
         txtDescription.setEnabled(editable);
         jcdEstimatedStartDate.setEnabled(editable);
@@ -133,15 +182,13 @@ private void showSelectedJob(int row) {
         btnSaveJob.setEnabled(editable);
         btnCancelJob.setEnabled(editable);
         btnResetJob.setEnabled(editable);
+
         
         btnAddJob.setEnabled(!editable);
         btnEditJob.setEnabled(!editable);
         btnDeleteJob.setEnabled(!editable);
-
-                
     }
-
-
+       
     private void resetButtons() {
         btnAddJob.setEnabled(true);
         btnEditJob.setEnabled(true);
@@ -167,7 +214,8 @@ private void showSelectedJob(int row) {
         String jobID = tbJob.getValueAt(selectedRow, 0).toString();
 
         String sql = "DELETE FROM Jobs WHERE JobID = ?";
-        try (Connection conn = ConnectDatabase.getConnection();
+        Connection conn = ConnectDatabase.getConnection();
+        try (
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, Integer.parseInt(jobID));
@@ -178,6 +226,8 @@ private void showSelectedJob(int row) {
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi xóa dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            ConnectDatabase.closeConnection(conn);
         }
     }
         loadJobs();
@@ -187,9 +237,6 @@ private void showSelectedJob(int row) {
     private void cancelJob() {
         setEditStatus(false);
     }
-
-//private boolean isEditing = false;
-//private int selectedJobId = -1;
 
 private void saveJob() {
     System.out.println("hàm save job");
@@ -205,25 +252,28 @@ private void saveJob() {
     String description = txtDescription.getText().trim();
     java.util.Date startDate = jcdEstimatedStartDate.getDate();
     java.util.Date endDate = jcdEstimatedEndDate.getDate();
-
+    String assignedTo = (String) cbxAssignedTo.getSelectedItem();
+    String teamName = (String) cbxTeamName.getSelectedItem();
     
-    if (jobName.isEmpty() || description.isEmpty() || startDate == null || endDate == null) {
+    if (jobName.isEmpty() || description.isEmpty() || startDate == null || endDate == null || assignedTo == null || teamName == null) {
         JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
     java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
     java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
-
-    try (Connection conn = ConnectDatabase.getConnection()) {
+    Connection conn = ConnectDatabase.getConnection();
+    try  {
         if (jobIdObj == null) { 
-            String insertSQL = "INSERT INTO Jobs (JobName, Description, EstimatedStartDate, EstimatedEndDate, Status) VALUES (?, ?, ?, ?, ?)";
+            String insertSQL = "INSERT INTO Jobs (JobName, Description, EstimatedStartDate, EstimatedEndDate, AssignedTo, TeamName, Status) VALUES (?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
                 pstmt.setString(1, jobName);
                 pstmt.setString(2, description);
                 pstmt.setDate(3, sqlStartDate);
                 pstmt.setDate(4, sqlEndDate);
-                pstmt.setString(5, "New");
+                pstmt.setString(5, assignedTo);
+                pstmt.setString(6, teamName);
+                pstmt.setString(7, "New");
 
                 int affectedRows = pstmt.executeUpdate();
                 if (affectedRows > 0) {
@@ -239,13 +289,15 @@ private void saveJob() {
             }
         } else { 
             int jobId = (int) jobIdObj;
-            String updateSQL = "UPDATE Jobs SET JobName=?, Description=?, EstimatedStartDate=?, EstimatedEndDate=? WHERE JobID=?";
+            String updateSQL = "UPDATE Jobs SET JobName=?, Description=?, EstimatedStartDate=?, EstimatedEndDate=?, AssignedTo=?, TeamName=? WHERE JobID=?";
             try (PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
                 pstmt.setString(1, jobName);
                 pstmt.setString(2, description);
                 pstmt.setDate(3, sqlStartDate);
                 pstmt.setDate(4, sqlEndDate);
-                pstmt.setInt(5, jobId);
+                pstmt.setString(5, assignedTo);
+                pstmt.setString(6, teamName);
+                pstmt.setInt(7, jobId);
 
                 int affectedRows = pstmt.executeUpdate();
                 if (affectedRows > 0) {
@@ -258,11 +310,16 @@ private void saveJob() {
         tbJob.setValueAt(description, selectedRow, 2);
         tbJob.setValueAt(sqlStartDate, selectedRow, 3);
         tbJob.setValueAt(sqlEndDate, selectedRow, 4);
+        tbJob.setValueAt(assignedTo, selectedRow, 5);
+        tbJob.setValueAt(teamName, selectedRow, 6);
         setEditStatus(false);
 
     } catch (SQLException e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, "Lỗi khi lưu công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
+    finally{
+        ConnectDatabase.closeConnection(conn);
     }
 }
 
@@ -271,7 +328,8 @@ private void resetJob() {
     txtDescription.setText("");
     jcdEstimatedStartDate.setDate(null);
     jcdEstimatedEndDate.setDate(null);
-
+    cbxAssignedTo.setSelectedIndex(-1);
+    cbxTeamName.setSelectedIndex(-1);
 }
 
 
@@ -310,6 +368,10 @@ private void resetJob() {
         jSeparator4 = new javax.swing.JSeparator();
         jSeparator5 = new javax.swing.JSeparator();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
+        jLabel5 = new javax.swing.JLabel();
+        cbxTeamName = new javax.swing.JComboBox<>();
+        jLabel10 = new javax.swing.JLabel();
+        cbxAssignedTo = new javax.swing.JComboBox<>();
 
         tbJob.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -500,16 +562,18 @@ private void resetJob() {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setText("Job list :");
 
+        jLabel5.setText("- TeamName : ");
+
+        cbxTeamName.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel10.setText("- AssignedTo : ");
+
+        cbxAssignedTo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(370, 370, 370)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 1, Short.MAX_VALUE)
@@ -535,40 +599,54 @@ private void resetJob() {
                         .addContainerGap())))
             .addComponent(jScrollPane1)
             .addGroup(layout.createSequentialGroup()
-                .addGap(227, 227, 227)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jcdEstimatedEndDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jcdEstimatedStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(118, 118, 118)
-                        .addComponent(btnResetJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSaveJob)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnCancelJob))
+                        .addGap(370, 370, 370)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(227, 227, 227)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 579, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(btnAddJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnEditJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnDeleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(txtJobName, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                                        .addGap(18, 18, 18)
+                                        .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 579, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(18, 18, 18)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(btnAddJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnEditJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnDeleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(txtJobName, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnResetJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSaveJob)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnCancelJob))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jcdEstimatedEndDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jcdEstimatedStartDate, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                                    .addComponent(cbxTeamName, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cbxAssignedTo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(349, 349, 349)))))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -616,29 +694,40 @@ private void resetJob() {
                     .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnCancelJob)
-                        .addComponent(btnSaveJob)
-                        .addComponent(btnResetJob))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel8)
-                            .addComponent(jcdEstimatedStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel9)
-                            .addComponent(jcdEstimatedEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(70, Short.MAX_VALUE))
+                    .addComponent(jLabel8)
+                    .addComponent(jcdEstimatedStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel9)
+                    .addComponent(jcdEstimatedEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(cbxTeamName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(cbxAssignedTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCancelJob)
+                    .addComponent(btnSaveJob)
+                    .addComponent(btnResetJob))
+                .addGap(47, 47, 47))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddJobActionPerformed
         // TODO add your handling code here:
-    // Xóa dữ liệu cũ trong các ô nhập liệu
     txtJobName.setText("");
     txtDescription.setText("");
     jcdEstimatedStartDate.setDate(null);
     jcdEstimatedEndDate.setDate(null);
+    cbxAssignedTo.setEnabled(true);
+    cbxTeamName.setEnabled(true);
+    cbxAssignedTo.setEnabled(true);
+    cbxTeamName.setEnabled(true);
+
 
     setEditStatus(true);
     isEditMode = true;
@@ -646,7 +735,6 @@ private void resetJob() {
     for (ActionListener al : btnSaveJob.getActionListeners()) {
         btnSaveJob.removeActionListener(al);
     }
-        System.out.println("hàm add");
 
     btnSaveJob.addActionListener(e -> {
         String jobName = txtJobName.getText().trim();
@@ -662,39 +750,82 @@ private void resetJob() {
         java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
         java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
 
-            //value date check 
-        JobValidation jobController = new JobValidation();
-        var checkDate = jobController.checkDate(startDate, endDate);
-        if (checkDate == true){
-            // ngày bắt đầu và kết thúc là hợp lệ
-            System.out.println("Hợp lệ");
-        } else {
-            //không hợp lệ
-            System.out.println("không hợp lệ");
+        JobValidation jobValidation = new JobValidation();
+        boolean isValidDate = jobValidation.checkDate(startDate, endDate);
+
+        if (!isValidDate) {
+            JOptionPane.showMessageDialog(this, "Ngày không hợp lệ! Ngày bắt đầu phải lớn hơn ngày hiện tại và ngày kết thúc phải lớn hơn ngày bắt đầu.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        String insertSQL = "INSERT INTO Jobs (JobName, Description, EstimatedStartDate, EstimatedEndDate, Status) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection conn = ConnectDatabase.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
+        String assignedTo = (String) cbxAssignedTo.getSelectedItem();
+        String teamName = (String) cbxTeamName.getSelectedItem();
 
-            pstmt.setString(1, jobName);
-            pstmt.setString(2, description);
-            pstmt.setDate(3, sqlStartDate);
-            pstmt.setDate(4, sqlEndDate);
-            pstmt.setString(5, "NotStartedYet");
+        int assignedToId = Integer.parseInt(assignedTo.split(" - ")[0]);
+        int teamId = Integer.parseInt(teamName.split(" - ")[0]);
 
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
+        Connection conn = ConnectDatabase.getConnection();
+        if (conn == null) {
+            JOptionPane.showMessageDialog(this, "Không thể kết nối cơ sở dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            conn.setAutoCommit(false);
+
+            String insertJobSQL = "INSERT INTO Jobs (JobName, Description, EstimatedStartDate, EstimatedEndDate, Status) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement pstmtJob = conn.prepareStatement(insertJobSQL, Statement.RETURN_GENERATED_KEYS)) {
+                pstmtJob.setString(1, jobName);
+                pstmtJob.setString(2, description);
+                pstmtJob.setDate(3, sqlStartDate);
+                pstmtJob.setDate(4, sqlEndDate);
+                pstmtJob.setString(5, "NotStartedYet");
+
+                int affectedRows = pstmtJob.executeUpdate();
+                if (affectedRows == 0) {
+                    conn.rollback();
+                    JOptionPane.showMessageDialog(this, "Lỗi khi thêm công việc vào Jobs!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                int newJobId = 0;
+                try (ResultSet generatedKeys = pstmtJob.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        newJobId = generatedKeys.getInt(1);
+                    } else {
+                        conn.rollback();
+                        JOptionPane.showMessageDialog(this, "Không thể lấy JobID vừa tạo!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+
+                String insertAssignmentSQL = "INSERT INTO Assignments (JobID, TeamID) VALUES (?, ?)";
+                try (PreparedStatement pstmtAssign = conn.prepareStatement(insertAssignmentSQL)) {
+                    pstmtAssign.setInt(1, newJobId);
+                    pstmtAssign.setInt(2, teamId);
+
+                    int affectedRowsAssign = pstmtAssign.executeUpdate();
+                    if (affectedRowsAssign == 0) {
+                        conn.rollback();
+                        JOptionPane.showMessageDialog(this, "Lỗi khi thêm phân công công việc vào Assignments!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+
+                conn.commit();
                 JOptionPane.showMessageDialog(this, "Thêm công việc thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
                 loadJobs();
                 setEditStatus(false);
-            } else {
+            } catch (SQLException ex) {
+                conn.rollback();
+                ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Lỗi khi thêm công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
-
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi thêm công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Lỗi giao dịch CSDL!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            ConnectDatabase.closeConnection(conn);
         }
     });
     }//GEN-LAST:event_btnAddJobActionPerformed
@@ -717,7 +848,8 @@ private void resetJob() {
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa công việc này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            try (Connection conn = ConnectDatabase.getConnection();
+            Connection conn = ConnectDatabase.getConnection();
+            try (
                  PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Jobs WHERE JobID = ?")) {
                 pstmt.setInt(1, jobId);
                 int affectedRows = pstmt.executeUpdate();
@@ -732,6 +864,8 @@ private void resetJob() {
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Lỗi khi xóa công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            } finally{
+                ConnectDatabase.closeConnection(conn);
             }
         }
     });
@@ -745,6 +879,11 @@ private void resetJob() {
 
     private void btnEditJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditJobActionPerformed
         // TODO add your handling code here:
+        
+    cbxAssignedTo.setEnabled(true);
+    cbxTeamName.setEnabled(true);
+
+    
     int selectedRow = tbJob.getSelectedRow();
     if (selectedRow == -1) {
         JOptionPane.showMessageDialog(this, "Vui lòng chọn một công việc để chỉnh sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
@@ -774,10 +913,19 @@ private void resetJob() {
 
         java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
         java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
+        
+        JobValidation jobValidation = new JobValidation();
+        boolean isValidDate = jobValidation.checkDate(startDate, endDate);
+        
+        if (!isValidDate) {
+            JOptionPane.showMessageDialog(this, "Ngày không hợp lệ! Ngày bắt đầu phải lớn hơn ngày hiện tại và ngày kết thúc phải lớn hơn ngày bắt đầu.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         String updateSQL = "UPDATE Jobs SET JobName=?, Description=?, EstimatedStartDate=?, EstimatedEndDate=? WHERE JobID=?";
         System.out.println("hàm updatejob");
-        try (Connection conn = ConnectDatabase.getConnection();
+        Connection conn = ConnectDatabase.getConnection();
+        try (
              PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
 
             pstmt.setString(1, jobName);
@@ -798,6 +946,8 @@ private void resetJob() {
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            ConnectDatabase.closeConnection(conn);
         }
     });
     }//GEN-LAST:event_btnEditJobActionPerformed
@@ -881,11 +1031,15 @@ private void resetJob() {
     private javax.swing.JToggleButton btnEditJob;
     private javax.swing.JToggleButton btnResetJob;
     private javax.swing.JButton btnSaveJob;
+    private javax.swing.JComboBox<String> cbxAssignedTo;
+    private javax.swing.JComboBox<String> cbxTeamName;
     private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;

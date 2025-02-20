@@ -59,9 +59,9 @@ public void loadTasks() {
             String taskName = rs.getString("TaskName");
             java.sql.Date sqlStartDate = rs.getDate("TaskStartDate");
             java.sql.Date sqlEndDate = rs.getDate("TaskEndDate");
-            String assignedTo = rs.getString("AssignedTo"); // Lấy FullName thay vì ID
+            String assignedTo = rs.getString("AssignedTo"); 
             int assignmentId = rs.getInt("AssignmentID");
-            String jobName = rs.getString("JobID"); // Lấy JobName thay vì ID
+            String jobName = rs.getString("JobID");
             String status = rs.getString("Status");
 
             java.util.Date startDate = (sqlStartDate != null) ? new java.util.Date(sqlStartDate.getTime()) : null;
@@ -113,7 +113,8 @@ public void loadTasks() {
      
          private void loadComboBox(JComboBox<String> comboBox, String query) {
         comboBox.removeAllItems();
-        try (Connection conn = ConnectDatabase.getConnection();
+        Connection conn = ConnectDatabase.getConnection();
+        try (
              PreparedStatement pstmt = conn.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
@@ -121,6 +122,8 @@ public void loadTasks() {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally{
+            ConnectDatabase.closeConnection(conn);
         }
     }
 
@@ -141,37 +144,32 @@ private void showSelectedTask(int row) {
         jcdTaskEndDate.setDate(null);
     }
 
-    // Lấy giá trị từ bảng (TaskID, AssignmentID, JobID)
     int taskId = (int) tbTask.getValueAt(row, 0);
     String assignmentID = tbTask.getValueAt(row, 5).toString();
     String jobID = tbTask.getValueAt(row, 6).toString();
 
-    // Kết nối đến cơ sở dữ liệu để lấy danh sách các giá trị
     Connection conn = ConnectDatabase.getConnection();
     try {
-        // Lấy danh sách FullName từ Employees để gán vào cbAssignedTo
         String assignedToQuery = "SELECT FullName FROM Employees";
         PreparedStatement assignedToStmt = conn.prepareStatement(assignedToQuery);
         ResultSet rsAssignedTo = assignedToStmt.executeQuery();
-        cbAssignedTo.removeAllItems(); // Xóa các item cũ trong ComboBox
+        cbAssignedTo.removeAllItems();
         while (rsAssignedTo.next()) {
             cbAssignedTo.addItem(rsAssignedTo.getString("FullName"));
         }
         
-        // Lấy danh sách AssignmentID để gán vào cbAssignmentID
         String assignmentQuery = "SELECT AssignmentID FROM Assignments";
         PreparedStatement assignmentStmt = conn.prepareStatement(assignmentQuery);
         ResultSet rsAssignments = assignmentStmt.executeQuery();
-        cbAssignmentID.removeAllItems(); // Xóa các item cũ trong ComboBox
+        cbAssignmentID.removeAllItems();
         while (rsAssignments.next()) {
             cbAssignmentID.addItem(rsAssignments.getString("AssignmentID"));
         }
         
-        // Lấy danh sách JobName để gán vào cbJobID
         String jobQuery = "SELECT JobName FROM Jobs";
         PreparedStatement jobStmt = conn.prepareStatement(jobQuery);
         ResultSet rsJobs = jobStmt.executeQuery();
-        cbJobID.removeAllItems(); // Xóa các item cũ trong ComboBox
+        cbJobID.removeAllItems();
         while (rsJobs.next()) {
             cbJobID.addItem(rsJobs.getString("JobName"));
         }
@@ -183,11 +181,9 @@ private void showSelectedTask(int row) {
         ConnectDatabase.closeConnection(conn);
     }
 
-    // Gán giá trị đã lưu vào các ComboBox
-    cbAssignmentID.setSelectedItem(assignmentID); // Gán trực tiếp AssignmentID
-    cbJobID.setSelectedItem(jobID); // Gán trực tiếp JobName
+    cbAssignmentID.setSelectedItem(assignmentID); 
+    cbJobID.setSelectedItem(jobID);
 
-    // Đặt trạng thái chỉnh sửa
     setEditStatus(false);
 }
 
@@ -237,7 +233,8 @@ private void showSelectedTask(int row) {
         String taskID = tbTask.getValueAt(selectedRow, 0).toString();
 
         String sql = "DELETE FROM Tasks WHERE TaskID = ?";
-        try (Connection conn = ConnectDatabase.getConnection();
+        Connection conn = ConnectDatabase.getConnection();
+        try (
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, Integer.parseInt(taskID));
@@ -248,6 +245,8 @@ private void showSelectedTask(int row) {
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi xóa dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } finally{
+            ConnectDatabase.closeConnection(conn);
         }
     }
     loadTasks();
@@ -285,8 +284,8 @@ private void saveTask() {
 
     java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
     java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
-
-    try (Connection conn = ConnectDatabase.getConnection()) {
+    Connection conn = ConnectDatabase.getConnection();
+    try {
         if (taskIdObj == null) { 
             String insertSQL = "INSERT INTO Tasks (TaskName, AssignedTo, AssignmentID, JobID, TaskStartDate, TaskEndDate) VALUES (?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
@@ -338,13 +337,15 @@ private void saveTask() {
     } catch (SQLException e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, "Lỗi khi lưu nhiệm vụ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        ConnectDatabase.closeConnection(conn);
     }
 }
 
 
 private void resetTask() {
     txtTaskName.setText("");
-    cbAssignedTo.setSelectedIndex(0); // Chọn mục đầu tiên
+    cbAssignedTo.setSelectedIndex(0); 
     cbAssignmentID.setSelectedIndex(0);
     cbJobID.setSelectedIndex(0);
 
@@ -699,8 +700,8 @@ private void resetTask() {
 
         java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
         java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
-
-        try (Connection conn = ConnectDatabase.getConnection()) {
+        Connection conn = ConnectDatabase.getConnection();
+        try {
             String insertSQL = "INSERT INTO Tasks (TaskName, AssignedTo, AssignmentID, JobID, TaskStartDate, TaskEndDate) VALUES (?, ?, ?, ?, ?, ?)";
             
             try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
@@ -723,6 +724,8 @@ private void resetTask() {
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi thêm nhiệm vụ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } finally{
+            ConnectDatabase.closeConnection(conn);
         }
     });
     }//GEN-LAST:event_btnAddTaskActionPerformed
@@ -763,8 +766,8 @@ private void resetTask() {
         java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
 
         String updateSQL = "UPDATE Tasks SET TaskName=?, AssignedTo=?, AssignmentID=?, JobID=?, TaskStartDate=?, TaskEndDate=? WHERE TaskID=?";
-
-        try (Connection conn = ConnectDatabase.getConnection();
+        Connection conn = ConnectDatabase.getConnection();
+        try (
              PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
 
             pstmt.setString(1, taskName);
@@ -787,6 +790,8 @@ private void resetTask() {
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật nhiệm vụ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } finally{
+            ConnectDatabase.closeConnection(conn);
         }
     });
 
@@ -811,7 +816,8 @@ private void resetTask() {
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa nhiệm vụ này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            try (Connection conn = ConnectDatabase.getConnection();
+            Connection conn = ConnectDatabase.getConnection();
+            try (
                  PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Tasks WHERE TaskID = ?")) {
                 pstmt.setInt(1, taskId);
                 int affectedRows = pstmt.executeUpdate();
@@ -826,6 +832,8 @@ private void resetTask() {
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Lỗi khi xóa nhiệm vụ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }finally{
+                ConnectDatabase.closeConnection(conn);
             }
         }
     });
@@ -868,8 +876,8 @@ private void resetTask() {
     }
 
     String sql = "UPDATE Tasks SET TaskName = ?, AssignedTo = ?, AssignmentID = ?, JobID = ?, TaskStartDate = ?, TaskEndDate = ? WHERE TaskID = ?";
-
-    try (Connection conn = ConnectDatabase.getConnection();
+    Connection conn = ConnectDatabase.getConnection();
+    try (
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
         pstmt.setString(1, taskName);
@@ -893,6 +901,7 @@ private void resetTask() {
         JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
     } finally {
         btnSaveTask.setEnabled(true);
+        ConnectDatabase.closeConnection(conn);
     }
     }//GEN-LAST:event_btnSaveTaskActionPerformed
 

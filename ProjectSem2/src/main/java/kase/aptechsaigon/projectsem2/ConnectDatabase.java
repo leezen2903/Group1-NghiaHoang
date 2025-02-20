@@ -43,26 +43,13 @@ public class ConnectDatabase {
         if (connection != null) {
             try {
                 connection.close();
-                System.out.println("Đóng kết nối cơ sở dữ liệu.");
+                System.out.println("Dong ket noi co so du lieu.");
             } catch (SQLException e) {
-                System.out.println("Lỗi khi đóng kết nối cơ sở dữ liệu.");
+                System.out.println("Loi khi dong ket noi co so du lieu.");
                 e.printStackTrace();
             }
         }
     } 
-        
-//    public static void main(String[] args) {
-//        Connection connection = getConnection();
-//        if (connection != null) {
-//            try {
-//                connection.close();
-//                System.out.println("Đóng kết nối cơ sở dữ liệu.");
-//            } catch (SQLException e) {
-//                System.out.println("Lỗi khi đóng kết nối cơ sở dữ liệu.");
-//                e.printStackTrace();
-//            }
-//            closeConnection(connection);
-//        }
-//    }
+       
 }
 

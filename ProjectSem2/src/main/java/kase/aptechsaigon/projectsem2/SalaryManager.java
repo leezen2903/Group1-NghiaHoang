@@ -56,10 +56,8 @@ public void loadSalaries() {
             double totalSalary = rs.getDouble("TotalSalary");
             int yearsOfWork = rs.getInt("YearsOfWork");
 
-            // Lấy PositionName từ bảng Positions
             String positionName = getPositionNameByID(positionID);
 
-            // Thêm dữ liệu vào bảng
             model.addRow(new Object[]{salaryID, month, year, positionName, dailyRate, workDays, totalSalary, yearsOfWork});
         }
 
@@ -73,16 +71,13 @@ public void loadSalaries() {
     tbSalary.setDefaultEditor(Object.class, null);
     tbSalary.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-    // Tải dữ liệu cho ComboBox
     loadComboBoxData();
 
-    // Tự động chọn dòng đầu tiên nếu có dữ liệu
     if (tbSalary.getRowCount() > 0 && tbSalary.getSelectedRow() == -1) {
         tbSalary.setRowSelectionInterval(0, 0);
         showSelectedSalary(0);
     }
 
-    // Xử lý chọn dòng để hiển thị thông tin chi tiết
     tbSalary.getSelectionModel().addListSelectionListener(event -> {
         if (!event.getValueIsAdjusting() && tbSalary.getSelectedRow() != -1) {
             showSelectedSalary(tbSalary.getSelectedRow());
@@ -90,16 +85,15 @@ public void loadSalaries() {
     });
 }
 
-// Tải dữ liệu cho các ComboBox từ database
 private void loadComboBoxData() {
     loadComboBox(cbxMonth, "SELECT DISTINCT Month FROM Salaries");
     loadComboBox(cbxPositionID, "SELECT DISTINCT PositionID FROM Salaries");
 }
 
-// Hàm chung để tải dữ liệu cho ComboBox
 private void loadComboBox(JComboBox<String> comboBox, String query) {
     comboBox.removeAllItems();
-    try (Connection conn = ConnectDatabase.getConnection();
+    Connection conn = ConnectDatabase.getConnection();
+    try (
          PreparedStatement pstmt = conn.prepareStatement(query);
          ResultSet rs = pstmt.executeQuery()) {
         while (rs.next()) {
@@ -107,6 +101,8 @@ private void loadComboBox(JComboBox<String> comboBox, String query) {
         }
     } catch (SQLException e) {
         e.printStackTrace();
+    }finally{
+        ConnectDatabase.closeConnection(conn);
     }
 }
 
@@ -114,10 +110,8 @@ private void showSelectedSalary(int row) {
     cbxMonth.setSelectedItem(tbSalary.getValueAt(row, 1).toString());
     txtYear.setText(tbSalary.getValueAt(row, 2).toString());
 
-    // Lấy PositionName từ bảng tbSalary và sử dụng trực tiếp
     String positionName = tbSalary.getValueAt(row, 3).toString();
 
-    // Gán PositionName vào ComboBox cbxPositionID
     cbxPositionID.setSelectedItem(positionName);
 
     txtDailyRate.setText(tbSalary.getValueAt(row, 4).toString());
@@ -127,11 +121,11 @@ private void showSelectedSalary(int row) {
 }
 
 
-// Hàm lấy PositionName từ PositionID
 private String getPositionNameByID(int positionID) {
     String positionName = "";
     String query = "SELECT PositionName FROM Positions WHERE PositionID = ?";
-    try (Connection conn = ConnectDatabase.getConnection();
+    Connection conn = ConnectDatabase.getConnection();
+    try (
          PreparedStatement pstmt = conn.prepareStatement(query)) {
         pstmt.setInt(1, positionID);
         try (ResultSet rs = pstmt.executeQuery()) {
@@ -141,6 +135,8 @@ private String getPositionNameByID(int positionID) {
         }
     } catch (SQLException e) {
         e.printStackTrace();
+    } finally {
+        ConnectDatabase.closeConnection(conn);
     }
     return positionName;
 }
