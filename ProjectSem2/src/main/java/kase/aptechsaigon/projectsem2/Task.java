@@ -35,7 +35,7 @@ public class Task extends javax.swing.JPanel {
     
 public void loadTasks() {
     DefaultTableModel model = new DefaultTableModel(
-        new Object[]{"TaskID", "TaskName", "TaskStartDate", "TaskEndDate", "AssignedTo", "AssignmentID", "JobID", "Status"}, 0) {
+        new Object[]{"TaskID", "TaskName", "TaskStartDate", "TaskEndDate", "AssignedTo", "JobID", "Status"}, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
@@ -60,14 +60,13 @@ public void loadTasks() {
             java.sql.Date sqlStartDate = rs.getDate("TaskStartDate");
             java.sql.Date sqlEndDate = rs.getDate("TaskEndDate");
             String assignedTo = rs.getString("AssignedTo"); 
-            int assignmentId = rs.getInt("AssignmentID");
             String jobName = rs.getString("JobID");
             String status = rs.getString("Status");
 
             java.util.Date startDate = (sqlStartDate != null) ? new java.util.Date(sqlStartDate.getTime()) : null;
             java.util.Date endDate = (sqlEndDate != null) ? new java.util.Date(sqlEndDate.getTime()) : null;
 
-            model.addRow(new Object[]{taskId, taskName, startDate, endDate, assignedTo, assignmentId, jobName, status});
+            model.addRow(new Object[]{taskId, taskName, startDate, endDate, assignedTo, jobName, status});
         }
 
     } catch (SQLException e) {
@@ -107,7 +106,6 @@ public void loadTasks() {
  
      private void loadComboBoxData() {
         loadComboBox(cbAssignedTo, "SELECT DISTINCT AssignedTo FROM Tasks");
-        loadComboBox(cbAssignmentID, "SELECT DISTINCT AssignmentID FROM Tasks");
         loadComboBox(cbJobID, "SELECT DISTINCT JobID FROM Tasks");
     }
      
@@ -161,10 +159,6 @@ private void showSelectedTask(int row) {
         String assignmentQuery = "SELECT AssignmentID FROM Assignments";
         PreparedStatement assignmentStmt = conn.prepareStatement(assignmentQuery);
         ResultSet rsAssignments = assignmentStmt.executeQuery();
-        cbAssignmentID.removeAllItems();
-        while (rsAssignments.next()) {
-            cbAssignmentID.addItem(rsAssignments.getString("AssignmentID"));
-        }
         
         String jobQuery = "SELECT JobName FROM Jobs";
         PreparedStatement jobStmt = conn.prepareStatement(jobQuery);
@@ -181,7 +175,6 @@ private void showSelectedTask(int row) {
         ConnectDatabase.closeConnection(conn);
     }
 
-    cbAssignmentID.setSelectedItem(assignmentID); 
     cbJobID.setSelectedItem(jobID);
 
     setEditStatus(false);
@@ -197,7 +190,6 @@ private void showSelectedTask(int row) {
     jcdTaskStartDate.setEnabled(editable);
     jcdTaskEndDate.setEnabled(editable);
     cbAssignedTo.setEnabled(editable);
-    cbAssignmentID.setEnabled(editable);
     cbJobID.setEnabled(editable);
 
     btnSaveTask.setEnabled(editable);
@@ -271,13 +263,12 @@ private void saveTask() {
     Object taskIdObj = tbTask.getValueAt(selectedRow, 0);
     String taskName = txtTaskName.getText().trim();
     String assignedTo = cbAssignedTo.getSelectedItem().toString().trim();
-    String assignmentID = cbAssignmentID.getSelectedItem().toString().trim();
     String jobID = cbJobID.getSelectedItem().toString().trim();
 
     java.util.Date startDate = jcdTaskStartDate.getDate();
     java.util.Date endDate = jcdTaskEndDate.getDate();
 
-    if (taskName.isEmpty() || assignedTo.isEmpty() || assignmentID.isEmpty() || jobID.isEmpty() || startDate == null || endDate == null) {
+    if (taskName.isEmpty() || assignedTo.isEmpty() || jobID.isEmpty() || startDate == null || endDate == null) {
         JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
         return;
     }
@@ -291,10 +282,9 @@ private void saveTask() {
             try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
                 pstmt.setString(1, taskName);
                 pstmt.setString(2, assignedTo);
-                pstmt.setInt(3, Integer.parseInt(assignmentID));
-                pstmt.setInt(4, Integer.parseInt(jobID));
-                pstmt.setDate(5, sqlStartDate);
-                pstmt.setDate(6, sqlEndDate);
+                pstmt.setInt(3, Integer.parseInt(jobID));
+                pstmt.setDate(4, sqlStartDate);
+                pstmt.setDate(5, sqlEndDate);
 
                 int affectedRows = pstmt.executeUpdate();
                 if (affectedRows > 0) {
@@ -313,11 +303,10 @@ private void saveTask() {
             try (PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
                 pstmt.setString(1, taskName);
                 pstmt.setString(2, assignedTo);
-                pstmt.setInt(3, Integer.parseInt(assignmentID));
-                pstmt.setInt(4, Integer.parseInt(jobID));
-                pstmt.setDate(5, sqlStartDate);
-                pstmt.setDate(6, sqlEndDate);
-                pstmt.setInt(7, taskId);
+                pstmt.setInt(3, Integer.parseInt(jobID));
+                pstmt.setDate(4, sqlStartDate);
+                pstmt.setDate(5, sqlEndDate);
+                pstmt.setInt(6, taskId);
 
                 int affectedRows = pstmt.executeUpdate();
                 if (affectedRows > 0) {
@@ -328,10 +317,9 @@ private void saveTask() {
 
         tbTask.setValueAt(taskName, selectedRow, 1);
         tbTask.setValueAt(assignedTo, selectedRow, 2);
-        tbTask.setValueAt(assignmentID, selectedRow, 3);
-        tbTask.setValueAt(jobID, selectedRow, 4);
-        tbTask.setValueAt(sqlStartDate, selectedRow, 5);
-        tbTask.setValueAt(sqlEndDate, selectedRow, 6);
+        tbTask.setValueAt(jobID, selectedRow, 3);
+        tbTask.setValueAt(sqlStartDate, selectedRow, 4);
+        tbTask.setValueAt(sqlEndDate, selectedRow, 5);
         setEditStatus(false);
 
     } catch (SQLException e) {
@@ -346,7 +334,6 @@ private void saveTask() {
 private void resetTask() {
     txtTaskName.setText("");
     cbAssignedTo.setSelectedIndex(0); 
-    cbAssignmentID.setSelectedIndex(0);
     cbJobID.setSelectedIndex(0);
 
     jcdTaskStartDate.setDate(null);
@@ -376,7 +363,6 @@ private void resetTask() {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         txtTaskName = new javax.swing.JTextField();
@@ -391,7 +377,6 @@ private void resetTask() {
         jLabel12 = new javax.swing.JLabel();
         jcdTaskEndDate = new com.toedter.calendar.JDateChooser();
         cbAssignedTo = new javax.swing.JComboBox<>();
-        cbAssignmentID = new javax.swing.JComboBox<>();
         cbJobID = new javax.swing.JComboBox<>();
 
         btnSaveTask.setText("Save");
@@ -440,8 +425,6 @@ private void resetTask() {
         jLabel7.setText("TaskStartDate :");
 
         jLabel8.setText("AssignedTo :");
-
-        jLabel9.setText("AssignmentID :");
 
         jLabel10.setText("JobID :");
 
@@ -500,8 +483,6 @@ private void resetTask() {
 
         cbAssignedTo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        cbAssignmentID.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         cbJobID.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -554,39 +535,39 @@ private void resetTask() {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cbJobID, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(331, 331, 331))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(96, 96, 96)
+                                        .addComponent(jcdTaskStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jcdTaskEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnSaveTask)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnResetTask)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnCancelTask)))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtTaskName))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(cbJobID, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(cbAssignmentID, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(cbAssignedTo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addGap(337, 337, 337))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(96, 96, 96)
-                                .addComponent(jcdTaskStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jcdTaskEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnSaveTask)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnResetTask)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnCancelTask)
-                        .addGap(173, 173, 173))))
+                                .addComponent(cbAssignedTo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(337, 337, 337))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -625,10 +606,6 @@ private void resetTask() {
                     .addComponent(cbAssignedTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(cbAssignmentID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
                     .addComponent(cbJobID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -648,7 +625,7 @@ private void resetTask() {
                             .addComponent(btnSaveTask)
                             .addComponent(btnCancelTask)
                             .addComponent(btnResetTask))))
-                .addContainerGap(56, Short.MAX_VALUE))
+                .addContainerGap(84, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -671,7 +648,6 @@ private void resetTask() {
         // TODO add your handling code here:
     txtTaskName.setText("");
     cbAssignedTo.setSelectedIndex(0); // Chọn mục đầu tiên
-    cbAssignmentID.setSelectedIndex(0);
     cbJobID.setSelectedIndex(0);
 
     jcdTaskStartDate.setDate(null);
@@ -687,13 +663,12 @@ private void resetTask() {
     btnSaveTask.addActionListener(e -> {
         String taskName = txtTaskName.getText().trim();
         String assignedTo = cbAssignedTo.getSelectedItem().toString().trim();
-        String assignmentID = cbAssignmentID.getSelectedItem().toString().trim();
         String jobID = cbJobID.getSelectedItem().toString().trim();
 
         java.util.Date startDate = jcdTaskStartDate.getDate();
         java.util.Date endDate = jcdTaskEndDate.getDate();
 
-        if (taskName.isEmpty() || assignedTo.isEmpty() || assignmentID.isEmpty() || jobID.isEmpty() || startDate == null || endDate == null) {
+        if (taskName.isEmpty() || assignedTo.isEmpty() || jobID.isEmpty() || startDate == null || endDate == null) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -707,10 +682,9 @@ private void resetTask() {
             try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
                 pstmt.setString(1, taskName);
                 pstmt.setString(2, assignedTo);
-                pstmt.setString(3, assignmentID);
-                pstmt.setString(4, jobID);
-                pstmt.setDate(5, sqlStartDate);
-                pstmt.setDate(6, sqlEndDate);
+                pstmt.setString(3, jobID);
+                pstmt.setDate(4, sqlStartDate);
+                pstmt.setDate(5, sqlEndDate);
 
                 int affectedRows = pstmt.executeUpdate();
                 if (affectedRows > 0) {
@@ -751,13 +725,12 @@ private void resetTask() {
         int taskId = (int) tbTask.getValueAt(selectedRow, 0);
         String taskName = txtTaskName.getText().trim();
         String assignedTo = cbAssignedTo.getSelectedItem().toString().trim();
-        String assignmentID = cbAssignmentID.getSelectedItem().toString().trim();
         String jobID = cbJobID.getSelectedItem().toString().trim();
 
         java.util.Date startDate = jcdTaskStartDate.getDate();
         java.util.Date endDate = jcdTaskEndDate.getDate();
 
-        if (taskName.isEmpty() || assignedTo.isEmpty() || assignmentID.isEmpty() || jobID.isEmpty() || startDate == null || endDate == null) {
+        if (taskName.isEmpty() || assignedTo.isEmpty() || jobID.isEmpty() || startDate == null || endDate == null) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -772,11 +745,10 @@ private void resetTask() {
 
             pstmt.setString(1, taskName);
             pstmt.setString(2, assignedTo);
-            pstmt.setString(3, assignmentID);
-            pstmt.setString(4, jobID);
-            pstmt.setDate(5, sqlStartDate);
-            pstmt.setDate(6, sqlEndDate);
-            pstmt.setInt(7, taskId);
+            pstmt.setString(3, jobID);
+            pstmt.setDate(4, sqlStartDate);
+            pstmt.setDate(5, sqlEndDate);
+            pstmt.setInt(6, taskId);
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
@@ -863,13 +835,12 @@ private void resetTask() {
     int taskId = Integer.parseInt(tbTask.getValueAt(selectedRow, 0).toString()); 
     String taskName = txtTaskName.getText().trim();
     String assignedTo = cbAssignedTo.getSelectedItem().toString().trim();
-    String assignmentID = cbAssignmentID.getSelectedItem().toString().trim();
     String jobID = cbJobID.getSelectedItem().toString().trim();
 
     java.util.Date startDate = jcdTaskStartDate.getDate();
     java.util.Date endDate = jcdTaskEndDate.getDate();
 
-    if (taskName.isEmpty() || assignedTo.isEmpty() || assignmentID.isEmpty() || jobID.isEmpty()) {
+    if (taskName.isEmpty() || assignedTo.isEmpty() || jobID.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         btnSaveTask.setEnabled(true); 
         return;
@@ -882,11 +853,10 @@ private void resetTask() {
 
         pstmt.setString(1, taskName);
         pstmt.setString(2, assignedTo);
-        pstmt.setString(3, assignmentID);
-        pstmt.setString(4, jobID);
-        pstmt.setDate(5, (startDate != null) ? new java.sql.Date(startDate.getTime()) : null);
-        pstmt.setDate(6, (endDate != null) ? new java.sql.Date(endDate.getTime()) : null);
-        pstmt.setInt(7, taskId);
+        pstmt.setString(3, jobID);
+        pstmt.setDate(4, (startDate != null) ? new java.sql.Date(startDate.getTime()) : null);
+        pstmt.setDate(5, (endDate != null) ? new java.sql.Date(endDate.getTime()) : null);
+        pstmt.setInt(6, taskId);
 
         int affectedRows = pstmt.executeUpdate();
         if (affectedRows > 0) {
@@ -915,7 +885,6 @@ private void resetTask() {
     private javax.swing.JButton btnSaveTask;
     private javax.swing.JButton btnSearch;
     private javax.swing.JComboBox<String> cbAssignedTo;
-    private javax.swing.JComboBox<String> cbAssignmentID;
     private javax.swing.JComboBox<String> cbJobID;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -926,7 +895,6 @@ private void resetTask() {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;

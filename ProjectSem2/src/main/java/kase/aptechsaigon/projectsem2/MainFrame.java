@@ -34,6 +34,7 @@ public class MainFrame extends javax.swing.JFrame {
         jpStaff = new Employee();
         jpTeam = new Team();
         jpSalary = new SalaryManager();
+        
     }
     
       private void showPanel(JPanel panel) {
