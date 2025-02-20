@@ -50,8 +50,8 @@ public class Employee extends javax.swing.JPanel {
         tbStaff.setModel(model);
 
         String sql = "SELECT EmployeeID, FullName, BirthDate, Gender, IDCardNumber, Address, Email, PhoneNumber, StartDate, ContractDuration, WorkExperience FROM Employees";
-
-        try (Connection conn = ConnectDatabase.getConnection();
+        Connection conn = ConnectDatabase.getConnection();
+        try (
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
@@ -78,6 +78,8 @@ public class Employee extends javax.swing.JPanel {
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            ConnectDatabase.closeConnection(conn);
         }
 
         tbStaff.setDefaultEditor(Object.class, null);
@@ -131,6 +133,7 @@ public class Employee extends javax.swing.JPanel {
             rbtnMale.setSelected(false);
             rbtnFemale.setSelected(false);
             rbtnOther.setSelected(false);       
+            
             //Ktra giá trị Gender
             Object genderObj = tbStaff.getValueAt(row, 3);
             String Gender = (genderObj != null) ? genderObj.toString().toLowerCase() : "other";
@@ -162,6 +165,11 @@ public class Employee extends javax.swing.JPanel {
         txtContractDuration.setText(tbStaff.getValueAt(row, 9).toString());
         txtWorkExp.setText(tbStaff.getValueAt(row, 10).toString());
         
+        rbtnManager.setSelected(false);
+        rbtnDManager.setSelected(false);
+        rbtnStaff.setSelected(false);
+        
+        
         //setStaffFieldsEditable(true); 
         
         //Vô hiệu hóa các nút 
@@ -178,6 +186,9 @@ public class Employee extends javax.swing.JPanel {
         rbtnFemale.setEnabled(false);
         rbtnOther.setEnabled(false);
         txtContractDuration.setEnabled(false);
+        rbtnManager.setEnabled(false);
+        rbtnDManager.setEnabled(false);
+        rbtnStaff.setEnabled(false);
         }
     }
     
@@ -303,10 +314,10 @@ public class Employee extends javax.swing.JPanel {
 
             int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa công việc này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                String EmployeeID = tbStaff.getValueAt(selectedRow, 0).toString();
-
+                String EmployeeID = tbStaff.getValueAt(selectedRow, 0).toString();               
                 String sql = "DELETE FROM Employees WHERE EmployeeID = ?";
-                try (Connection conn = ConnectDatabase.getConnection();
+                Connection conn = ConnectDatabase.getConnection();
+                try (
                      PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
                     pstmt.setInt(1, Integer.parseInt(EmployeeID));
@@ -317,6 +328,8 @@ public class Employee extends javax.swing.JPanel {
                 } catch (SQLException e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Lỗi khi xóa dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                ConnectDatabase.closeConnection(conn);
                 }
             }
         }
@@ -357,10 +370,8 @@ public class Employee extends javax.swing.JPanel {
                         + " IDCardNumber, Address, Email,"
                         + " PhoneNumber, StartDate, ContracDuration, WorkExperience)"
                         + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-                try (Connection conn = ConnectDatabase.getConnection();
-                     PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+                Connection conn = ConnectDatabase.getConnection();
+                try ( PreparedStatement pstmt = conn.prepareStatement(sql)) {
                     pstmt.setString(1, fullName);
                     pstmt.setString(2, sdf.format(birthDate));
                     pstmt.setString(3, gender);
@@ -378,6 +389,8 @@ public class Employee extends javax.swing.JPanel {
                 } catch (SQLException e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Lỗi khi thêm dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                ConnectDatabase.closeConnection(conn);
                 }
 
             } else if (isEditing) {
@@ -387,10 +400,9 @@ public class Employee extends javax.swing.JPanel {
                         + "PhoneNumber = ?, StartDate = ?, ContractDuration = ?,"
                         + "WorkExperience = ?"
                         + " WHERE EmployeeID = ?";
-
-                try (Connection conn = ConnectDatabase.getConnection();
+                Connection conn = ConnectDatabase.getConnection();
+                try (
                      PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
                     pstmt.setString(1, fullName);
                     pstmt.setString(2, sdf.format(birthDate));
                     pstmt.setString(3, gender);
@@ -403,13 +415,12 @@ public class Employee extends javax.swing.JPanel {
                     pstmt.setString(10, workExperience);
                     pstmt.setInt(11, Integer.parseInt(employeeID));
                     pstmt.executeUpdate();
-
-                    JOptionPane.showMessageDialog(this, "Cập nhật thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                    
-
+                    JOptionPane.showMessageDialog(this, "Cập nhật thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);                   
                 } catch (SQLException e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    ConnectDatabase.closeConnection(conn);
                 }
             }
 
@@ -440,6 +451,7 @@ public class Employee extends javax.swing.JPanel {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
+        buttonGroup2 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jEmployeeID = new javax.swing.JLabel();
         txtEmployeeID = new javax.swing.JTextField();
@@ -447,7 +459,6 @@ public class Employee extends javax.swing.JPanel {
         txtFullName = new javax.swing.JTextField();
         jBirthdate = new javax.swing.JLabel();
         jdBirthDate = new com.toedter.calendar.JDateChooser();
-        jGender = new javax.swing.JLabel();
         jIDCard = new javax.swing.JLabel();
         txtIDCard = new javax.swing.JTextField();
         jAddress = new javax.swing.JLabel();
@@ -465,6 +476,7 @@ public class Employee extends javax.swing.JPanel {
         txtContractDuration = new javax.swing.JTextField();
         jContractDuration = new javax.swing.JLabel();
         jPhoneNum1 = new javax.swing.JLabel();
+        jGender1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbStaff = new javax.swing.JTable();
         jSeparator2 = new javax.swing.JSeparator();
@@ -477,6 +489,10 @@ public class Employee extends javax.swing.JPanel {
         jSeparator1 = new javax.swing.JSeparator();
         jStartDate = new javax.swing.JLabel();
         jdStartDate = new com.toedter.calendar.JDateChooser();
+        jPosition = new javax.swing.JLabel();
+        rbtnStaff = new javax.swing.JRadioButton();
+        rbtnDManager = new javax.swing.JRadioButton();
+        rbtnManager = new javax.swing.JRadioButton();
 
         setPreferredSize(new java.awt.Dimension(1000, 857));
 
@@ -500,9 +516,6 @@ public class Employee extends javax.swing.JPanel {
         jBirthdate.setText("BirthDate");
         jPanel1.add(jBirthdate, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 71, 110, -1));
         jPanel1.add(jdBirthDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(139, 71, 369, -1));
-
-        jGender.setText("Gender");
-        jPanel1.add(jGender, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 99, 110, -1));
 
         jIDCard.setText("IDCardNumber");
         jPanel1.add(jIDCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 127, 110, -1));
@@ -566,6 +579,9 @@ public class Employee extends javax.swing.JPanel {
 
         jPhoneNum1.setText("Phone Number");
         jPanel1.add(jPhoneNum1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 220, 110, 20));
+
+        jGender1.setText("Gender");
+        jPanel1.add(jGender1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 99, 110, -1));
 
         tbStaff.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -725,6 +741,22 @@ public class Employee extends javax.swing.JPanel {
 
         jStartDate.setText("Start Date");
 
+        jPosition.setText("Position");
+
+        buttonGroup2.add(rbtnStaff);
+        rbtnStaff.setText("Staff");
+
+        buttonGroup2.add(rbtnDManager);
+        rbtnDManager.setText("Deputy Manager");
+        rbtnDManager.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbtnDManagerActionPerformed(evt);
+            }
+        });
+
+        buttonGroup2.add(rbtnManager);
+        rbtnManager.setText("Manager");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -734,10 +766,19 @@ public class Employee extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 546, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jStartDate)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jPosition, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jStartDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jdStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 193, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jdStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(rbtnManager)
+                                .addGap(11, 11, 11)
+                                .addComponent(rbtnDManager)
+                                .addGap(9, 9, 9)
+                                .addComponent(rbtnStaff)))
+                        .addGap(0, 126, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel1)
@@ -770,18 +811,27 @@ public class Employee extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(btnAddJob, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEditJob, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDeleteJob))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnAddJob, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnEditJob, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel3)
+                        .addComponent(btnDeleteJob)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jdStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jdStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPosition)
+                            .addComponent(rbtnManager)
+                            .addComponent(rbtnDManager)
+                            .addComponent(rbtnStaff))))
                 .addContainerGap(113, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -830,6 +880,10 @@ public class Employee extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_rbtnFemaleActionPerformed
 
+    private void rbtnDManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbtnDManagerActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_rbtnDManagerActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btnAddJob;
@@ -838,18 +892,20 @@ public class Employee extends javax.swing.JPanel {
     private javax.swing.JToggleButton btnEditJob;
     private javax.swing.JButton btnSaveJob;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JLabel jAddress;
     private javax.swing.JLabel jBirthdate;
     private javax.swing.JLabel jContractDuration;
     private javax.swing.JLabel jEmail;
     private javax.swing.JLabel jEmployeeID;
     private javax.swing.JLabel jFullName;
-    private javax.swing.JLabel jGender;
+    private javax.swing.JLabel jGender1;
     private javax.swing.JLabel jIDCard;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel jPhoneNum1;
+    private javax.swing.JLabel jPosition;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
@@ -858,9 +914,12 @@ public class Employee extends javax.swing.JPanel {
     private javax.swing.JLabel jWorkExp;
     private com.toedter.calendar.JDateChooser jdBirthDate;
     private com.toedter.calendar.JDateChooser jdStartDate;
+    private javax.swing.JRadioButton rbtnDManager;
     private javax.swing.JRadioButton rbtnFemale;
     private javax.swing.JRadioButton rbtnMale;
+    private javax.swing.JRadioButton rbtnManager;
     private javax.swing.JRadioButton rbtnOther;
+    private javax.swing.JRadioButton rbtnStaff;
     private javax.swing.JTable tbStaff;
     private javax.swing.JTextField txtAddress;
     private javax.swing.JTextField txtContractDuration;
