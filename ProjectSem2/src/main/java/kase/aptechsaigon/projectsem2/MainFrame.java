@@ -97,7 +97,6 @@ public class MainFrame extends javax.swing.JFrame {
         jmiContract = new javax.swing.JMenuItem();
         jmJob = new javax.swing.JMenu();
         jmiJobManagement = new javax.swing.JMenuItem();
-        jmiTaskManagement = new javax.swing.JMenuItem();
         jmSalary = new javax.swing.JMenu();
         jmiStaffSalary = new javax.swing.JMenuItem();
         jmiCalculateSalary = new javax.swing.JMenuItem();
@@ -468,14 +467,6 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jmJob.add(jmiJobManagement);
 
-        jmiTaskManagement.setText("Task Management");
-        jmiTaskManagement.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmiTaskManagementActionPerformed(evt);
-            }
-        });
-        jmJob.add(jmiTaskManagement);
-
         jMenuBar1.add(jmJob);
 
         jmSalary.setText("Salary");
@@ -541,10 +532,6 @@ public class MainFrame extends javax.swing.JFrame {
       //** Gọi panel công việc **
       showPanel(jpJob);
     }//GEN-LAST:event_jmiJobManagementActionPerformed
-
-    private void jmiTaskManagementActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiTaskManagementActionPerformed
-       showPanel(jpTask);
-    }//GEN-LAST:event_jmiTaskManagementActionPerformed
 
     private void jmiHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiHomeActionPerformed
     
@@ -632,7 +619,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jmiRole;
     private javax.swing.JMenuItem jmiStaff;
     private javax.swing.JMenuItem jmiStaffSalary;
-    private javax.swing.JMenuItem jmiTaskManagement;
     private javax.swing.JMenuItem jmiTeam;
     private javax.swing.JPanel jpAttTracking;
     private javax.swing.JPanel jpAttTracking1;
