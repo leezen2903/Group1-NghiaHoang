@@ -4,6 +4,8 @@
  */
 package kase.aptechsaigon.projectsem2;
 
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.Date;
@@ -29,6 +31,24 @@ import kase.aptechsaigon.projectsem2.controller.JobValidation;
 public class Job extends javax.swing.JPanel {
 
     private boolean isCreate = true;
+    private MainFrame mainFrame;
+    private static Job instance;
+    
+    
+    public static Job getInstance() {
+        if (instance == null) {
+            instance = new Job();
+        }
+        return instance;
+    }
+
+    public int getSelectedJobID() {
+        // Trả về ID của công việc đã chọn (cần triển khai)
+        return 0; 
+    }
+
+
+    
 
     /**
      * Creates new form Jobb
@@ -37,118 +57,117 @@ public class Job extends javax.swing.JPanel {
         
             initComponents();
             loadJobs();
-            
+            this.mainFrame = mainFrame;
             
         }
+    
+    private void openTaskPopup() {
+        Window parentWindow = SwingUtilities.getWindowAncestor(this);
+
+        JDialog taskDialog = new JDialog((Frame) parentWindow, "Task Manager", true);
+        taskDialog.setSize(1400, 800);
+        taskDialog.setLocationRelativeTo(this);
+        taskDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        taskDialog.setContentPane(new Task()); 
+
+        taskDialog.setVisible(true);
+    }
+        
+        
     private JobAssignment jobAssignment = new JobAssignment();
     Set<String> teamNames = new HashSet<>();
     Set<String> assignedNames = new HashSet<>();
 
 
 
-public void loadJobs() {
-    DefaultTableModel model = new DefaultTableModel(
-        new Object[]{"JobID", "JobName", "Description", "EstimatedStartDate", "EstimatedEndDate", "Status", "TeamName"}, 0) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    };
-    tbJob.setModel(model);
+    public void loadJobs() {
+        DefaultTableModel model = new DefaultTableModel(
+            new Object[]{"JobID", "JobName", "Description", "EstimatedStartDate", "EstimatedEndDate", "Status", "TeamName"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tbJob.setModel(model);
 
-    String sql = """
-        SELECT j.JobID, j.JobName, j.Description, j.EstimatedStartDate, j.EstimatedEndDate, j.Status,
-               t.TeamName, e.FullName AS AssignedTo
-        FROM Jobs j
-        LEFT JOIN Assignments a ON j.JobID = a.JobID
-        LEFT JOIN Teams t ON a.TeamID = t.TeamID
-        LEFT JOIN Tasks tk ON j.JobID = tk.JobID
-        LEFT JOIN Employees e ON tk.AssignedTo = e.EmployeeID
-        """;
+        String sql = """
+            SELECT j.JobID, j.JobName, j.Description, j.EstimatedStartDate, j.EstimatedEndDate, j.Status,
+                   a.TeamID, t.TeamName 
+            FROM Jobs j
+            LEFT JOIN Assignments a ON j.JobID = a.JobID
+            LEFT JOIN Teams t ON a.TeamID = t.TeamID
+            """;
 
-    Connection conn = null;
-    try {
-        
-        conn = ConnectDatabase.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql);
-        ResultSet rs = pstmt.executeQuery();
+            cbxTeamName.removeAllItems();
+            cbxTeamName.addItem("Select Team");
 
-        while (rs.next()) {
-            int jobId = rs.getInt("JobID");
-            String jobName = rs.getString("JobName");
-            String description = rs.getString("Description");
-            Date startDate = rs.getDate("EstimatedStartDate");
-            Date endDate = rs.getDate("EstimatedEndDate");
-            String status = rs.getString("Status");
-            String teamName = rs.getString("TeamName");
-
-            model.addRow(new Object[]{jobId, jobName, description, startDate, endDate, status, teamName});
+        Connection conn = ConnectDatabase.getConnection();
+        try {
             
-            if (teamName != null) {
-                teamNames.add(teamName);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int jobId = rs.getInt("JobID");
+                String jobName = rs.getString("JobName");
+                String description = rs.getString("Description");
+                Date startDate = rs.getDate("EstimatedStartDate");
+                Date endDate = rs.getDate("EstimatedEndDate");
+                String status = rs.getString("Status");
+                String teamName = rs.getString("TeamName");
+
+                model.addRow(new Object[]{jobId, jobName, description, startDate, endDate, status, teamName});
+                
+                if (teamName != null && !teamNames.contains(teamName)) {
+                    teamNames.add(teamName);
+                }
             }
 
+            cbxTeamName.removeAllItems();
+            cbxTeamName.addItem("Select Team");
+            for (String name : teamNames) {
+                cbxTeamName.addItem(name);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error loading data from database!", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            ConnectDatabase.closeConnection(conn);
         }
-        
-        cbxTeamName.removeAllItems();
-        cbxTeamName.addItem("Select Team");
-        for (String name : teamNames) {
-            cbxTeamName.addItem(name);
+
+        tbJob.setDefaultEditor(Object.class, null);
+        tbJob.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        if (tbJob.getRowCount() > 0) {
+            tbJob.setRowSelectionInterval(0, 0);
+            showSelectedJob(0);
         }
 
-
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-    } finally {
-        ConnectDatabase.closeConnection(conn);
+        tbJob.getSelectionModel().addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting() && tbJob.getSelectedRow() != -1) {
+                showSelectedJob(tbJob.getSelectedRow());
+            }
+        });
     }
 
-    tbJob.setDefaultEditor(Object.class, null);
-    tbJob.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    private void showSelectedJob(int row) {
+        txtJobName.setText(tbJob.getValueAt(row, 1).toString());
+        txtDescription.setText(tbJob.getValueAt(row, 2).toString());
 
-    if (tbJob.getRowCount() > 0 && tbJob.getSelectedRow() == -1) {
-        tbJob.setRowSelectionInterval(0, 0);
-        showSelectedJob(0);
+        Object startDateObj = tbJob.getValueAt(row, 3);
+        jcdEstimatedStartDate.setDate(startDateObj != null ? (java.util.Date) startDateObj : null);
+
+        Object endDateObj = tbJob.getValueAt(row, 4);
+        jcdEstimatedEndDate.setDate(endDateObj != null ? (java.util.Date) endDateObj : null);
+
+        String teamName = (String) tbJob.getValueAt(row, 6);
+        cbxTeamName.setSelectedItem(teamName != null ? teamName : "Select Team");
+
+
+        setEditStatus(false);
+        cbxTeamName.setEnabled(false);
+
     }
-
-    tbJob.getSelectionModel().addListSelectionListener(event -> {
-        if (!event.getValueIsAdjusting() && tbJob.getSelectedRow() != -1) {
-            showSelectedJob(tbJob.getSelectedRow());
-        }
-    });
-}
-
-
-private void showSelectedJob(int row) {
-    txtJobName.setText(tbJob.getValueAt(row, 1).toString());
-    txtDescription.setText(tbJob.getValueAt(row, 2).toString());
-
-    Object startDateObj = tbJob.getValueAt(row, 3);
-    if (startDateObj != null) {
-        jcdEstimatedStartDate.setDate((java.util.Date) startDateObj);
-    } else {
-        jcdEstimatedStartDate.setDate(null);
-    }
-
-    Object endDateObj = tbJob.getValueAt(row, 4);
-    if (endDateObj != null) {
-        jcdEstimatedEndDate.setDate((java.util.Date) endDateObj);
-    } else {
-        jcdEstimatedEndDate.setDate(null);
-    }
-    
-    String teamName = (String) tbJob.getValueAt(row, 6);
-    if (teamName != null) {
-        cbxTeamName.setSelectedItem(teamName);
-    } else {
-        cbxTeamName.setSelectedIndex(0); 
-    }
-
-    setEditStatus(false);
-    cbxTeamName.setEnabled(false);
-}
 
 
     private boolean isEditMode = false; 
@@ -160,6 +179,9 @@ private void showSelectedJob(int row) {
         txtDescription.setEnabled(editable);
         jcdEstimatedStartDate.setEnabled(editable);
         jcdEstimatedEndDate.setEnabled(editable);
+        cbxTeamName.setEditable(editable);
+
+        
         btnSaveJob.setEnabled(editable);
         btnCancelJob.setEnabled(editable);
         btnResetJob.setEnabled(editable);
@@ -181,7 +203,7 @@ private void showSelectedJob(int row) {
     private void deleteJob() {
     int selectedRow = tbJob.getSelectedRow();
     if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn một công việc để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Please select a job to delete!", "Notification", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
@@ -190,134 +212,218 @@ private void showSelectedJob(int row) {
         return;
     }
 
-    int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa công việc này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+    int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this job?", "Confirm", JOptionPane.YES_NO_OPTION);
     if (confirm == JOptionPane.YES_OPTION) {
         String jobID = tbJob.getValueAt(selectedRow, 0).toString();
+        Connection conn = ConnectDatabase.getConnection();
+        PreparedStatement pstmt = null;
 
-        String sql = "DELETE FROM Jobs WHERE JobID = ?";
-        Connection conn = null;
-        try  {
-            conn = ConnectDatabase.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+        try {
             
+            conn.setAutoCommit(false);
+
+            String sqlDeleteAssignments = "DELETE FROM Assignments WHERE JobID = ?";
+            pstmt = conn.prepareStatement(sqlDeleteAssignments);
             pstmt.setInt(1, Integer.parseInt(jobID));
             pstmt.executeUpdate();
-            JOptionPane.showMessageDialog(this, "Xóa thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            loadJobs();
+
+            String sqlDeleteJob = "DELETE FROM Jobs WHERE JobID = ?";
+            pstmt = conn.prepareStatement(sqlDeleteJob);
+            pstmt.setInt(1, Integer.parseInt(jobID));
+            pstmt.executeUpdate();
+
+            conn.commit(); 
+            JOptionPane.showMessageDialog(this, "Deletion successful!", "Notification", JOptionPane.INFORMATION_MESSAGE);
+
+            loadJobs(); 
 
         } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback(); 
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+            }
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi xóa dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error deleting data!", "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
-            ConnectDatabase.closeConnection(conn);
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                    ConnectDatabase.closeConnection(conn);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
-        loadJobs();
-        btnCancelJob.setEnabled(false);
 }
 
     private void cancelJob() {
         setEditStatus(false);
     }
 
-private void saveJob() {
-    System.out.println("hàm save job");
-    int selectedRow = tbJob.getSelectedRow();
-    
-    if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn một công việc để lưu!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+    private void saveJob() {
+        int selectedRow = tbJob.getSelectedRow();
 
-    Object jobIdObj = tbJob.getValueAt(selectedRow, 0);
-    String jobName = txtJobName.getText().trim();
-    String description = txtDescription.getText().trim();
-    java.util.Date startDate = jcdEstimatedStartDate.getDate();
-    java.util.Date endDate = jcdEstimatedEndDate.getDate();
-    String teamName = (String) cbxTeamName.getSelectedItem();
-    
-    if (jobName.isEmpty() || description.isEmpty() || startDate == null || endDate == null || teamName == null) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
-    java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
-    Connection conn = ConnectDatabase.getConnection();
-    try  {
-        if (jobIdObj == null) { 
-            String insertSQL = "INSERT INTO Jobs (JobName, Description, EstimatedStartDate, EstimatedEndDate, AssignedTo, TeamName, Status) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
-                pstmt.setString(1, jobName);
-                pstmt.setString(2, description);
-                pstmt.setDate(3, sqlStartDate);
-                pstmt.setDate(4, sqlEndDate);
-                pstmt.setString(5, teamName);
-                pstmt.setString(6, "New");
-
-                int affectedRows = pstmt.executeUpdate();
-                if (affectedRows > 0) {
-                    try (ResultSet rs = pstmt.getGeneratedKeys()) {
-                        if (rs.next()) {
-                            int newJobId = rs.getInt(1);
-                            tbJob.setValueAt(newJobId, selectedRow, 0);
-                        }
-                    }
-                    System.out.println("test thêm thành công");
-                    JOptionPane.showMessageDialog(this, "Thêm công việc mới thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        } else { 
-            int jobId = (int) jobIdObj;
-            String updateSQL = "UPDATE Jobs SET JobName=?, Description=?, EstimatedStartDate=?, EstimatedEndDate=?, AssignedTo=?, TeamName=? WHERE JobID=?";
-            try (PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
-                pstmt.setString(1, jobName);
-                pstmt.setString(2, description);
-                pstmt.setDate(3, sqlStartDate);
-                pstmt.setDate(4, sqlEndDate);
-                pstmt.setString(5, teamName);
-                pstmt.setInt(6, jobId);
-
-                int affectedRows = pstmt.executeUpdate();
-                if (affectedRows > 0) {
-                    JOptionPane.showMessageDialog(this, "Cập nhật công việc thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a job to save!", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
         }
 
-        tbJob.setValueAt(jobName, selectedRow, 1);
-        tbJob.setValueAt(description, selectedRow, 2);
-        tbJob.setValueAt(sqlStartDate, selectedRow, 3);
-        tbJob.setValueAt(sqlEndDate, selectedRow, 4);
-        tbJob.setValueAt(teamName, selectedRow, 5);
-        setEditStatus(false);
+        Object jobIdObj = tbJob.getValueAt(selectedRow, 0);
+        String jobName = txtJobName.getText().trim();
+        String description = txtDescription.getText().trim();
+        java.util.Date startDate = jcdEstimatedStartDate.getDate();
+        java.util.Date endDate = jcdEstimatedEndDate.getDate();
+        String teamName = (String) cbxTeamName.getSelectedItem();
 
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Lỗi khi lưu công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        if (jobName.isEmpty() || description.isEmpty() || startDate == null || endDate == null || teamName == null) {
+            JOptionPane.showMessageDialog(this, "Please enter complete information!", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
+        java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
+        Connection conn = ConnectDatabase.getConnection();
+        try  {
+            if (jobIdObj == null) { 
+                String insertSQL = "INSERT INTO Jobs (JobName, Description, EstimatedStartDate, EstimatedEndDate, AssignedTo, TeamName, Status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
+                    pstmt.setString(1, jobName);
+                    pstmt.setString(2, description);
+                    pstmt.setDate(3, sqlStartDate);
+                    pstmt.setDate(4, sqlEndDate);
+                    pstmt.setString(5, teamName);
+                    pstmt.setString(6, "New");
+
+                    int affectedRows = pstmt.executeUpdate();
+                    if (affectedRows > 0) {
+                        try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                            if (rs.next()) {
+                                int newJobId = rs.getInt(1);
+                                tbJob.setValueAt(newJobId, selectedRow, 0);
+                            }
+                        }
+                        JOptionPane.showMessageDialog(this,"New job added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+            } else { 
+                int jobId = (int) jobIdObj;
+                String updateSQL = "UPDATE Jobs SET JobName=?, Description=?, EstimatedStartDate=?, EstimatedEndDate=?, AssignedTo=?, TeamName=? WHERE JobID=?";
+                try (PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
+                    pstmt.setString(1, jobName);
+                    pstmt.setString(2, description);
+                    pstmt.setDate(3, sqlStartDate);
+                    pstmt.setDate(4, sqlEndDate);
+                    pstmt.setString(5, teamName);
+                    pstmt.setInt(6, jobId);
+
+                    int affectedRows = pstmt.executeUpdate();
+                    if (affectedRows > 0) {
+                        JOptionPane.showMessageDialog(this, "Job update successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+            }
+
+            tbJob.setValueAt(jobName, selectedRow, 1);
+            tbJob.setValueAt(description, selectedRow, 2);
+            tbJob.setValueAt(sqlStartDate, selectedRow, 3);
+            tbJob.setValueAt(sqlEndDate, selectedRow, 4);
+            tbJob.setValueAt(teamName, selectedRow, 5);
+            setEditStatus(false);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error saving work!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        finally{
+            ConnectDatabase.closeConnection(conn);
+        }
     }
-    finally{
-        ConnectDatabase.closeConnection(conn);
+
+    private void resetJob() {
+        txtJobName.setText("");
+        txtDescription.setText("");
+        jcdEstimatedStartDate.setDate(null);
+        jcdEstimatedEndDate.setDate(null);
+        cbxTeamName.setSelectedIndex(-1);
     }
-}
 
-private void resetJob() {
-    txtJobName.setText("");
-    txtDescription.setText("");
-    jcdEstimatedStartDate.setDate(null);
-    jcdEstimatedEndDate.setDate(null);
-    cbxTeamName.setSelectedIndex(-1);
-}
+    public int getTeamIDByName(String teamName) {
+        int teamID = -1;
+        String sql = "SELECT TeamID FROM Teams WHERE TeamName = ?";
 
-private void openTaskPopup() {
-    JDialog taskDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Task Manager", true);
-    taskDialog.setSize(800, 600); 
-    taskDialog.setLocationRelativeTo(this); 
+        try (Connection conn = ConnectDatabase.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
-//    taskDialog.add(MainFrame.getJpTask());
-    
-    taskDialog.setVisible(true); 
-}
+            stmt.setString(1, teamName);
+
+            if (rs.next()) {
+                teamID = rs.getInt("TeamID");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return teamID;
+    }
+
+
+    public void addAssignment(int jobID, String teamName) {
+        int teamID = getTeamIDByName(teamName);
+
+        if (teamID == -1) {
+            System.out.println("No TeamID found for TeamName: " + teamName);
+            return;
+        }
+
+        String sql = "INSERT INTO Assignments (JobID, TeamID) VALUES (?, ?)";
+
+        try (Connection conn = ConnectDatabase.getConnection();  
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, jobID);
+            stmt.setInt(2, teamID);
+            stmt.executeUpdate();
+            System.out.println("Add assignment successfully!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } 
+    }
+
+    private String getTeamNameByJobId(int jobId) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        String teamName = "";
+        try {
+            conn = ConnectDatabase.getConnection();
+            String query = "SELECT t.TeamName FROM Teams t INNER JOIN Assignments a ON t.TeamID = a.TeamID WHERE a.JobID = ?";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, jobId);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                teamName = rs.getString("TeamName");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return teamName;
+    }
+
 
 
     /**
@@ -551,8 +657,13 @@ private void openTaskPopup() {
         jLabel5.setText("- TeamName : ");
 
         cbxTeamName.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbxTeamName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxTeamNameActionPerformed(evt);
+            }
+        });
 
-        btnTaskManager.setText("Task Manager");
+        btnTaskManager.setText("Task Management");
         btnTaskManager.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnTaskManagerActionPerformed(evt);
@@ -616,14 +727,8 @@ private void openTaskPopup() {
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(btnDeleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(btnTaskManager, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(btnTaskManager))
                                             .addComponent(txtJobName, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnResetJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnSaveJob)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnCancelJob))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
@@ -634,7 +739,13 @@ private void openTaskPopup() {
                                     .addComponent(jcdEstimatedEndDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jcdEstimatedStartDate, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
                                     .addComponent(cbxTeamName, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(349, 349, 349)))))
+                                .addGap(18, 18, 18)
+                                .addComponent(btnSaveJob)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnResetJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnCancelJob)
+                                .addGap(76, 76, 76)))))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -690,16 +801,19 @@ private void openTaskPopup() {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel9)
                     .addComponent(jcdEstimatedEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(cbxTeamName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCancelJob)
-                    .addComponent(btnSaveJob)
-                    .addComponent(btnResetJob))
-                .addGap(47, 47, 47))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(cbxTeamName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnSaveJob)
+                            .addComponent(btnResetJob)
+                            .addComponent(btnCancelJob))))
+                .addContainerGap(136, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -710,8 +824,6 @@ private void openTaskPopup() {
     jcdEstimatedStartDate.setDate(null);
     jcdEstimatedEndDate.setDate(null);
     cbxTeamName.setEnabled(true);
-
-
     setEditStatus(true);
     isEditMode = true;
 
@@ -724,138 +836,161 @@ private void openTaskPopup() {
         String description = txtDescription.getText().trim();
         java.util.Date startDate = jcdEstimatedStartDate.getDate();
         java.util.Date endDate = jcdEstimatedEndDate.getDate();
+        String selectedTeamName = (String) cbxTeamName.getSelectedItem();
 
         if (jobName.isEmpty() || description.isEmpty() || startDate == null || endDate == null) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Please enter complete information!", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        JobValidation jobValidation = new JobValidation();
+        if (!jobValidation.checkDate(startDate, endDate)) {
+            JOptionPane.showMessageDialog(null, "Invalid date!", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        
-        // khai báo để làm logic của ngày tháng
         java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
         java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
-
-        JobValidation jobValidation = new JobValidation();
-        boolean isValidDate = jobValidation.checkDate(startDate, endDate);
-
-        if (!isValidDate) {
-            JOptionPane.showMessageDialog(this, "Ngày không hợp lệ! Ngày bắt đầu phải lớn hơn ngày hiện tại và ngày kết thúc phải lớn hơn ngày bắt đầu.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+        
+        if (selectedTeamName.equals("Select Team")) {
+            JOptionPane.showMessageDialog(null, "Please select a group!", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        String teamName = (String) cbxTeamName.getSelectedItem();
-
-        int teamId = Integer.parseInt(teamName.split(" - ")[0]);
-
-        Connection conn = null;
-        if (conn == null) {
-            JOptionPane.showMessageDialog(this, "Không thể kết nối cơ sở dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
+        Connection conn = ConnectDatabase.getConnection();
         try {
-            ConnectDatabase.getConnection();
-            conn.setAutoCommit(false);
+            
+            conn.setAutoCommit(false); 
 
-            String insertJobSQL = "INSERT INTO Jobs (JobName, Description, EstimatedStartDate, EstimatedEndDate, Status) VALUES (?, ?, ?, ?, ?)";
+            String insertJobSQL = "INSERT INTO Jobs (JobName, Description, EstimatedStartDate, EstimatedEndDate, Status) VALUES (?, ?, ?, ?, 'NotStartedYet')";
+            int jobId = -1; 
+
             try (PreparedStatement pstmtJob = conn.prepareStatement(insertJobSQL, Statement.RETURN_GENERATED_KEYS)) {
                 pstmtJob.setString(1, jobName);
                 pstmtJob.setString(2, description);
                 pstmtJob.setDate(3, sqlStartDate);
                 pstmtJob.setDate(4, sqlEndDate);
-                pstmtJob.setString(5, "NotStartedYet");
+                pstmtJob.executeUpdate();
 
-                int affectedRows = pstmtJob.executeUpdate();
-                if (affectedRows == 0) {
-                    conn.rollback();
-                    JOptionPane.showMessageDialog(this, "Lỗi khi thêm công việc vào Jobs!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    return;
+                ResultSet generatedKeys = pstmtJob.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    jobId = generatedKeys.getInt(1);
                 }
-
-                int newJobId = 0;
-                try (ResultSet generatedKeys = pstmtJob.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        newJobId = generatedKeys.getInt(1);
-                    } else {
-                        conn.rollback();
-                        JOptionPane.showMessageDialog(this, "Không thể lấy JobID vừa tạo!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                }
-
-                String insertAssignmentSQL = "INSERT INTO Assignments (JobID, TeamID) VALUES (?, ?)";
-                try (PreparedStatement pstmtAssign = conn.prepareStatement(insertAssignmentSQL)) {
-                    pstmtAssign.setInt(1, newJobId);
-                    pstmtAssign.setInt(2, teamId);
-
-                    int affectedRowsAssign = pstmtAssign.executeUpdate();
-                    if (affectedRowsAssign == 0) {
-                        conn.rollback();
-                        JOptionPane.showMessageDialog(this, "Lỗi khi thêm phân công công việc vào Assignments!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                }
-
-                conn.commit();
-                JOptionPane.showMessageDialog(this, "Thêm công việc thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                loadJobs();
-                setEditStatus(false);
-            } catch (SQLException ex) {
-                conn.rollback();
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Lỗi khi thêm công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
+
+            if (jobId == -1) {
+                conn.rollback();
+                JOptionPane.showMessageDialog(null, "Error getting JobID!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String getTeamIdSQL = "SELECT TeamID FROM Teams WHERE TeamName = ?";
+            int teamId = -1;
+            try (PreparedStatement pstmtTeam = conn.prepareStatement(getTeamIdSQL)) {
+                pstmtTeam.setString(1, selectedTeamName);
+                ResultSet rs = pstmtTeam.executeQuery();
+                if (rs.next()) {
+                    teamId = rs.getInt("TeamID");
+                }
+            }
+
+            if (teamId == -1) {
+                conn.rollback();
+                JOptionPane.showMessageDialog(null,"Error getting TeamID!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String insertAssignmentSQL = "INSERT INTO Assignments (JobID, TeamID, ActualStartDate, ActualEndDate) VALUES (?, ?, NULL, NULL)";
+            try (PreparedStatement pstmtAssignment = conn.prepareStatement(insertAssignmentSQL)) {
+                pstmtAssignment.setInt(1, jobId);
+                pstmtAssignment.setInt(2, teamId);
+                pstmtAssignment.executeUpdate();
+            }
+
+            conn.commit();
+            JOptionPane.showMessageDialog(null, "Added job successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            loadJobs();
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi giao dịch CSDL!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error adding job!", "Error", JOptionPane.ERROR_MESSAGE);
+            try {
+                if (conn != null) conn.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
         } finally {
-            ConnectDatabase.closeConnection(conn);
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    ConnectDatabase.closeConnection(conn);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     });
     }//GEN-LAST:event_btnAddJobActionPerformed
 
     private void btnDeleteJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteJobActionPerformed
         // TODO add your handling code here:
-        deleteJob();
-        
+    // Remove old action listeners
     for (ActionListener al : btnDeleteJob.getActionListeners()) {
         btnDeleteJob.removeActionListener(al);
     }
+
+    // Add new action listener
     btnDeleteJob.addActionListener(e -> {
         int selectedRow = tbJob.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một công việc để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a job to delete!", "Notification", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         int jobId = (int) tbJob.getValueAt(selectedRow, 0);
-        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa công việc này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this job?", "Confirm", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            Connection conn = null;
-            try (
-                 PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Jobs WHERE JobID = ?")) {
-                
-                ConnectDatabase.getConnection();
-                pstmt.setInt(1, jobId);
-                int affectedRows = pstmt.executeUpdate();
+            Connection conn = ConnectDatabase.getConnection();
+            try {
+                conn.setAutoCommit(false); 
 
-                if (affectedRows > 0) {
-                    JOptionPane.showMessageDialog(this, "Xóa công việc thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                    loadJobs();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Không thể xóa công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                try (PreparedStatement pstmtAssignments = conn.prepareStatement("DELETE FROM Assignments WHERE JobID = ?")) {
+                    pstmtAssignments.setInt(1, jobId);
+                    pstmtAssignments.executeUpdate();
+                }
+
+                try (PreparedStatement pstmtJobs = conn.prepareStatement("DELETE FROM Jobs WHERE JobID = ?")) {
+                    pstmtJobs.setInt(1, jobId);
+                    int affectedRows = pstmtJobs.executeUpdate();
+
+                    if (affectedRows > 0) {
+                        conn.commit(); 
+                        JOptionPane.showMessageDialog(this, "Job deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        loadJobs(); 
+                    } else {
+                        conn.rollback(); 
+                        JOptionPane.showMessageDialog(this, "Cannot delete job!", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
 
             } catch (SQLException ex) {
+                try {
+                    conn.rollback(); 
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Lỗi khi xóa công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            } finally{
-                ConnectDatabase.closeConnection(conn);
+                JOptionPane.showMessageDialog(this, "Error deleting job: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                try {
+                    conn.setAutoCommit(true); 
+                    ConnectDatabase.closeConnection(conn); 
+                } catch (SQLException closeEx) {
+                    closeEx.printStackTrace();
+                }
             }
         }
     });
-
     }//GEN-LAST:event_btnDeleteJobActionPerformed
 
     private void txtDescriptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDescriptionActionPerformed
@@ -865,34 +1000,37 @@ private void openTaskPopup() {
 
     private void btnEditJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditJobActionPerformed
         // TODO add your handling code here:
-        
-    cbxTeamName.setEnabled(true);
-
-    
     int selectedRow = tbJob.getSelectedRow();
     if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn một công việc để chỉnh sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Please select a job to edit!", "Notification", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
     showSelectedJob(selectedRow);
 
+    int jobId = (int) tbJob.getValueAt(selectedRow, 0);
+    String currentTeamName = getTeamNameByJobId(jobId);
+    cbxTeamName.setSelectedItem(currentTeamName);
+
     setEditStatus(true);
+    cbxTeamName.setEnabled(true);
     isEditMode = true;
+    
+    btnResetJob.setEnabled(false); 
 
     for (ActionListener al : btnSaveJob.getActionListeners()) {
         btnSaveJob.removeActionListener(al);
     }
 
     btnSaveJob.addActionListener(e -> {
-        int jobId = (int) tbJob.getValueAt(selectedRow, 0);
         String jobName = txtJobName.getText().trim();
         String description = txtDescription.getText().trim();
         java.util.Date startDate = jcdEstimatedStartDate.getDate();
         java.util.Date endDate = jcdEstimatedEndDate.getDate();
+        String newTeamName = (String) cbxTeamName.getSelectedItem();
 
         if (jobName.isEmpty() || description.isEmpty() || startDate == null || endDate == null) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please enter complete information!", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -903,37 +1041,53 @@ private void openTaskPopup() {
         boolean isValidDate = jobValidation.checkDate(startDate, endDate);
         
         if (!isValidDate) {
-            JOptionPane.showMessageDialog(this, "Ngày không hợp lệ! Ngày bắt đầu phải lớn hơn ngày hiện tại và ngày kết thúc phải lớn hơn ngày bắt đầu.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invalid date! Start date must be greater than current date and end date must be greater than start date.", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        String updateSQL = "UPDATE Jobs SET JobName=?, Description=?, EstimatedStartDate=?, EstimatedEndDate=? WHERE JobID=?";
-        System.out.println("hàm updatejob");
-        Connection conn = null;
-        try {
-            ConnectDatabase.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(updateSQL);
+        Connection conn = ConnectDatabase.getConnection();
 
+        PreparedStatement pstmt = null;
+        try {
+            if (conn == null) {
+                JOptionPane.showMessageDialog(this,"Unable to connect to database!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            conn.setAutoCommit(false);
+            
+            String updateJobSQL = "UPDATE Jobs SET JobName=?, Description=?, EstimatedStartDate=?, EstimatedEndDate=? WHERE JobID=?";
+            pstmt = conn.prepareStatement(updateJobSQL);
             pstmt.setString(1, jobName);
             pstmt.setString(2, description);
             pstmt.setDate(3, sqlStartDate);
             pstmt.setDate(4, sqlEndDate);
             pstmt.setInt(5, jobId);
-
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                JOptionPane.showMessageDialog(this, "Cập nhật công việc thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                loadJobs();
-                setEditStatus(false);
-            } else {
-                JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            pstmt.executeUpdate();
+            pstmt.close();
+            
+            if (!currentTeamName.equals(newTeamName)) {
+                String updateAssignmentSQL = "UPDATE Assignments SET TeamID = (SELECT TeamID FROM Teams WHERE TeamName = ?) WHERE JobID = ?";
+                pstmt = conn.prepareStatement(updateAssignmentSQL);
+                pstmt.setString(1, newTeamName);
+                pstmt.setInt(2, jobId);
+                pstmt.executeUpdate();
             }
-
+            
+            conn.commit();
+            JOptionPane.showMessageDialog(this, "Job update successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            loadJobs();
         } catch (SQLException ex) {
+            try { if (conn != null) conn.rollback(); } catch (SQLException e1) { e1.printStackTrace(); }
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error updating job!", "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
-            ConnectDatabase.closeConnection(conn);
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
     });
     }//GEN-LAST:event_btnEditJobActionPerformed
@@ -957,13 +1111,17 @@ private void openTaskPopup() {
 
     loadJobs();
 
-    btnCancelJob.setEnabled(true);
+    btnCancelJob.setEnabled(false);
     }//GEN-LAST:event_btnCancelJobActionPerformed
 
     private void btnTaskManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaskManagerActionPerformed
         // TODO add your handling code here:
         openTaskPopup();
     }//GEN-LAST:event_btnTaskManagerActionPerformed
+
+    private void cbxTeamNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxTeamNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxTeamNameActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
