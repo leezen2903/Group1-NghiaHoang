@@ -12,6 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -28,6 +30,9 @@ public class Task extends javax.swing.JPanel {
     /**
      * Creates new form Task
      */
+    private List<Integer> taskIdList = new ArrayList<>();
+
+    
     public Task() {
         initComponents();
         loadTasks();
@@ -56,6 +61,8 @@ public class Task extends javax.swing.JPanel {
 
            while (rs.next()) {
                int taskId = rs.getInt("TaskID");
+               taskIdList.add(taskId); 
+               
                String taskName = rs.getString("TaskName");
                java.sql.Date sqlStartDate = rs.getDate("TaskStartDate");
                java.sql.Date sqlEndDate = rs.getDate("TaskEndDate");
@@ -346,14 +353,12 @@ public class Task extends javax.swing.JPanel {
         jLabel10 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         txtTaskName = new javax.swing.JTextField();
-        txtJobName = new javax.swing.JTextField();
         jSeparator1 = new javax.swing.JSeparator();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbTask = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         jcdTaskStartDate = new com.toedter.calendar.JDateChooser();
         btnCancelTask = new javax.swing.JButton();
-        btnSearch = new javax.swing.JButton();
         jLabel12 = new javax.swing.JLabel();
         jcdTaskEndDate = new com.toedter.calendar.JDateChooser();
         cbxAssignedTo = new javax.swing.JComboBox<>();
@@ -409,15 +414,13 @@ public class Task extends javax.swing.JPanel {
         jLabel10.setText("JobID :");
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("List task of job : ");
+        jLabel1.setText("List task of job");
 
         txtTaskName.addHierarchyListener(new java.awt.event.HierarchyListener() {
             public void hierarchyChanged(java.awt.event.HierarchyEvent evt) {
                 txtTaskNameHierarchyChanged(evt);
             }
         });
-
-        txtJobName.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
 
         tbTask.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -427,7 +430,7 @@ public class Task extends javax.swing.JPanel {
                 {null, null, null, null, null}
             },
             new String [] {
-                "Task Name", "Task Date", "AssignedTo", "JobID", "Status"
+                "Task Name", "Task Date", "Assigned To", "Job Name", "Status"
             }
         ) {
             Class[] types = new Class [] {
@@ -456,8 +459,6 @@ public class Task extends javax.swing.JPanel {
                 btnCancelTaskActionPerformed(evt);
             }
         });
-
-        btnSearch.setText("Search");
 
         jLabel12.setText("TaskEndDate :");
 
@@ -504,12 +505,8 @@ public class Task extends javax.swing.JPanel {
                         .addComponent(btnDeleteTask))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(291, 291, 291)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtJobName, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSearch)))
-                .addGap(0, 337, Short.MAX_VALUE))
+                        .addComponent(jLabel1)))
+                .addGap(0, 512, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -553,11 +550,7 @@ public class Task extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(txtJobName, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addComponent(btnSearch)))
+                .addComponent(jLabel1)
                 .addGap(2, 2, 2)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -892,7 +885,6 @@ public class Task extends javax.swing.JPanel {
     private javax.swing.JButton btnEditTask;
     private javax.swing.JButton btnResetTask;
     private javax.swing.JButton btnSaveTask;
-    private javax.swing.JButton btnSearch;
     private javax.swing.JComboBox<String> cbxAssignedTo;
     private javax.swing.JComboBox<String> cbxJobID;
     private javax.swing.JLabel jLabel1;
@@ -911,7 +903,6 @@ public class Task extends javax.swing.JPanel {
     private com.toedter.calendar.JDateChooser jcdTaskEndDate;
     private com.toedter.calendar.JDateChooser jcdTaskStartDate;
     private javax.swing.JTable tbTask;
-    private javax.swing.JTextField txtJobName;
     private javax.swing.JTextField txtTaskName;
     // End of variables declaration//GEN-END:variables
 }
