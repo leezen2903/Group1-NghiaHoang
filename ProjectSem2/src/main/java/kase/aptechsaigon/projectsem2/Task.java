@@ -12,6 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -21,327 +23,312 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Moiiii
  */
-public class Task extends javax.swing.JPanel {
+
     
+public class Task extends javax.swing.JPanel {
 
     /**
      * Creates new form Task
      */
+    private List<Integer> taskIdList = new ArrayList<>();
+
+    
     public Task() {
         initComponents();
         loadTasks();
-        
     }
     
-public void loadTasks() {
-    DefaultTableModel model = new DefaultTableModel(
-        new Object[]{"TaskID", "TaskName", "TaskStartDate", "TaskEndDate", "AssignedTo", "JobID", "Status"}, 0) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    };
-    tbTask.setModel(model);
+    public void loadTasks() {
+       DefaultTableModel model = new DefaultTableModel(
+           new Object[]{"TaskID", "TaskName", "TaskStartDate", "TaskEndDate", "AssignedTo", "JobID", "Status"}, 0) {
+           @Override
+           public boolean isCellEditable(int row, int column) {
+               return false;
+           }
+       };
+       tbTask.setModel(model);
 
-    String sql = "SELECT t.TaskID, t.TaskName, t.TaskStartDate, t.TaskEndDate, " +
-                 "e.FullName AS AssignedTo, t.AssignmentID, j.JobName AS JobID, t.Status " +
-                 "FROM Tasks t " +
-                 "LEFT JOIN Employees e ON t.AssignedTo = e.EmployeeID " +
-                 "LEFT JOIN Jobs j ON t.JobID = j.JobID";
+       String sql = "SELECT t.TaskID, t.TaskName, t.TaskStartDate, t.TaskEndDate, " +
+                    "e.FullName AS AssignedTo, j.JobName AS JobID, t.Status " +
+                    "FROM Tasks t " +
+                    "LEFT JOIN Employees e ON t.AssignedTo = e.EmployeeID " +
+                    "LEFT JOIN Jobs j ON t.JobID = j.JobID";
 
-    Connection conn = ConnectDatabase.getConnection();
-    try (
-         PreparedStatement pstmt = conn.prepareStatement(sql);
-         ResultSet rs = pstmt.executeQuery()) {
+       Connection conn = ConnectDatabase.getConnection();
+       try (
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery()) {
 
-        while (rs.next()) {
-            int taskId = rs.getInt("TaskID");
-            String taskName = rs.getString("TaskName");
-            java.sql.Date sqlStartDate = rs.getDate("TaskStartDate");
-            java.sql.Date sqlEndDate = rs.getDate("TaskEndDate");
-            String assignedTo = rs.getString("AssignedTo"); 
-            String jobName = rs.getString("JobID");
-            String status = rs.getString("Status");
+           while (rs.next()) {
+               int taskId = rs.getInt("TaskID");
+               taskIdList.add(taskId); 
+               
+               String taskName = rs.getString("TaskName");
+               java.sql.Date sqlStartDate = rs.getDate("TaskStartDate");
+               java.sql.Date sqlEndDate = rs.getDate("TaskEndDate");
+               String assignedTo = rs.getString("AssignedTo"); 
+               String jobName = rs.getString("JobID");
+               String status = rs.getString("Status");
 
-            java.util.Date startDate = (sqlStartDate != null) ? new java.util.Date(sqlStartDate.getTime()) : null;
-            java.util.Date endDate = (sqlEndDate != null) ? new java.util.Date(sqlEndDate.getTime()) : null;
+               java.util.Date startDate = (sqlStartDate != null) ? new java.util.Date(sqlStartDate.getTime()) : null;
+               java.util.Date endDate = (sqlEndDate != null) ? new java.util.Date(sqlEndDate.getTime()) : null;
 
-            model.addRow(new Object[]{taskId, taskName, startDate, endDate, assignedTo, jobName, status});
-        }
+               model.addRow(new Object[]{taskId, taskName, startDate, endDate, assignedTo, jobName, status});
+           }
 
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-    } finally {
-        ConnectDatabase.closeConnection(conn);
-    }
+       } catch (SQLException e) {
+           e.printStackTrace();
+           JOptionPane.showMessageDialog(this, "Error loading data from database!", "Error", JOptionPane.ERROR_MESSAGE);
+       } finally {
+           ConnectDatabase.closeConnection(conn);
+       }
 
-    tbTask.setDefaultEditor(Object.class, null);
-    tbTask.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+       tbTask.setDefaultEditor(Object.class, null);
+       tbTask.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-    loadComboBoxData();
+       tbTask.getColumnModel().getColumn(6).setMinWidth(0);
+       tbTask.getColumnModel().getColumn(6).setMaxWidth(0);
+       tbTask.getColumnModel().getColumn(6).setPreferredWidth(0);
 
-    if (isEditMode) {
-        setEditStatus(true);
-    } else {
-        setEditStatus(false);
-    }
+       loadComboBoxData();
 
-    if (tbTask.getRowCount() > 0 && tbTask.getSelectedRow() == -1) {
-        tbTask.setRowSelectionInterval(0, 0);
-        showSelectedTask(0);
-    }
+       if (isEditMode) {
+           setEditStatus(true);
+       } else {
+           setEditStatus(false);
+       }
 
-    tbTask.getSelectionModel().addListSelectionListener(event -> {
-        if (!event.getValueIsAdjusting() && tbTask.getSelectedRow() != -1) {
-            showSelectedTask(tbTask.getSelectedRow());
+       if (tbTask.getRowCount() > 0 && tbTask.getSelectedRow() == -1) {
+           tbTask.setRowSelectionInterval(0, 0);
+           showSelectedTask(0);
+       }
 
-            if (isEditMode) {
-                setEditStatus(true);
-            }
-        }
-    });
-}
+       tbTask.getSelectionModel().addListSelectionListener(event -> {
+           if (!event.getValueIsAdjusting() && tbTask.getSelectedRow() != -1) {
+               showSelectedTask(tbTask.getSelectedRow());
 
- 
-     private void loadComboBoxData() {
-        loadComboBox(cbAssignedTo, "SELECT DISTINCT AssignedTo FROM Tasks");
-        loadComboBox(cbJobID, "SELECT DISTINCT JobID FROM Tasks");
-    }
-     
-         private void loadComboBox(JComboBox<String> comboBox, String query) {
-        comboBox.removeAllItems();
-        Connection conn = ConnectDatabase.getConnection();
-        try (
-             PreparedStatement pstmt = conn.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                comboBox.addItem(rs.getString(1));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally{
-            ConnectDatabase.closeConnection(conn);
-        }
-    }
+               if (isEditMode) {
+                   setEditStatus(true);
+               }
+           }
+       });
+   }
 
-private void showSelectedTask(int row) {
-    txtTaskName.setText(tbTask.getValueAt(row, 1).toString());
+    private void loadComboBoxData() {
+       loadComboBox(cbxAssignedTo, "SELECT DISTINCT FullName FROM Employees"); 
+       loadComboBox(cbxJobID, "SELECT DISTINCT JobName FROM Jobs"); 
+   }
 
-    Object startDateObj = tbTask.getValueAt(row, 2);
-    if (startDateObj != null) {
-        jcdTaskStartDate.setDate((java.util.Date) startDateObj);
-    } else {
-        jcdTaskStartDate.setDate(null);
-    }
-
-    Object endDateObj = tbTask.getValueAt(row, 3);
-    if (endDateObj != null) {
-        jcdTaskEndDate.setDate((java.util.Date) endDateObj);
-    } else {
-        jcdTaskEndDate.setDate(null);
-    }
-
-    int taskId = (int) tbTask.getValueAt(row, 0);
-    String assignmentID = tbTask.getValueAt(row, 5).toString();
-    String jobID = tbTask.getValueAt(row, 6).toString();
-
-    Connection conn = ConnectDatabase.getConnection();
-    try {
-        String assignedToQuery = "SELECT FullName FROM Employees";
-        PreparedStatement assignedToStmt = conn.prepareStatement(assignedToQuery);
-        ResultSet rsAssignedTo = assignedToStmt.executeQuery();
-        cbAssignedTo.removeAllItems();
-        while (rsAssignedTo.next()) {
-            cbAssignedTo.addItem(rsAssignedTo.getString("FullName"));
-        }
-        
-        String assignmentQuery = "SELECT AssignmentID FROM Assignments";
-        PreparedStatement assignmentStmt = conn.prepareStatement(assignmentQuery);
-        ResultSet rsAssignments = assignmentStmt.executeQuery();
-        
-        String jobQuery = "SELECT JobName FROM Jobs";
-        PreparedStatement jobStmt = conn.prepareStatement(jobQuery);
-        ResultSet rsJobs = jobStmt.executeQuery();
-        cbJobID.removeAllItems();
-        while (rsJobs.next()) {
-            cbJobID.addItem(rsJobs.getString("JobName"));
-        }
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-    } finally {
-        ConnectDatabase.closeConnection(conn);
-    }
-
-    cbJobID.setSelectedItem(jobID);
-
-    setEditStatus(false);
-}
+   private void loadComboBox(JComboBox<String> comboBox, String query) {
+       comboBox.removeAllItems(); 
+       Connection conn = ConnectDatabase.getConnection();
+       try (
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            ResultSet rs = pstmt.executeQuery()) {
+           while (rs.next()) {
+               comboBox.addItem(rs.getString(1));
+           }
+       } catch (SQLException e) {
+           e.printStackTrace();
+       } finally{
+           ConnectDatabase.closeConnection(conn);
+       }
+   }
 
 
-     private boolean isEditMode = false; 
- 
- public void setEditStatus(boolean editable) {
-    isEditMode = editable;
-    
-    txtTaskName.setEnabled(editable);
-    jcdTaskStartDate.setEnabled(editable);
-    jcdTaskEndDate.setEnabled(editable);
-    cbAssignedTo.setEnabled(editable);
-    cbJobID.setEnabled(editable);
+   private void showSelectedTask(int row) {
+       txtTaskName.setText(tbTask.getValueAt(row, 1).toString());
 
-    btnSaveTask.setEnabled(editable);
-    btnCancelTask.setEnabled(editable);
-    btnResetTask.setEnabled(editable);
+       Object startDateObj = tbTask.getValueAt(row, 2);
+       if (startDateObj != null) {
+           jcdTaskStartDate.setDate((java.util.Date) startDateObj);
+       } else {
+           jcdTaskStartDate.setDate(null);
+       }
 
-    btnAddTask.setEnabled(!editable);
-    btnEditTask.setEnabled(!editable);
-    btnDeleteTask.setEnabled(!editable);
-}
+       Object endDateObj = tbTask.getValueAt(row, 3);
+       if (endDateObj != null) {
+           jcdTaskEndDate.setDate((java.util.Date) endDateObj);
+       } else {
+           jcdTaskEndDate.setDate(null);
+       }
 
- private void resetButtons() {
-    btnAddTask.setEnabled(true);
-    btnEditTask.setEnabled(true);
-    btnDeleteTask.setEnabled(true);
-    btnResetTask.setEnabled(true);
-}
+       String assignedTo = tbTask.getValueAt(row, 4).toString();
+       String jobID = tbTask.getValueAt(row, 5).toString();
 
- private void deleteTask() {
-    int selectedRow = tbTask.getSelectedRow();
-    if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhiệm vụ để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+       cbxAssignedTo.setSelectedItem(assignedTo);
+       cbxJobID.setSelectedItem(jobID);
 
-    if (!btnDeleteTask.isEnabled()) {
-        resetButtons();
-        return;
-    }
+       setEditStatus(false);
+   }
 
-    int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa nhiệm vụ này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-    if (confirm == JOptionPane.YES_OPTION) {
-        String taskID = tbTask.getValueAt(selectedRow, 0).toString();
+        private boolean isEditMode = false; 
 
-        String sql = "DELETE FROM Tasks WHERE TaskID = ?";
-        Connection conn = ConnectDatabase.getConnection();
-        try (
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    public void setEditStatus(boolean editable) {
+       isEditMode = editable;
 
-            pstmt.setInt(1, Integer.parseInt(taskID));
-            pstmt.executeUpdate();
-            JOptionPane.showMessageDialog(this, "Xóa thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            loadTasks();
+       txtTaskName.setEnabled(editable);
+       jcdTaskStartDate.setEnabled(editable);
+       jcdTaskEndDate.setEnabled(editable);
+       cbxAssignedTo.setEnabled(editable);
+       cbxJobID.setEnabled(editable);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi xóa dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        } finally{
-            ConnectDatabase.closeConnection(conn);
-        }
-    }
-    loadTasks();
-    btnCancelTask.setEnabled(false);
-}
+       btnSaveTask.setEnabled(editable);
+       btnCancelTask.setEnabled(editable);
+       btnResetTask.setEnabled(editable);
 
- private void cancelTask() {
-    setEditStatus(false);
-}
+       btnAddTask.setEnabled(!editable);
+       btnEditTask.setEnabled(!editable);
+       btnDeleteTask.setEnabled(!editable);
+   }
 
-private boolean isEditing = false;
-private int selectedTaskId = -1;
+    private void resetButtons() {
+       btnAddTask.setEnabled(true);
+       btnEditTask.setEnabled(true);
+       btnDeleteTask.setEnabled(true);
+       btnResetTask.setEnabled(true);
+   }
 
-private void saveTask() {
-    int selectedRow = tbTask.getSelectedRow();
+    private void deleteTask() {
+       int selectedRow = tbTask.getSelectedRow();
+       if (selectedRow == -1) {
+           JOptionPane.showMessageDialog(this, "Please select a mission to delete!", "Notification", JOptionPane.WARNING_MESSAGE);
+           return;
+       }
 
-    if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhiệm vụ để lưu!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+       if (!btnDeleteTask.isEnabled()) {
+           resetButtons();
+           return;
+       }
 
-    Object taskIdObj = tbTask.getValueAt(selectedRow, 0);
-    String taskName = txtTaskName.getText().trim();
-    String assignedTo = cbAssignedTo.getSelectedItem().toString().trim();
-    String jobID = cbJobID.getSelectedItem().toString().trim();
+       int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this task?", "Confirm", JOptionPane.YES_NO_OPTION);
+       if (confirm == JOptionPane.YES_OPTION) {
+           String taskID = tbTask.getValueAt(selectedRow, 0).toString();
 
-    java.util.Date startDate = jcdTaskStartDate.getDate();
-    java.util.Date endDate = jcdTaskEndDate.getDate();
+           String sql = "DELETE FROM Tasks WHERE TaskID = ?";
+           try (Connection conn = ConnectDatabase.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-    if (taskName.isEmpty() || assignedTo.isEmpty() || jobID.isEmpty() || startDate == null || endDate == null) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+               pstmt.setInt(1, Integer.parseInt(taskID));
+               pstmt.executeUpdate();
+               JOptionPane.showMessageDialog(this, "Deletion successful!", "Notification", JOptionPane.INFORMATION_MESSAGE);
+               loadTasks();
 
-    java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
-    java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
-    Connection conn = ConnectDatabase.getConnection();
-    try {
-        if (taskIdObj == null) { 
-            String insertSQL = "INSERT INTO Tasks (TaskName, AssignedTo, AssignmentID, JobID, TaskStartDate, TaskEndDate) VALUES (?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
-                pstmt.setString(1, taskName);
-                pstmt.setString(2, assignedTo);
-                pstmt.setInt(3, Integer.parseInt(jobID));
-                pstmt.setDate(4, sqlStartDate);
-                pstmt.setDate(5, sqlEndDate);
+           } catch (SQLException e) {
+               e.printStackTrace();
+               JOptionPane.showMessageDialog(this,"Error deleting data!", "Error", JOptionPane.ERROR_MESSAGE);
+           }
+       }
+       loadTasks();
+       btnCancelTask.setEnabled(false);
+   }
 
-                int affectedRows = pstmt.executeUpdate();
-                if (affectedRows > 0) {
-                    try (ResultSet rs = pstmt.getGeneratedKeys()) {
-                        if (rs.next()) {
-                            int newTaskId = rs.getInt(1);
-                            tbTask.setValueAt(newTaskId, selectedRow, 0);
-                        }
-                    }
-                    JOptionPane.showMessageDialog(this, "Thêm nhiệm vụ mới thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        } else { 
-            int taskId = (int) taskIdObj;
-            String updateSQL = "UPDATE Tasks SET TaskName=?, AssignedTo=?, AssignmentID=?, JobID=?, TaskStartDate=?, TaskEndDate=? WHERE TaskID=?";
-            try (PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
-                pstmt.setString(1, taskName);
-                pstmt.setString(2, assignedTo);
-                pstmt.setInt(3, Integer.parseInt(jobID));
-                pstmt.setDate(4, sqlStartDate);
-                pstmt.setDate(5, sqlEndDate);
-                pstmt.setInt(6, taskId);
+    private void cancelTask() {
+       setEditStatus(false);
+   }
 
-                int affectedRows = pstmt.executeUpdate();
-                if (affectedRows > 0) {
-                    JOptionPane.showMessageDialog(this, "Cập nhật nhiệm vụ thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        }
+   private boolean isEditing = false;
+   private int selectedTaskId = -1;
 
-        tbTask.setValueAt(taskName, selectedRow, 1);
-        tbTask.setValueAt(assignedTo, selectedRow, 2);
-        tbTask.setValueAt(jobID, selectedRow, 3);
-        tbTask.setValueAt(sqlStartDate, selectedRow, 4);
-        tbTask.setValueAt(sqlEndDate, selectedRow, 5);
-        setEditStatus(false);
+   private void saveTask() {
+       int selectedRow = tbTask.getSelectedRow();
 
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Lỗi khi lưu nhiệm vụ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-    } finally {
-        ConnectDatabase.closeConnection(conn);
-    }
-}
+       if (selectedRow == -1) {
+           JOptionPane.showMessageDialog(this, "Please select a mission to save!", "Error", JOptionPane.WARNING_MESSAGE);
+           return;
+       }
 
+       Object taskIdObj = tbTask.getValueAt(selectedRow, 0);
+       String taskName = txtTaskName.getText().trim();
+       String assignedTo = cbxAssignedTo.getSelectedItem().toString(); 
+       String jobID = cbxJobID.getSelectedItem().toString(); 
+       java.util.Date startDate = jcdTaskStartDate.getDate();
+       java.util.Date endDate = jcdTaskEndDate.getDate();
 
-private void resetTask() {
-    txtTaskName.setText("");
-    cbAssignedTo.setSelectedIndex(0); 
-    cbJobID.setSelectedIndex(0);
+       if (taskName.isEmpty() || assignedTo == null || jobID == null || startDate == null || endDate == null) {
+           JOptionPane.showMessageDialog(this, "Please enter complete information!", "Error", JOptionPane.WARNING_MESSAGE);
+           return;
+       }
 
-    jcdTaskStartDate.setDate(null);
-    jcdTaskEndDate.setDate(null);
-}
+       java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
+       java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
 
-    
- 
+       try (Connection conn = ConnectDatabase.getConnection()) {
+           if (taskIdObj == null) { 
+               String insertSQL = "INSERT INTO Tasks (TaskName, AssignedTo, JobID, TaskStartDate, TaskEndDate, AssignmentID) " + 
+                                  "VALUES (?, (SELECT EmployeeID FROM Employees WHERE FullName = ?), (SELECT JobID FROM Jobs WHERE JobName = ?), ?, ?, ?)";
+               try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
+                   pstmt.setString(1, taskName);
+                   pstmt.setString(2, assignedTo); 
+                   pstmt.setString(3, jobID);   
+                   pstmt.setDate(4, sqlStartDate);
+                   pstmt.setDate(5, sqlEndDate);
+                   String getAssignmentIdSQL = "SELECT AssignmentID FROM Assignments WHERE TeamID = (SELECT TeamID FROM Employees WHERE FullName = ?) AND JobID = (SELECT JobID FROM Jobs WHERE JobName = ?)";
+                   PreparedStatement pstmtAssignment = conn.prepareStatement(getAssignmentIdSQL);
+                   pstmtAssignment.setString(1, assignedTo);
+                   pstmtAssignment.setString(2, jobID);
+                   ResultSet rsAssignment = pstmtAssignment.executeQuery();
+                   if(rsAssignment.next()){
+                       pstmt.setInt(6, rsAssignment.getInt("AssignmentID"));
+                   }
+                   int affectedRows = pstmt.executeUpdate();
+                   if (affectedRows > 0) {
+                       try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                           if (rs.next()) {
+                               int newTaskId = rs.getInt(1);
+                               tbTask.setValueAt(newTaskId, selectedRow, 0);
+                           }
+                       }
+                       JOptionPane.showMessageDialog(this,"New quest added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                       loadTasks(); 
+                       resetTask();
+                   }
+               }
+           } else { // Update existing task
+               int taskId = (int) taskIdObj;
+               String updateSQL = "UPDATE Tasks SET TaskName=?, AssignedTo=(SELECT EmployeeID FROM Employees WHERE FullName = ?), JobID=(SELECT JobID FROM Jobs WHERE JobName = ?), TaskStartDate=?, TaskEndDate=?, AssignmentID = ? WHERE TaskID=?"; // Subqueries for IDs
+               try (PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
+                   pstmt.setString(1, taskName);
+                   pstmt.setString(2, assignedTo);
+                   pstmt.setString(3, jobID);
+                   pstmt.setDate(4, sqlStartDate);
+                   pstmt.setDate(5, sqlEndDate);
+                   //Get AssignmentID
+                   String getAssignmentIdSQL = "SELECT AssignmentID FROM Assignments WHERE TeamID = (SELECT TeamID FROM Employees WHERE FullName = ?) AND JobID = (SELECT JobID FROM Jobs WHERE JobName = ?)";
+                   PreparedStatement pstmtAssignment = conn.prepareStatement(getAssignmentIdSQL);
+                   pstmtAssignment.setString(1, assignedTo);
+                   pstmtAssignment.setString(2, jobID);
+                   ResultSet rsAssignment = pstmtAssignment.executeQuery();
+                   if(rsAssignment.next()){
+                       pstmt.setInt(6, rsAssignment.getInt("AssignmentID"));
+                   }
+                   pstmt.setInt(7, taskId);
+
+                   int affectedRows = pstmt.executeUpdate();
+                   if (affectedRows > 0) {
+                       JOptionPane.showMessageDialog(this, "Mission update successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                   }
+               }
+           }
+
+           loadTasks();
+           setEditStatus(false);
+           resetTask();
+
+       } catch (SQLException e) {
+           e.printStackTrace();
+           JOptionPane.showMessageDialog(this, "Error saving mission!", "Error", JOptionPane.ERROR_MESSAGE);
+       }
+   }
+
+   private void resetTask() {
+       txtTaskName.setText("");
+       cbxAssignedTo.setSelectedIndex(-1); 
+       cbxJobID.setSelectedIndex(-1); 
+       jcdTaskStartDate.setDate(null);
+       jcdTaskEndDate.setDate(null);
+   }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -366,18 +353,16 @@ private void resetTask() {
         jLabel10 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         txtTaskName = new javax.swing.JTextField();
-        txtJobName = new javax.swing.JTextField();
         jSeparator1 = new javax.swing.JSeparator();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbTask = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         jcdTaskStartDate = new com.toedter.calendar.JDateChooser();
         btnCancelTask = new javax.swing.JButton();
-        btnSearch = new javax.swing.JButton();
         jLabel12 = new javax.swing.JLabel();
         jcdTaskEndDate = new com.toedter.calendar.JDateChooser();
-        cbAssignedTo = new javax.swing.JComboBox<>();
-        cbJobID = new javax.swing.JComboBox<>();
+        cbxAssignedTo = new javax.swing.JComboBox<>();
+        cbxJobID = new javax.swing.JComboBox<>();
 
         btnSaveTask.setText("Save");
         btnSaveTask.addActionListener(new java.awt.event.ActionListener() {
@@ -429,7 +414,7 @@ private void resetTask() {
         jLabel10.setText("JobID :");
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("List task of job : ");
+        jLabel1.setText("List task of job");
 
         txtTaskName.addHierarchyListener(new java.awt.event.HierarchyListener() {
             public void hierarchyChanged(java.awt.event.HierarchyEvent evt) {
@@ -437,24 +422,22 @@ private void resetTask() {
             }
         });
 
-        txtJobName.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-
         tbTask.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Task Name", "Task Date", "AssignedTo", "AssignmentID", "JobID", "Status"
+                "Task Name", "Task Date", "Assigned To", "Job Name", "Status"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                true, true, true, true, true, false
+                true, true, true, true, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -477,13 +460,11 @@ private void resetTask() {
             }
         });
 
-        btnSearch.setText("Search");
-
         jLabel12.setText("TaskEndDate :");
 
-        cbAssignedTo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbxAssignedTo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        cbJobID.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbxJobID.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -524,12 +505,8 @@ private void resetTask() {
                         .addComponent(btnDeleteTask))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(291, 291, 291)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtJobName, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSearch)))
-                .addGap(0, 337, Short.MAX_VALUE))
+                        .addComponent(jLabel1)))
+                .addGap(0, 512, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -538,7 +515,7 @@ private void resetTask() {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbJobID, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(cbxJobID, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(331, 331, 331))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -566,18 +543,14 @@ private void resetTask() {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbAssignedTo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(cbxAssignedTo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGap(337, 337, 337))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(txtJobName, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addComponent(btnSearch)))
+                .addComponent(jLabel1)
                 .addGap(2, 2, 2)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -603,11 +576,11 @@ private void resetTask() {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
-                    .addComponent(cbAssignedTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbxAssignedTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
-                    .addComponent(cbJobID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbxJobID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -637,7 +610,7 @@ private void resetTask() {
 
     loadTasks();
 
-    btnCancelTask.setEnabled(true);
+    btnCancelTask.setEnabled(false);
     }//GEN-LAST:event_btnCancelTaskActionPerformed
 
     private void txtTaskNameHierarchyChanged(java.awt.event.HierarchyEvent evt) {//GEN-FIRST:event_txtTaskNameHierarchyChanged
@@ -646,10 +619,9 @@ private void resetTask() {
 
     private void btnAddTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddTaskActionPerformed
         // TODO add your handling code here:
-    txtTaskName.setText("");
-    cbAssignedTo.setSelectedIndex(0); // Chọn mục đầu tiên
-    cbJobID.setSelectedIndex(0);
-
+   txtTaskName.setText("");
+    cbxAssignedTo.setSelectedIndex(-1); 
+    cbxJobID.setSelectedIndex(-1); 
     jcdTaskStartDate.setDate(null);
     jcdTaskEndDate.setDate(null);
 
@@ -662,60 +634,75 @@ private void resetTask() {
 
     btnSaveTask.addActionListener(e -> {
         String taskName = txtTaskName.getText().trim();
-        String assignedTo = cbAssignedTo.getSelectedItem().toString().trim();
-        String jobID = cbJobID.getSelectedItem().toString().trim();
-
+        String assignedTo = cbxAssignedTo.getSelectedItem() != null ? cbxAssignedTo.getSelectedItem().toString() : null;
+        String jobID = cbxJobID.getSelectedItem() != null ? cbxJobID.getSelectedItem().toString() : null;
         java.util.Date startDate = jcdTaskStartDate.getDate();
         java.util.Date endDate = jcdTaskEndDate.getDate();
 
-        if (taskName.isEmpty() || assignedTo.isEmpty() || jobID.isEmpty() || startDate == null || endDate == null) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
+        if (taskName.isEmpty() || assignedTo == null || jobID == null || startDate == null || endDate == null) {
+            JOptionPane.showMessageDialog(this, "Please enter complete information!", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
         java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
-        Connection conn = ConnectDatabase.getConnection();
-        try {
-            String insertSQL = "INSERT INTO Tasks (TaskName, AssignedTo, AssignmentID, JobID, TaskStartDate, TaskEndDate) VALUES (?, ?, ?, ?, ?, ?)";
-            
+
+        try (Connection conn = ConnectDatabase.getConnection()) {
+            String insertSQL = "INSERT INTO Tasks (TaskName, AssignedTo, JobID, TaskStartDate, TaskEndDate, AssignmentID) " +
+                               "VALUES (?, (SELECT EmployeeID FROM Employees WHERE FullName = ?), (SELECT JobID FROM Jobs WHERE JobName = ?), ?, ?, ?)";
+
             try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
                 pstmt.setString(1, taskName);
-                pstmt.setString(2, assignedTo);
-                pstmt.setString(3, jobID);
+                pstmt.setString(2, assignedTo); 
+                pstmt.setString(3, jobID);   
                 pstmt.setDate(4, sqlStartDate);
                 pstmt.setDate(5, sqlEndDate);
 
+                String getAssignmentIdSQL = "SELECT AssignmentID FROM Assignments WHERE TeamID = (SELECT TeamID FROM Employees WHERE FullName = ?) AND JobID = (SELECT JobID FROM Jobs WHERE JobName = ?)";
+                try (PreparedStatement pstmtAssignment = conn.prepareStatement(getAssignmentIdSQL)) {
+                    pstmtAssignment.setString(1, assignedTo);
+                    pstmtAssignment.setString(2, jobID);
+                    try (ResultSet rsAssignment = pstmtAssignment.executeQuery()) {
+                        if (rsAssignment.next()) {
+                            pstmt.setInt(6, rsAssignment.getInt("AssignmentID"));
+                        } else {
+                            JOptionPane.showMessageDialog(this,"No matching AssignmentID found!", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    }
+                }
+
                 int affectedRows = pstmt.executeUpdate();
                 if (affectedRows > 0) {
-                    JOptionPane.showMessageDialog(this, "Thêm nhiệm vụ thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this,"Added mission successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                     loadTasks();
                     setEditStatus(false);
+                    isEditMode = false; 
                 } else {
-                    JOptionPane.showMessageDialog(this, "Lỗi khi thêm nhiệm vụ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this,"Error adding task!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi thêm nhiệm vụ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        } finally{
-            ConnectDatabase.closeConnection(conn);
+            JOptionPane.showMessageDialog(this, "SQL Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     });
     }//GEN-LAST:event_btnAddTaskActionPerformed
 
     private void btnEditTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditTaskActionPerformed
         // TODO add your handling code here:
-            int selectedRow = tbTask.getSelectedRow();
+   int selectedRow = tbTask.getSelectedRow();
     if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhiệm vụ để chỉnh sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Please select a task to edit!", "Notification", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
-    showSelectedTask(selectedRow);
+    showSelectedTask(selectedRow); 
 
     setEditStatus(true);
     isEditMode = true;
+    
+     btnResetTask.setEnabled(false); 
 
     for (ActionListener al : btnSaveTask.getActionListeners()) {
         btnSaveTask.removeActionListener(al);
@@ -724,46 +711,63 @@ private void resetTask() {
     btnSaveTask.addActionListener(e -> {
         int taskId = (int) tbTask.getValueAt(selectedRow, 0);
         String taskName = txtTaskName.getText().trim();
-        String assignedTo = cbAssignedTo.getSelectedItem().toString().trim();
-        String jobID = cbJobID.getSelectedItem().toString().trim();
-
+        String assignedTo = cbxAssignedTo.getSelectedItem() != null ? cbxAssignedTo.getSelectedItem().toString() : null;
+        String jobID = cbxJobID.getSelectedItem() != null ? cbxJobID.getSelectedItem().toString() : null;
         java.util.Date startDate = jcdTaskStartDate.getDate();
         java.util.Date endDate = jcdTaskEndDate.getDate();
 
-        if (taskName.isEmpty() || assignedTo.isEmpty() || jobID.isEmpty() || startDate == null || endDate == null) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
+        if (taskName.isEmpty() || assignedTo == null || jobID == null || startDate == null || endDate == null) {
+            JOptionPane.showMessageDialog(this, "Please enter complete information!", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
         java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
 
-        String updateSQL = "UPDATE Tasks SET TaskName=?, AssignedTo=?, AssignmentID=?, JobID=?, TaskStartDate=?, TaskEndDate=? WHERE TaskID=?";
-        Connection conn = ConnectDatabase.getConnection();
-        try (
-             PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
+        try (Connection conn = ConnectDatabase.getConnection()) {
+            String updateSQL = "UPDATE Tasks SET TaskName=?, AssignedTo=(SELECT EmployeeID FROM Employees WHERE FullName = ?), JobID=(SELECT JobID FROM Jobs WHERE JobName = ?), TaskStartDate=?, TaskEndDate=?, AssignmentID = ? WHERE TaskID=?";
 
-            pstmt.setString(1, taskName);
-            pstmt.setString(2, assignedTo);
-            pstmt.setString(3, jobID);
-            pstmt.setDate(4, sqlStartDate);
-            pstmt.setDate(5, sqlEndDate);
-            pstmt.setInt(6, taskId);
+            try (PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
+                pstmt.setString(1, taskName);
+                pstmt.setString(2, assignedTo);
+                pstmt.setString(3, jobID);
+                pstmt.setDate(4, sqlStartDate);
+                pstmt.setDate(5, sqlEndDate);
 
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                JOptionPane.showMessageDialog(this, "Cập nhật nhiệm vụ thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                loadTasks();
-                setEditStatus(false);
-            } else {
-                JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật nhiệm vụ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                String getAssignmentIdSQL = "SELECT AssignmentID FROM Assignments WHERE TeamID = (SELECT TeamID FROM Employees WHERE FullName = ?) AND JobID = (SELECT JobID FROM Jobs WHERE JobName = ?)";
+                try (PreparedStatement pstmtAssignment = conn.prepareStatement(getAssignmentIdSQL)) {
+                    pstmtAssignment.setString(1, assignedTo);
+                    pstmtAssignment.setString(2, jobID);
+                    try (ResultSet rsAssignment = pstmtAssignment.executeQuery()) {
+                        if (rsAssignment.next()) {
+                            pstmt.setInt(6, rsAssignment.getInt("AssignmentID"));
+                        } else {
+                            JOptionPane.showMessageDialog(this, "No matching AssignmentID found!", "Error", JOptionPane.ERROR_MESSAGE);
+                            return; 
+                        }
+                    }
+                }
+                pstmt.setInt(7, taskId);
+
+                int affectedRows = pstmt.executeUpdate();
+                if (affectedRows > 0) {
+                    JOptionPane.showMessageDialog(this,"Mission update successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+                    tbTask.setValueAt(taskName, selectedRow, 1);
+                    tbTask.setValueAt(assignedTo, selectedRow, 4);
+                    tbTask.setValueAt(jobID, selectedRow, 5);    
+                    tbTask.setValueAt(sqlStartDate, selectedRow, 2);
+                    tbTask.setValueAt(sqlEndDate, selectedRow, 3);
+
+                    setEditStatus(false);
+                    isEditMode = false;
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error updating quest!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
-
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật nhiệm vụ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        } finally{
-            ConnectDatabase.closeConnection(conn);
+            JOptionPane.showMessageDialog(this, "SQL Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     });
 
@@ -780,12 +784,12 @@ private void resetTask() {
     btnDeleteTask.addActionListener(e -> {
         int selectedRow = tbTask.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhiệm vụ để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a task to delete!", "Notification", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         int taskId = (int) tbTask.getValueAt(selectedRow, 0);
-        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa nhiệm vụ này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this task?", "Confirm", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
             Connection conn = ConnectDatabase.getConnection();
@@ -795,15 +799,15 @@ private void resetTask() {
                 int affectedRows = pstmt.executeUpdate();
 
                 if (affectedRows > 0) {
-                    JOptionPane.showMessageDialog(this, "Xóa nhiệm vụ thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Mission deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                     loadTasks();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Không thể xóa nhiệm vụ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Cannot delete quest!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
 
             } catch (SQLException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Lỗi khi xóa nhiệm vụ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error deleting quest!", "Error", JOptionPane.ERROR_MESSAGE);
             }finally{
                 ConnectDatabase.closeConnection(conn);
             }
@@ -823,7 +827,7 @@ private void resetTask() {
     int selectedRow = tbTask.getSelectedRow();
 
     if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Không có nhiệm vụ nào được chọn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "No quest selected!", "Error", JOptionPane.ERROR_MESSAGE);
         btnSaveTask.setEnabled(true); 
         return;
     }
@@ -834,41 +838,39 @@ private void resetTask() {
 
     int taskId = Integer.parseInt(tbTask.getValueAt(selectedRow, 0).toString()); 
     String taskName = txtTaskName.getText().trim();
-    String assignedTo = cbAssignedTo.getSelectedItem().toString().trim();
-    String jobID = cbJobID.getSelectedItem().toString().trim();
+    String jobID = cbxJobID.getSelectedItem().toString().trim();
 
     java.util.Date startDate = jcdTaskStartDate.getDate();
     java.util.Date endDate = jcdTaskEndDate.getDate();
 
-    if (taskName.isEmpty() || assignedTo.isEmpty() || jobID.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    if (taskName.isEmpty() || jobID.isEmpty()) {
+        JOptionPane.showMessageDialog(this,"Please fill in all information!", "Error", JOptionPane.ERROR_MESSAGE);
         btnSaveTask.setEnabled(true); 
         return;
     }
 
-    String sql = "UPDATE Tasks SET TaskName = ?, AssignedTo = ?, AssignmentID = ?, JobID = ?, TaskStartDate = ?, TaskEndDate = ? WHERE TaskID = ?";
+    String sql = "UPDATE Tasks SET TaskName = ?, AssignedTo = ?, JobID = ?, TaskStartDate = ?, TaskEndDate = ? WHERE TaskID = ?";
     Connection conn = ConnectDatabase.getConnection();
     try (
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
         pstmt.setString(1, taskName);
-        pstmt.setString(2, assignedTo);
-        pstmt.setString(3, jobID);
-        pstmt.setDate(4, (startDate != null) ? new java.sql.Date(startDate.getTime()) : null);
-        pstmt.setDate(5, (endDate != null) ? new java.sql.Date(endDate.getTime()) : null);
-        pstmt.setInt(6, taskId);
+        pstmt.setString(2, jobID);
+        pstmt.setDate(3, (startDate != null) ? new java.sql.Date(startDate.getTime()) : null);
+        pstmt.setDate(4, (endDate != null) ? new java.sql.Date(endDate.getTime()) : null);
+        pstmt.setInt(5, taskId);
 
         int affectedRows = pstmt.executeUpdate();
         if (affectedRows > 0) {
-            JOptionPane.showMessageDialog(this, "Cập nhật nhiệm vụ thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Mission update successful!", "Notification", JOptionPane.INFORMATION_MESSAGE);
             loadTasks(); 
         } else {
-            JOptionPane.showMessageDialog(this, "Không thể cập nhật dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Unable to update data!", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
     } catch (SQLException ex) {
         ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Error updating data!", "Error", JOptionPane.ERROR_MESSAGE);
     } finally {
         btnSaveTask.setEnabled(true);
         ConnectDatabase.closeConnection(conn);
@@ -883,9 +885,8 @@ private void resetTask() {
     private javax.swing.JButton btnEditTask;
     private javax.swing.JButton btnResetTask;
     private javax.swing.JButton btnSaveTask;
-    private javax.swing.JButton btnSearch;
-    private javax.swing.JComboBox<String> cbAssignedTo;
-    private javax.swing.JComboBox<String> cbJobID;
+    private javax.swing.JComboBox<String> cbxAssignedTo;
+    private javax.swing.JComboBox<String> cbxJobID;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
@@ -902,7 +903,6 @@ private void resetTask() {
     private com.toedter.calendar.JDateChooser jcdTaskEndDate;
     private com.toedter.calendar.JDateChooser jcdTaskStartDate;
     private javax.swing.JTable tbTask;
-    private javax.swing.JTextField txtJobName;
     private javax.swing.JTextField txtTaskName;
     // End of variables declaration//GEN-END:variables
 }

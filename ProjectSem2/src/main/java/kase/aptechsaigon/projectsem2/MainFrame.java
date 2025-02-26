@@ -11,6 +11,7 @@ import java.io.File;
 import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -32,9 +33,15 @@ public class MainFrame extends javax.swing.JFrame {
      */
     private JPanel defaultPanel;
    
-    public MainFrame() {       
+    public MainFrame(int employeeID, String fullName, int positionID) { 
+        
+        this.employeeID = employeeID;
+        this.fullName = fullName;
+        this.positionID = positionID;
+        
         initComponents();
         setExtendedState(JFrame.MAXIMIZED_BOTH); //Full màn hình
+        JOptionPane.showMessageDialog(this, "Xin chào, " + fullName);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         jpJob = new Job();
@@ -43,18 +50,12 @@ public class MainFrame extends javax.swing.JFrame {
         jpStaff = new Employee();
         jpTeam = new Team();
        // jpSalary = new AttendanceTracking();
-       // jpAttTracking = new AttendanceTracking();
+        jpAttTracking = new AttendanceTracking();
         //jpLogin = new Login();          
         jpPosition = new Position();
         jpAccount = new InfoAccount();
     }
     
-    public void switchToMainFrame() {
-    MainFrame mainFrame = new MainFrame();
-    this.setContentPane(mainFrame);
-    this.revalidate();
-    this.repaint();
-    }
     
       private void showPanel(JPanel panel) {
         jpBackground.removeAll(); 
@@ -499,6 +500,11 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuBar1.add(jmJob);
 
         jmSalary.setText("Salary");
+        jmSalary.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmSalaryActionPerformed(evt);
+            }
+        });
 
         jmiStaffSalary.setText("Staff Salary");
         jmSalary.add(jmiStaffSalary);
@@ -565,8 +571,8 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jmiStaffActionPerformed
 
     private void jmiAttendanceTrackingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiAttendanceTrackingActionPerformed
-        // TODO add your handling code here:
-        showPanel(jpSalary);
+
+        showPanel(jpAttTracking);
     }//GEN-LAST:event_jmiAttendanceTrackingActionPerformed
 
     private void jmiTeamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiTeamActionPerformed
@@ -589,14 +595,16 @@ public class MainFrame extends javax.swing.JFrame {
         showPanel(jpAccount);
     }//GEN-LAST:event_jmiAccountActionPerformed
 
+    private void jmSalaryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmSalaryActionPerformed
+   
+    }//GEN-LAST:event_jmSalaryActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainFrame().setVisible(true);
-            }              
+        java.awt.EventQueue.invokeLater(() -> {
+            new Login().setVisible(true);
         });
     }
 
