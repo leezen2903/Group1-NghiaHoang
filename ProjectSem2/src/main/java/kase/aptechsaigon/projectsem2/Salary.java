@@ -22,13 +22,13 @@ import kase.aptechsaigon.projectsem2.ConnectDatabase;
  *
  * @author Moiiii
  */
-public class AttendanceTracking extends javax.swing.JPanel {
+public class Salary extends javax.swing.JPanel {
 
 
     /**
      * Creates new form Jobb
      */
-    public AttendanceTracking() {
+    public Salary() {
         
             initComponents();
             loadSalaries();
@@ -36,7 +36,7 @@ public class AttendanceTracking extends javax.swing.JPanel {
 
 public void loadSalaries() {
     DefaultTableModel model = new DefaultTableModel(
-        new Object[]{"SalaryID", "Month", "Year", "PositionID", "DailyRate", "WorkDays","TotalSalary", "YearsOfWork"}, 0) {
+        new Object[]{"SalaryID", "Month", "Year", "PositionID", "DailyRate", "WorkDays", "YearsOfWork"}, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;

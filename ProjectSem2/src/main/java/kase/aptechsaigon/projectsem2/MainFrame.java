@@ -20,6 +20,10 @@ import javax.swing.JPanel;
 
 
 public class MainFrame extends javax.swing.JFrame {
+    private int employeeID;
+    private String fullName;
+    private int positionID;
+    
     public JPanel getJpTask() {
         return jpTask;
     }
@@ -28,7 +32,7 @@ public class MainFrame extends javax.swing.JFrame {
      */
     private JPanel defaultPanel;
    
-    public MainFrame() {
+    public MainFrame() {       
         initComponents();
         setExtendedState(JFrame.MAXIMIZED_BOTH); //Full màn hình
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -38,9 +42,11 @@ public class MainFrame extends javax.swing.JFrame {
         jpDept = new Department();
         jpStaff = new Employee();
         jpTeam = new Team();
-        jpSalary = new AttendanceTracking();
-        jpAttTracking = new AttendanceTracking();
-        jpLogin = new Login();          
+       // jpSalary = new AttendanceTracking();
+       // jpAttTracking = new AttendanceTracking();
+        //jpLogin = new Login();          
+        jpPosition = new Position();
+        jpAccount = new InfoAccount();
     }
     
     public void switchToMainFrame() {
@@ -68,12 +74,12 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jpLogin = new javax.swing.JPanel();
-        jpTask3 = new javax.swing.JPanel();
         jpBackground = new javax.swing.JPanel();
+        jpAccount = new javax.swing.JPanel();
         jpJob = new javax.swing.JPanel();
         jpTask = new javax.swing.JPanel();
         jpHR = new javax.swing.JPanel();
+        jpPosition = new javax.swing.JPanel();
         jpDept = new javax.swing.JPanel();
         jpStaff = new javax.swing.JPanel();
         jpSalary = new javax.swing.JPanel();
@@ -91,12 +97,12 @@ public class MainFrame extends javax.swing.JFrame {
         jmiHome = new javax.swing.JMenuItem();
         jmiLogout = new javax.swing.JMenuItem();
         jmiExit = new javax.swing.JMenuItem();
+        jmiAccount = new javax.swing.JMenuItem();
         jmHR = new javax.swing.JMenu();
         jmiDept = new javax.swing.JMenuItem();
-        jmiRole = new javax.swing.JMenuItem();
+        jmiPosition = new javax.swing.JMenuItem();
         jmiTeam = new javax.swing.JMenuItem();
         jmiStaff = new javax.swing.JMenuItem();
-        jmiContract = new javax.swing.JMenuItem();
         jmJob = new javax.swing.JMenu();
         jmiJobManagement = new javax.swing.JMenuItem();
         jmSalary = new javax.swing.JMenu();
@@ -109,29 +115,15 @@ public class MainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        javax.swing.GroupLayout jpTask3Layout = new javax.swing.GroupLayout(jpTask3);
-        jpTask3.setLayout(jpTask3Layout);
-        jpTask3Layout.setHorizontalGroup(
-            jpTask3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 856, Short.MAX_VALUE)
+        javax.swing.GroupLayout jpAccountLayout = new javax.swing.GroupLayout(jpAccount);
+        jpAccount.setLayout(jpAccountLayout);
+        jpAccountLayout.setHorizontalGroup(
+            jpAccountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 880, Short.MAX_VALUE)
         );
-        jpTask3Layout.setVerticalGroup(
-            jpTask3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 504, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout jpLoginLayout = new javax.swing.GroupLayout(jpLogin);
-        jpLogin.setLayout(jpLoginLayout);
-        jpLoginLayout.setHorizontalGroup(
-            jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpLoginLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jpTask3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jpLoginLayout.setVerticalGroup(
-            jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jpTask3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        jpAccountLayout.setVerticalGroup(
+            jpAccountLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 516, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jpTaskLayout = new javax.swing.GroupLayout(jpTask);
@@ -159,15 +151,26 @@ public class MainFrame extends javax.swing.JFrame {
             .addComponent(jpTask, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
+        javax.swing.GroupLayout jpPositionLayout = new javax.swing.GroupLayout(jpPosition);
+        jpPosition.setLayout(jpPositionLayout);
+        jpPositionLayout.setHorizontalGroup(
+            jpPositionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 852, Short.MAX_VALUE)
+        );
+        jpPositionLayout.setVerticalGroup(
+            jpPositionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 490, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout jpDeptLayout = new javax.swing.GroupLayout(jpDept);
         jpDept.setLayout(jpDeptLayout);
         jpDeptLayout.setHorizontalGroup(
             jpDeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 852, Short.MAX_VALUE)
+            .addGap(0, 868, Short.MAX_VALUE)
         );
         jpDeptLayout.setVerticalGroup(
             jpDeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 490, Short.MAX_VALUE)
+            .addGap(0, 504, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jpStaffLayout = new javax.swing.GroupLayout(jpStaff);
@@ -196,6 +199,11 @@ public class MainFrame extends javax.swing.JFrame {
                     .addContainerGap()
                     .addComponent(jpStaff, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addContainerGap()))
+            .addGroup(jpHRLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jpHRLayout.createSequentialGroup()
+                    .addGap(12, 12, 12)
+                    .addComponent(jpPosition, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGap(12, 12, 12)))
         );
         jpHRLayout.setVerticalGroup(
             jpHRLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -210,6 +218,11 @@ public class MainFrame extends javax.swing.JFrame {
                     .addContainerGap()
                     .addComponent(jpStaff, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addContainerGap()))
+            .addGroup(jpHRLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jpHRLayout.createSequentialGroup()
+                    .addGap(12, 12, 12)
+                    .addComponent(jpPosition, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGap(12, 12, 12)))
         );
 
         javax.swing.GroupLayout jpAttTrackingLayout = new javax.swing.GroupLayout(jpAttTracking);
@@ -384,6 +397,8 @@ public class MainFrame extends javax.swing.JFrame {
                     .addContainerGap()
                     .addComponent(jpTeam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addContainerGap()))
+            .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jpAccount, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jpBackgroundLayout.setVerticalGroup(
             jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -400,6 +415,8 @@ public class MainFrame extends javax.swing.JFrame {
                     .addContainerGap()
                     .addComponent(jpTeam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addContainerGap()))
+            .addGroup(jpBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jpAccount, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jmSystem.setText("System");
@@ -423,6 +440,14 @@ public class MainFrame extends javax.swing.JFrame {
         jmiExit.setText("Exit");
         jmSystem.add(jmiExit);
 
+        jmiAccount.setText("Account");
+        jmiAccount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiAccountActionPerformed(evt);
+            }
+        });
+        jmSystem.add(jmiAccount);
+
         jMenuBar1.add(jmSystem);
 
         jmHR.setText("HR");
@@ -435,8 +460,13 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jmHR.add(jmiDept);
 
-        jmiRole.setText("Role");
-        jmHR.add(jmiRole);
+        jmiPosition.setText("Position");
+        jmiPosition.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiPositionActionPerformed(evt);
+            }
+        });
+        jmHR.add(jmiPosition);
 
         jmiTeam.setText("Team");
         jmiTeam.addActionListener(new java.awt.event.ActionListener() {
@@ -453,9 +483,6 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         jmHR.add(jmiStaff);
-
-        jmiContract.setText("Contract");
-        jmHR.add(jmiContract);
 
         jMenuBar1.add(jmHR);
 
@@ -511,20 +538,10 @@ public class MainFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jpBackground, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jpLogin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jpBackground, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jpLogin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
         );
 
         pack();
@@ -561,44 +578,25 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jmiCalculateSalaryActionPerformed
 
     private void jmiLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiLogoutActionPerformed
-       showPanel(jpLogin);
+      
     }//GEN-LAST:event_jmiLogoutActionPerformed
+
+    private void jmiPositionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiPositionActionPerformed
+        showPanel(jpPosition);
+    }//GEN-LAST:event_jmiPositionActionPerformed
+
+    private void jmiAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiAccountActionPerformed
+        showPanel(jpAccount);
+    }//GEN-LAST:event_jmiAccountActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        
-    
-       
-        
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new MainFrame().setVisible(true);
-            }
+            }              
         });
     }
 
@@ -610,19 +608,20 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jmSalary;
     private javax.swing.JMenu jmSystem;
     private javax.swing.JMenuItem jmiAbout;
+    private javax.swing.JMenuItem jmiAccount;
     private javax.swing.JMenuItem jmiAttendanceTracking;
     private javax.swing.JMenuItem jmiCalculateSalary;
-    private javax.swing.JMenuItem jmiContract;
     private javax.swing.JMenuItem jmiDept;
     private javax.swing.JMenuItem jmiExit;
     private javax.swing.JMenuItem jmiHome;
     private javax.swing.JMenuItem jmiJobManagement;
     private javax.swing.JMenuItem jmiLogout;
     private javax.swing.JMenuItem jmiManual;
-    private javax.swing.JMenuItem jmiRole;
+    private javax.swing.JMenuItem jmiPosition;
     private javax.swing.JMenuItem jmiStaff;
     private javax.swing.JMenuItem jmiStaffSalary;
     private javax.swing.JMenuItem jmiTeam;
+    private javax.swing.JPanel jpAccount;
     private javax.swing.JPanel jpAttTracking;
     private javax.swing.JPanel jpAttTracking1;
     private javax.swing.JPanel jpBackground;
@@ -632,14 +631,13 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jpHR1;
     private javax.swing.JPanel jpJob;
     private javax.swing.JPanel jpJob1;
-    private javax.swing.JPanel jpLogin;
+    private javax.swing.JPanel jpPosition;
     private javax.swing.JPanel jpSalary;
     private javax.swing.JPanel jpSalary1;
     private javax.swing.JPanel jpStaff;
     private javax.swing.JPanel jpStaff1;
     private javax.swing.JPanel jpTask;
     private javax.swing.JPanel jpTask1;
-    private javax.swing.JPanel jpTask3;
     private javax.swing.JPanel jpTeam;
     // End of variables declaration//GEN-END:variables
 }
