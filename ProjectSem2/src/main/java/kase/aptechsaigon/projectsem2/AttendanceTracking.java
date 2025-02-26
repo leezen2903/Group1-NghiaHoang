@@ -14,62 +14,65 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 
 public class AttendanceTracking extends javax.swing.JPanel {
 
     private boolean isEditMode = false;
-    private int currentSalaryID = -1; // Lưu SalaryID của bản ghi đang được chọn
+    private int currentSalaryID = -1;
+    private DefaultComboBoxModel<String> cbxPositionModel; 
+    private DefaultComboBoxModel<String> cbxMonthModel;
 
     public AttendanceTracking() {
         initComponents();
+        cbxPositionModel = new DefaultComboBoxModel<>(); 
+        cbxPositionID.setModel(cbxPositionModel);      
+
+        loadPositions();
         loadSalaries();
-        loadPositions(); // Load dữ liệu cho combobox PositionID
-        setEditStatus(false); // Khởi tạo trạng thái không chỉnh sửa
-        cbxMonth.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateTotalSalary();
-            }
+        setEditStatus(false);
+        
+        cbxMonthModel = new DefaultComboBoxModel<>(); 
+        cbxMonth.setModel(cbxMonthModel);
+
+        loadMonths(); 
+
+        cbxMonth.addActionListener(e -> updateTotalSalary());
+        txtWorkDays.addActionListener(e -> updateTotalSalary());
+        txtYearsOfWork.addActionListener(e -> updateTotalSalary());
+
+        cbxPositionID.addActionListener(e -> {
+            updateDailyRate();
+            updateTotalSalary();
         });
 
-        txtWorkDays.addActionListener(new ActionListener() {
+        txtWorkDays.addKeyListener(new KeyAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void keyReleased(KeyEvent evt) {
                 updateTotalSalary();
             }
         });
-
-        cbxPositionID.addActionListener(new ActionListener() {
+        txtYearsOfWork.addKeyListener(new KeyAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                updateDailyRate();
-                updateTotalSalary();
-            }
-        });
-
-        txtYearsOfWork.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateTotalSalary();
-            }
-        });
-        txtWorkDays.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                updateTotalSalary();
-            }
-        });
-        txtYearsOfWork.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
+            public void keyReleased(KeyEvent evt) {
                 updateTotalSalary();
             }
         });
 
     }
 
-      private void loadPositions() {
-        cbxPositionID.removeAllItems();
-//        cbxPositionID.addItem(new ComboItem(-1, "Select Position"));
+    private void loadMonths() {
+        cbxMonthModel.removeAllElements(); 
+        for (int i = 1; i <= 12; i++) {
+            cbxMonthModel.addElement(String.valueOf(i));
+        }
+    }
+        
+    private void loadPositions() {
+        cbxPositionModel.removeAllElements();
+        cbxPositionModel.addElement("Select Position");
 
         String sql = "SELECT PositionID, PositionName FROM Positions";
 
@@ -78,41 +81,44 @@ public class AttendanceTracking extends javax.swing.JPanel {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                int positionID = rs.getInt("PositionID");
                 String positionName = rs.getString("PositionName");
-//                cbxPositionID.addItem(new ComboItem(positionID, positionName));
+                cbxPositionModel.addElement(positionName);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Lỗi khi tải dữ liệu chức vụ từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error loading positions from database!", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+//            ConnectDatabase.closeConnection(connection);
+        }
+    }
+ 
+private void showSelectedSalary(int row) {
+    currentSalaryID = (int) tbSalary.getValueAt(row, 0); 
+
+    String month = tbSalary.getValueAt(row, 1).toString();
+    cbxMonth.setSelectedItem(month);
+
+    String positionName = tbSalary.getValueAt(row, 4).toString(); 
+
+    for (int i = 0; i < cbxPositionID.getItemCount(); i++) {
+        Object item = cbxPositionID.getItemAt(i); 
+
+        if (item.toString().equals(positionName)) { 
+            cbxPositionID.setSelectedIndex(i);
+            break;
         }
     }
 
-    private void showSelectedSalary(int row) {
-        currentSalaryID = (int) tbSalary.getValueAt(row, 0);
-        cbxMonth.setSelectedItem(tbSalary.getValueAt(row, 1).toString()); // Correct: setSelectedItem with String
+    txtDailyRate.setText(tbSalary.getValueAt(row, 5).toString());
+    txtWorkDays.setText(tbSalary.getValueAt(row, 6).toString());
+    txtTotalSalary.setText(tbSalary.getValueAt(row, 7).toString());
+    txtYearsOfWork.setText(tbSalary.getValueAt(row, 8).toString());
 
-        int positionID = (int) tbSalary.getValueAt(row, 3);
+    setEditStatus(false);
+}
 
-//        for (int i = 0; i < cbxPositionID.getItemCount(); i++) {
-//            ComboItem item = cbxPositionID.getItemAt(i);
-//            if (item.getId() == positionID) {
-//                cbxPositionID.setSelectedItem(item);
-//                break;
-//            }
-//        }
-
-        txtDailyRate.setText(tbSalary.getValueAt(row, 5).toString());
-        txtWorkDays.setText(tbSalary.getValueAt(row, 6).toString());
-        txtTotalSalary.setText(tbSalary.getValueAt(row, 7).toString());
-        txtYearsOfWork.setText(tbSalary.getValueAt(row, 8).toString());
-
-        setEditStatus(false);
-    }
-
-
-    private class ComboItem {
+    private static class ComboItem {
         private int id;
         private String name;
 
@@ -131,9 +137,10 @@ public class AttendanceTracking extends javax.swing.JPanel {
 
         @Override
         public String toString() {
-            return name; // Trả về positionName
+            return name; 
         }
     }
+
 
     private void updateDailyRate(){
         if(cbxPositionID.getSelectedItem() instanceof ComboItem){
@@ -151,6 +158,7 @@ public class AttendanceTracking extends javax.swing.JPanel {
                 }
             }catch (SQLException e){
                 e.printStackTrace();
+            } finally{
             }
         }
     }
@@ -191,7 +199,8 @@ public class AttendanceTracking extends javax.swing.JPanel {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Lỗi khi tải dữ liệu từ database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error loading data from database!", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
         }
 
         tbSalary.setDefaultEditor(Object.class, null);
@@ -234,7 +243,7 @@ public class AttendanceTracking extends javax.swing.JPanel {
         int yearsOfWork = Integer.parseInt(txtYearsOfWork.getText());
 
         if (month.isEmpty() || String.valueOf(year).isEmpty() || String.valueOf(positionID).isEmpty() || String.valueOf(dailyRate).isEmpty() || String.valueOf(workDays).isEmpty() || String.valueOf(yearsOfWork).isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please enter complete information!", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -253,8 +262,8 @@ public class AttendanceTracking extends javax.swing.JPanel {
 
                     int affectedRows = pstmt.executeUpdate();
                     if (affectedRows > 0) {
-                        JOptionPane.showMessageDialog(this, "Cập nhật lương thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                        loadSalaries(); // Tải lại dữ liệu sau khi cập nhật
+                        JOptionPane.showMessageDialog(this, "Salary updated successfully!", "Notification", JOptionPane.INFORMATION_MESSAGE);
+                        loadSalaries(); 
                     }
                 }
             } else {
@@ -269,21 +278,21 @@ public class AttendanceTracking extends javax.swing.JPanel {
 
                     int affectedRows = pstmt.executeUpdate();
                     if (affectedRows > 0) {
-                        JOptionPane.showMessageDialog(this, "Thêm mới lương thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "New salary added successfully!", "Notification", JOptionPane.INFORMATION_MESSAGE);
                         try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                             if (generatedKeys.next()) {
-                                currentSalaryID = generatedKeys.getInt(1); // Lấy SalaryID mới
+                                currentSalaryID = generatedKeys.getInt(1); 
                             }
                         }
-                        loadSalaries(); // Tải lại dữ liệu sau khi thêm mới
+                        loadSalaries(); 
                     }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi lưu dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,"Error saving data!", "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
-            setEditStatus(false); // Chuyển về trạng thái không chỉnh sửa sau khi lưu
+            setEditStatus(false); 
         }
     }
 
@@ -306,7 +315,7 @@ public class AttendanceTracking extends javax.swing.JPanel {
         if (selectedRow != -1) {
             setEditStatus(true);
         } else {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn bản ghi lương để sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a salary record to edit!", "Notification", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -324,7 +333,7 @@ public class AttendanceTracking extends javax.swing.JPanel {
             int workDays = Integer.parseInt(txtWorkDays.getText());
             txtTotalSalary.setText(String.valueOf(dailyRate * workDays));
         } catch (NumberFormatException ex) {
-            txtTotalSalary.setText("0"); // Handle invalid input
+            txtTotalSalary.setText("0");
         }
     }
 
@@ -659,78 +668,85 @@ public class AttendanceTracking extends javax.swing.JPanel {
         if (selectedRow != -1) {
             setEditStatus(true);
         } else {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn bản ghi lương để sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this,"Please select a salary record to edit!", "Notification", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // TODO add your handling code here:
-        String month = cbxMonth.getSelectedItem().toString();
-        int year = Integer.parseInt(txtYear.getText());
+      String month = cbxMonth.getSelectedItem().toString(); 
+    int year = Integer.parseInt(txtYear.getText()); 
 
-        if (!(cbxPositionID.getSelectedItem() instanceof ComboItem)) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn chức vụ!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        ComboItem selectedPosition = (ComboItem) cbxPositionID.getSelectedItem();
-        int positionID = selectedPosition.getId();
+    Object selectedItem = cbxPositionID.getSelectedItem();
+    if (selectedItem == null) {
+        JOptionPane.showMessageDialog(this, "Please select a position!", "Error", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
 
-        double dailyRate = Double.parseDouble(txtDailyRate.getText());
-        int workDays = Integer.parseInt(txtWorkDays.getText());
-        int yearsOfWork = Integer.parseInt(txtYearsOfWork.getText());
+    int positionID;
+    if (selectedItem instanceof ComboItem) {
+        positionID = ((ComboItem) selectedItem).getId(); 
+    } else {
+        JOptionPane.showMessageDialog(this, "Invalid position data!", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        if (month.isEmpty() || String.valueOf(year).isEmpty() || String.valueOf(positionID).isEmpty() || String.valueOf(dailyRate).isEmpty() || String.valueOf(workDays).isEmpty() || String.valueOf(yearsOfWork).isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+    double dailyRate = Double.parseDouble(txtDailyRate.getText());
+    int workDays = Integer.parseInt(txtWorkDays.getText());
+    int yearsOfWork = Integer.parseInt(txtYearsOfWork.getText());
 
-        String sql;
-        try (Connection conn = ConnectDatabase.getConnection()) {
-            if (isEditMode) {
-                sql = "UPDATE Salaries SET Month=?, Year=?, PositionID=?, DailyRate=?, WorkDays=?, YearsOfWork=? WHERE SalaryID=?";
-                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                    pstmt.setString(1, month);
-                    pstmt.setInt(2, year);
-                    pstmt.setInt(3, positionID);
-                    pstmt.setDouble(4, dailyRate);
-                    pstmt.setInt(5, workDays);
-                    pstmt.setInt(6, yearsOfWork);
-                    pstmt.setInt(7, currentSalaryID);
+    if (month.isEmpty() || year <= 0 || positionID <= 0 || dailyRate <= 0 || workDays <= 0 || yearsOfWork < 0) {
+        JOptionPane.showMessageDialog(this, "Please enter valid information!", "Error", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
 
-                    int affectedRows = pstmt.executeUpdate();
-                    if (affectedRows > 0) {
-                        JOptionPane.showMessageDialog(this, "Cập nhật lương thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                    }
+    String sql;
+    try (Connection conn = ConnectDatabase.getConnection()) {
+        if (isEditMode) {
+            sql = "UPDATE Salaries SET Month=?, Year=?, PositionID=?, DailyRate=?, WorkDays=?, YearsOfWork=? WHERE SalaryID=?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, month);
+                pstmt.setInt(2, year);
+                pstmt.setInt(3, positionID);
+                pstmt.setDouble(4, dailyRate);
+                pstmt.setInt(5, workDays);
+                pstmt.setInt(6, yearsOfWork);
+                pstmt.setInt(7, currentSalaryID);
+
+                int affectedRows = pstmt.executeUpdate();
+                if (affectedRows > 0) {
+                    JOptionPane.showMessageDialog(this, "Salary updated successfully!", "Notification", JOptionPane.INFORMATION_MESSAGE);
                 }
-            } else {
-                sql = "INSERT INTO Salaries (Month, Year, PositionID, DailyRate, WorkDays, YearsOfWork) VALUES (?, ?, ?, ?, ?, ?)";
-                try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                    pstmt.setString(1, month);
-                    pstmt.setInt(2, year);
-                    pstmt.setInt(3, positionID);
-                    pstmt.setDouble(4, dailyRate);
-                    pstmt.setInt(5, workDays);
-                    pstmt.setInt(6, yearsOfWork);
+            }
+        } else {
+            sql = "INSERT INTO Salaries (Month, Year, PositionID, DailyRate, WorkDays, YearsOfWork) VALUES (?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                pstmt.setString(1, month);
+                pstmt.setInt(2, year);
+                pstmt.setInt(3, positionID);
+                pstmt.setDouble(4, dailyRate);
+                pstmt.setInt(5, workDays);
+                pstmt.setInt(6, yearsOfWork);
 
-                    int affectedRows = pstmt.executeUpdate();
-                    if (affectedRows > 0) {
-                        JOptionPane.showMessageDialog(this, "Thêm mới lương thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                        try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                            if (generatedKeys.next()) {
-                                currentSalaryID = generatedKeys.getInt(1);
-                            }
+                int affectedRows = pstmt.executeUpdate();
+                if (affectedRows > 0) {
+                    JOptionPane.showMessageDialog(this, "New salary added successfully!", "Notification", JOptionPane.INFORMATION_MESSAGE);
+                    try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            currentSalaryID = generatedKeys.getInt(1);
                         }
                     }
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi lưu dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            setEditStatus(false);
-            loadSalaries();
-            tbSalary.clearSelection();
         }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this,"Error saving data!", "Error", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        setEditStatus(false);
+        loadSalaries();
+        tbSalary.clearSelection();
+    }
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
