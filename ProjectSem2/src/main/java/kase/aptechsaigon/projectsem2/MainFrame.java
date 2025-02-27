@@ -25,14 +25,12 @@ public class MainFrame extends javax.swing.JFrame {
     private String fullName;
     private int positionID;
     
+    private JPanel defaultPanel;
+       
     public JPanel getJpTask() {
         return jpTask;
     }
-    /**
-     * Creates new form MainFrame
-     */
-    private JPanel defaultPanel;
-   
+    
     public MainFrame(int employeeID, String fullName, int positionID) { 
         
         this.employeeID = employeeID;
