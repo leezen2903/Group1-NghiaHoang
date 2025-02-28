@@ -31,10 +31,10 @@ public class Department extends javax.swing.JPanel {
     public Department() {
         
             initComponents();
-            loadJobs();
+            loadDepts();
         }
 
-public void loadJobs() {
+public void loadDepts() {
     DefaultTableModel model = new DefaultTableModel(
         new Object[]{"DepartmentID", "DepartmentName", "ManagerID", "DeputyManagerID"}, 0) {
         @Override
@@ -64,10 +64,11 @@ public void loadJobs() {
     } finally {
         ConnectDatabase.closeConnection(conn);
     }
-
+    
     tbDept.setDefaultEditor(Object.class, null);
     tbDept.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
+    hideUnwantedColumns();
+    
     if (isEditMode) {
         setEditStatus(true);
     } else {
@@ -89,11 +90,24 @@ public void loadJobs() {
         }
     });
 }
+public void hideUnwantedColumns() {
+    if (tbDept.getColumnModel().getColumnCount() > 1) {
+        tbDept.getColumnModel().getColumn(0).setMinWidth(0);
+        tbDept.getColumnModel().getColumn(0).setMaxWidth(0);
+        tbDept.getColumnModel().getColumn(0).setWidth(0);
 
+        tbDept.getColumnModel().getColumn(2).setMinWidth(0);
+        tbDept.getColumnModel().getColumn(2).setMaxWidth(0);
+        tbDept.getColumnModel().getColumn(2).setWidth(0);
+
+        tbDept.getColumnModel().getColumn(3).setMinWidth(0);
+        tbDept.getColumnModel().getColumn(3).setMaxWidth(0);
+        tbDept.getColumnModel().getColumn(3).setWidth(0);
+    }
+}
 private void showSelectedJob(int row) {
     txtDeptName.setText(tbDept.getValueAt(row, 1).toString());
-    txtManID.setText(tbDept.getValueAt(row, 2).toString());
-    txtDManID.setText(tbDept.getValueAt(row, 3).toString());
+    
     /*Object startDateObj = tbJob.getValueAt(row, 3);
     if (startDateObj != null) {
         jcdEstimatedStartDate.setDate((java.util.Date) startDateObj);
@@ -117,8 +131,7 @@ private void showSelectedJob(int row) {
         isEditMode = editable;
         
         txtDeptName.setEnabled(editable);
-        txtManID.setEnabled(editable);
-        txtDManID.setEnabled(editable);
+        
        /* jcdEstimatedStartDate.setEnabled(editable);
         jcdEstimatedEndDate.setEnabled(editable); */
         btnSaveJob.setEnabled(editable);
@@ -162,7 +175,7 @@ private void showSelectedJob(int row) {
             pstmt.setInt(1, Integer.parseInt(DeptID));
             pstmt.executeUpdate();
             JOptionPane.showMessageDialog(this, "Xóa thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            loadJobs();
+            loadDepts();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -171,7 +184,7 @@ private void showSelectedJob(int row) {
         ConnectDatabase.closeConnection(conn); 
         }
     }
-        loadJobs();
+        loadDepts();
         btnCancelJob.setEnabled(false);
 }
 
@@ -192,12 +205,11 @@ private void saveJob() {
 
     Object deptIdObj = tbDept.getValueAt(selectedRow, 0);
     String deptName = txtDeptName.getText().trim();
-    String manID = txtManID.getText().trim();
-    String dManID = txtDManID.getText().trim();
+    
     /* java.util.Date startDate = jcdEstimatedStartDate.getDate();
     java.util.Date endDate = jcdEstimatedEndDate.getDate(); */
 
-    if (deptName.isEmpty() || manID.isEmpty() || dManID.isEmpty()) {
+    if (deptName.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
         return;
     }
@@ -207,13 +219,10 @@ private void saveJob() {
 
     try (Connection conn = ConnectDatabase.getConnection()) {
         if (deptIdObj == null) { 
-            String insertSQL = "INSERT INTO Departments (DepartmentName, ManagerID, DeputyManagerID) VALUES (?, ?, ?, ?)";
+            String insertSQL = "INSERT INTO Departments (DepartmentName) VALUES (?)";
             try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
                 pstmt.setString(1, deptName);
-                pstmt.setString(2, manID);
-                /*pstmt.setDate(3, deputyManagerID);
-                pstmt.setDate(4, sqlEndDate);*/
-                pstmt.setString(3, dManID);
+               
                
 
                 int affectedRows = pstmt.executeUpdate();
@@ -229,12 +238,10 @@ private void saveJob() {
             }
         } else { 
             int deptId = (int) deptIdObj;
-            String updateSQL = "UPDATE Departments SET DepartmentName=?, ManagerID=?, DeputyManagerID=? WHERE DepartmentID=?";
+            String updateSQL = "UPDATE Departments SET DepartmentName=? WHERE DepartmentID=?";
             try (PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
-                pstmt.setString(1, deptName);
-                pstmt.setString(2, manID);
-                pstmt.setString(3, dManID);              
-                pstmt.setInt(4, deptId);
+                pstmt.setString(1, deptName);                          
+                pstmt.setInt(2, deptId);
 
                 int affectedRows = pstmt.executeUpdate();
                 if (affectedRows > 0) {
@@ -244,8 +251,6 @@ private void saveJob() {
         }
 
         tbDept.setValueAt(deptName, selectedRow, 1);
-        tbDept.setValueAt(manID, selectedRow, 2);
-        tbDept.setValueAt(dManID, selectedRow, 3);
         tbDept.setValueAt(deptIdObj, selectedRow, 4);
         setEditStatus(false);
 
@@ -257,8 +262,6 @@ private void saveJob() {
 
 private void resetJob() {
     txtDeptName.setText("");
-    txtManID.setText("");
-    txtDManID.setText("");
 }
 
 
@@ -274,13 +277,9 @@ private void resetJob() {
         jScrollPane1 = new javax.swing.JScrollPane();
         tbDept = new javax.swing.JTable();
         jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jSeparator2 = new javax.swing.JSeparator();
-        jLabel8 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         btnAddJob = new javax.swing.JToggleButton();
         btnDeleteJob = new javax.swing.JToggleButton();
-        txtManID = new javax.swing.JTextField();
         btnEditJob = new javax.swing.JToggleButton();
         btnSaveJob = new javax.swing.JButton();
         btnResetJob = new javax.swing.JToggleButton();
@@ -288,142 +287,129 @@ private void resetJob() {
         jLabel1 = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
         btnCancelJob = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JSeparator();
         jLabel4 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jSeparator4 = new javax.swing.JSeparator();
         jSeparator5 = new javax.swing.JSeparator();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
-        txtDManID = new javax.swing.JTextField();
 
         tbDept.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null},
+                {null}
             },
             new String [] {
-                "DepartentName", "ManagerID", "DeputyManagerID"
+                "DepartentName"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                true, true, false
+                java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
         });
         jScrollPane1.setViewportView(tbDept);
 
-        jLabel6.setText("Department Name");
-
-        jLabel7.setText("Manager ID");
-
-        jLabel8.setText("Deputy Manager ID");
+        jLabel6.setText("Department Name:");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("Function :");
@@ -440,12 +426,6 @@ private void resetJob() {
         btnDeleteJob.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDeleteJobActionPerformed(evt);
-            }
-        });
-
-        txtManID.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtManIDActionPerformed(evt);
             }
         });
 
@@ -492,134 +472,90 @@ private void resetJob() {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setText("Department list:");
 
-        txtDManID.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtDManIDActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 1, Short.MAX_VALUE)
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(194, 194, 194)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(180, 180, 180)
-                                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSeparator5)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSeparator4))))
-            .addComponent(jScrollPane1)
+            .addComponent(jSeparator4, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(jSeparator5)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator3)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnResetJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnSaveJob)
                         .addGap(18, 18, 18)
-                        .addComponent(btnCancelJob))
+                        .addComponent(btnCancelJob)
+                        .addGap(6, 6, 6))
                     .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1033, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(227, 227, 227)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2)
                                     .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(12, 12, 12)
                                         .addComponent(btnAddJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btnEditJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnDeleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(43, 43, 43))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txtManID, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(txtDManID, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(txtDeptName, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel2)))
-                        .addGap(0, 393, Short.MAX_VALUE)))
+                                        .addComponent(btnDeleteJob, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLabel1))
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(462, 462, 462))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(40, 40, 40)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(6, 6, 6)
+                        .addComponent(txtDeptName, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(17, 17, 17)
+                .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(41, 41, 41)
-                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(3, 3, 3)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(btnAddJob)
-                                        .addComponent(btnEditJob)
-                                        .addComponent(btnDeleteJob))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(28, 28, 28)
-                        .addComponent(jLabel4)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(txtDeptName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(9, 9, 9)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(txtManID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel3)
+                    .addComponent(btnAddJob)
+                    .addComponent(btnEditJob)
+                    .addComponent(btnDeleteJob))
+                .addGap(6, 6, 6)
+                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(txtDManID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 103, Short.MAX_VALUE)
+                    .addComponent(txtDeptName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addGap(29, 29, 29)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnResetJob)
                     .addComponent(btnSaveJob)
                     .addComponent(btnCancelJob))
-                .addContainerGap())
+                .addGap(16, 16, 16)
+                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(9, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -627,8 +563,6 @@ private void resetJob() {
         // TODO add your handling code here:
     // Xóa dữ liệu cũ trong các ô nhập liệu
     txtDeptName.setText("");
-    txtManID.setText("");
-    txtDManID.setText("");
 
     setEditStatus(true);
     isEditMode = true;
@@ -639,31 +573,26 @@ private void resetJob() {
 
     btnSaveJob.addActionListener(e -> {
         String deptName = txtDeptName.getText().trim();
-        String manID = txtManID.getText().trim();
-        String dManID = txtDManID.getText().trim();
-        
-
-        if (deptName.isEmpty() || manID.isEmpty() || dManID.isEmpty()) {
+        if (deptName.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
       
 
-        String insertSQL = "INSERT INTO Departments (DepartmentName, ManagerID, DeputyManagerID) VALUES (?, ?, ?)";
+        String insertSQL = "INSERT INTO Departments (DepartmentName) VALUES (?)";
 
         try (Connection conn = ConnectDatabase.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, deptName);
-            pstmt.setString(2, manID);
-            pstmt.setString(3, dManID);
+
             
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
                 JOptionPane.showMessageDialog(this, "Thêm công việc thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                loadJobs();
+                loadDepts();
                 setEditStatus(false);
             } else {
                 JOptionPane.showMessageDialog(this, "Lỗi khi thêm công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -696,13 +625,13 @@ private void resetJob() {
 
         if (confirm == JOptionPane.YES_OPTION) {
             try (Connection conn = ConnectDatabase.getConnection();
-                 PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Departments WHERE DeptID = ?")) {
+                 PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Departments WHERE DepartmentID = ?")) {
                 pstmt.setInt(1, DeptID);
                 int affectedRows = pstmt.executeUpdate();
 
                 if (affectedRows > 0) {
                     JOptionPane.showMessageDialog(this, "Xóa công việc thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                    loadJobs();
+                    loadDepts();
                 } else {
                     JOptionPane.showMessageDialog(this, "Không thể xóa công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
@@ -715,11 +644,6 @@ private void resetJob() {
     });
 
     }//GEN-LAST:event_btnDeleteJobActionPerformed
-
-    private void txtManIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtManIDActionPerformed
-        // TODO add your handling code here:
-
-    }//GEN-LAST:event_txtManIDActionPerformed
 
     private void btnEditJobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditJobActionPerformed
         // TODO add your handling code here:
@@ -741,26 +665,22 @@ private void resetJob() {
     btnSaveJob.addActionListener(e -> {
         int DeptId = (int) tbDept.getValueAt(selectedRow, 0);
         String deptName = txtDeptName.getText().trim();
-        String manID = txtManID.getText().trim();
-        String dManID = txtDManID.getText().trim();
-        if (deptName.isEmpty() || manID.isEmpty() || dManID.isEmpty()) {
+        if (deptName.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        String updateSQL = "UPDATE Departments SET DepartmentName=?, ManagerID=?, DeputyManagerID=? WHERE DepartmentID=?";
+        String updateSQL = "UPDATE Departments SET DepartmentName=? WHERE DepartmentID=?";
 
         try (Connection conn = ConnectDatabase.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
 
             pstmt.setString(1, deptName);
-            pstmt.setString(2, manID);
-            pstmt.setString(3, dManID);
-            pstmt.setInt(4, DeptId);
+            pstmt.setInt(2, DeptId);
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
                 JOptionPane.showMessageDialog(this, "Cập nhật công việc thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                loadJobs();
+                loadDepts();
                 setEditStatus(false);
             } else {
                 JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật công việc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -791,10 +711,7 @@ private void resetJob() {
 
     int deptID = Integer.parseInt(tbDept.getValueAt(selectedRow, 0).toString()); 
     String deptName = txtDeptName.getText().trim();
-    String manID = txtManID.getText().trim();
-    String dManID = txtDManID.getText().trim();
-
-    if (deptName.isEmpty() || manID.isEmpty() || dManID.isEmpty()) {
+    if (deptName.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         btnSaveJob.setEnabled(true); 
         return;
@@ -806,13 +723,11 @@ private void resetJob() {
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
         pstmt.setString(1, deptName);
-        pstmt.setString(2, manID);      
-        pstmt.setString(3, dManID);
 
         int affectedRows = pstmt.executeUpdate();
         if (affectedRows > 0) {
             JOptionPane.showMessageDialog(this, "Cập nhật thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            loadJobs(); 
+            loadDepts(); 
         } else {
             JOptionPane.showMessageDialog(this, "Không thể cập nhật dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
@@ -836,14 +751,10 @@ private void resetJob() {
 
     cancelJob();
 
-    loadJobs();
+    loadDepts();
 
     btnCancelJob.setEnabled(true);
     }//GEN-LAST:event_btnCancelJobActionPerformed
-
-    private void txtDManIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDManIDActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtDManIDActionPerformed
 
     private void txtDeptNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDeptNameActionPerformed
         // TODO add your handling code here:
@@ -863,17 +774,11 @@ private void resetJob() {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JTable tbDept;
-    private javax.swing.JTextField txtDManID;
     private javax.swing.JTextField txtDeptName;
-    private javax.swing.JTextField txtManID;
     // End of variables declaration//GEN-END:variables
 }

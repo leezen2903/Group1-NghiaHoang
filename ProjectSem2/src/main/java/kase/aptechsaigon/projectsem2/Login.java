@@ -13,11 +13,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import javax.swing.JOptionPane;
 
-
-/**
- *
- * @author Admin
- */
 public class Login extends javax.swing.JFrame {
    
     public static int loggedEmployeeID;
@@ -36,6 +31,7 @@ public class Login extends javax.swing.JFrame {
     public static String loggedPassword;
         public Login() {
         initComponents();
+        setLocationRelativeTo(null); 
     }
 
     @SuppressWarnings("unchecked")

@@ -39,7 +39,6 @@ public class MainFrame extends javax.swing.JFrame {
         
         initComponents();
         setExtendedState(JFrame.MAXIMIZED_BOTH); //Full màn hình
-        JOptionPane.showMessageDialog(this, "Xin chào, " + fullName);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         jpJob = new Job();
@@ -93,10 +92,8 @@ public class MainFrame extends javax.swing.JFrame {
         jpAttTracking1 = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jmSystem = new javax.swing.JMenu();
-        jmiHome = new javax.swing.JMenuItem();
-        jmiLogout = new javax.swing.JMenuItem();
-        jmiExit = new javax.swing.JMenuItem();
-        jmiAccount = new javax.swing.JMenuItem();
+        jmiUpdateInfo = new javax.swing.JMenuItem();
+        jmiChangePwd = new javax.swing.JMenuItem();
         jmHR = new javax.swing.JMenu();
         jmiDept = new javax.swing.JMenuItem();
         jmiPosition = new javax.swing.JMenuItem();
@@ -105,11 +102,8 @@ public class MainFrame extends javax.swing.JFrame {
         jmJob = new javax.swing.JMenu();
         jmiJobManagement = new javax.swing.JMenuItem();
         jmSalary = new javax.swing.JMenu();
-        jmiStaffSalary = new javax.swing.JMenuItem();
-        jmiCalculateSalary = new javax.swing.JMenuItem();
         jmiAttendanceTracking = new javax.swing.JMenuItem();
         jmHelp = new javax.swing.JMenu();
-        jmiManual = new javax.swing.JMenuItem();
         jmiAbout = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -419,33 +413,27 @@ public class MainFrame extends javax.swing.JFrame {
         );
 
         jmSystem.setText("System");
-
-        jmiHome.setText("Home");
-        jmiHome.addActionListener(new java.awt.event.ActionListener() {
+        jmSystem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmiHomeActionPerformed(evt);
+                jmSystemActionPerformed(evt);
             }
         });
-        jmSystem.add(jmiHome);
 
-        jmiLogout.setText("Log out");
-        jmiLogout.addActionListener(new java.awt.event.ActionListener() {
+        jmiUpdateInfo.setText("Update Info");
+        jmiUpdateInfo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmiLogoutActionPerformed(evt);
+                jmiUpdateInfoActionPerformed(evt);
             }
         });
-        jmSystem.add(jmiLogout);
+        jmSystem.add(jmiUpdateInfo);
 
-        jmiExit.setText("Exit");
-        jmSystem.add(jmiExit);
-
-        jmiAccount.setText("Account");
-        jmiAccount.addActionListener(new java.awt.event.ActionListener() {
+        jmiChangePwd.setText("Change Password");
+        jmiChangePwd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmiAccountActionPerformed(evt);
+                jmiChangePwdActionPerformed(evt);
             }
         });
-        jmSystem.add(jmiAccount);
+        jmSystem.add(jmiChangePwd);
 
         jMenuBar1.add(jmSystem);
 
@@ -504,17 +492,6 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jmiStaffSalary.setText("Staff Salary");
-        jmSalary.add(jmiStaffSalary);
-
-        jmiCalculateSalary.setText("Calculate Salary");
-        jmiCalculateSalary.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmiCalculateSalaryActionPerformed(evt);
-            }
-        });
-        jmSalary.add(jmiCalculateSalary);
-
         jmiAttendanceTracking.setText("Attendance Tracking");
         jmiAttendanceTracking.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -526,9 +503,6 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuBar1.add(jmSalary);
 
         jmHelp.setText("Help");
-
-        jmiManual.setText("Manual");
-        jmHelp.add(jmiManual);
 
         jmiAbout.setText("About");
         jmHelp.add(jmiAbout);
@@ -556,10 +530,6 @@ public class MainFrame extends javax.swing.JFrame {
       showPanel(jpJob);
     }//GEN-LAST:event_jmiJobManagementActionPerformed
 
-    private void jmiHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiHomeActionPerformed
-    
-    }//GEN-LAST:event_jmiHomeActionPerformed
-
     private void jmiDeptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiDeptActionPerformed
         showPanel(jpDept);
     }//GEN-LAST:event_jmiDeptActionPerformed
@@ -577,25 +547,27 @@ public class MainFrame extends javax.swing.JFrame {
        showPanel(jpTeam);
     }//GEN-LAST:event_jmiTeamActionPerformed
 
-    private void jmiCalculateSalaryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiCalculateSalaryActionPerformed
-        showPanel(jpSalary);
-    }//GEN-LAST:event_jmiCalculateSalaryActionPerformed
-
-    private void jmiLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiLogoutActionPerformed
-      
-    }//GEN-LAST:event_jmiLogoutActionPerformed
-
     private void jmiPositionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiPositionActionPerformed
         showPanel(jpPosition);
     }//GEN-LAST:event_jmiPositionActionPerformed
 
-    private void jmiAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiAccountActionPerformed
+    private void jmiUpdateInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiUpdateInfoActionPerformed
         showPanel(jpAccount);
-    }//GEN-LAST:event_jmiAccountActionPerformed
+    }//GEN-LAST:event_jmiUpdateInfoActionPerformed
 
     private void jmSalaryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmSalaryActionPerformed
    
     }//GEN-LAST:event_jmSalaryActionPerformed
+
+    private void jmSystemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmSystemActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jmSystemActionPerformed
+
+    private void jmiChangePwdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiChangePwdActionPerformed
+        ChangePwd changePwdFrame = new ChangePwd();
+        changePwdFrame.setVisible(true);
+        changePwdFrame.setLocationRelativeTo(null);
+    }//GEN-LAST:event_jmiChangePwdActionPerformed
 
     /**
      * @param args the command line arguments
@@ -614,19 +586,14 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jmSalary;
     private javax.swing.JMenu jmSystem;
     private javax.swing.JMenuItem jmiAbout;
-    private javax.swing.JMenuItem jmiAccount;
     private javax.swing.JMenuItem jmiAttendanceTracking;
-    private javax.swing.JMenuItem jmiCalculateSalary;
+    private javax.swing.JMenuItem jmiChangePwd;
     private javax.swing.JMenuItem jmiDept;
-    private javax.swing.JMenuItem jmiExit;
-    private javax.swing.JMenuItem jmiHome;
     private javax.swing.JMenuItem jmiJobManagement;
-    private javax.swing.JMenuItem jmiLogout;
-    private javax.swing.JMenuItem jmiManual;
     private javax.swing.JMenuItem jmiPosition;
     private javax.swing.JMenuItem jmiStaff;
-    private javax.swing.JMenuItem jmiStaffSalary;
     private javax.swing.JMenuItem jmiTeam;
+    private javax.swing.JMenuItem jmiUpdateInfo;
     private javax.swing.JPanel jpAccount;
     private javax.swing.JPanel jpAttTracking;
     private javax.swing.JPanel jpAttTracking1;
