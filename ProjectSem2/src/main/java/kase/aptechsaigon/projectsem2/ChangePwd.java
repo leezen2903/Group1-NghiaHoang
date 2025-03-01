@@ -35,7 +35,7 @@ public class ChangePwd extends javax.swing.JFrame {
         txtNewPwd = new javax.swing.JTextField();
         jRetypePwd = new javax.swing.JLabel();
         txtReypePwd = new javax.swing.JTextField();
-        btnSubmit = new javax.swing.JButton();
+        btnSave = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -49,10 +49,10 @@ public class ChangePwd extends javax.swing.JFrame {
 
         jRetypePwd.setText("Retype new password:");
 
-        btnSubmit.setText("Submit");
-        btnSubmit.addActionListener(new java.awt.event.ActionListener() {
+        btnSave.setText("Save");
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSubmitActionPerformed(evt);
+                btnSaveActionPerformed(evt);
             }
         });
 
@@ -80,7 +80,7 @@ public class ChangePwd extends javax.swing.JFrame {
                         .addComponent(txtNewPwd, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnSubmit)
+                            .addComponent(btnSave)
                             .addComponent(jRetypePwd))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -108,7 +108,7 @@ public class ChangePwd extends javax.swing.JFrame {
                     .addComponent(txtReypePwd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSubmit)
+                    .addComponent(btnSave)
                     .addComponent(btnCancel))
                 .addContainerGap(12, Short.MAX_VALUE))
         );
@@ -147,12 +147,12 @@ public class ChangePwd extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        // TODO add your handling code here:
+        dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
 
-    private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitActionPerformed
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnSubmitActionPerformed
+    }//GEN-LAST:event_btnSaveActionPerformed
 
     /**
      * @param args the command line arguments
@@ -192,7 +192,7 @@ public class ChangePwd extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
-    private javax.swing.JButton btnSubmit;
+    private javax.swing.JButton btnSave;
     private javax.swing.JLabel jNewPwd;
     private javax.swing.JLabel jOldPwd;
     private javax.swing.JPanel jPanel1;

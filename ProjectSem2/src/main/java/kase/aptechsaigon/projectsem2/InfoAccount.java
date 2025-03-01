@@ -19,7 +19,6 @@ public class InfoAccount extends javax.swing.JPanel {
     public InfoAccount() {
         initComponents();
         loadInfo();
-        editInfo(false);
     }
     
     private void loadInfo() {
@@ -60,31 +59,44 @@ public class InfoAccount extends javax.swing.JPanel {
     
     private void editInfo(boolean editable) {
         txtEmpID.setEditable(false);
-        txtFullName.setEditable(editable);
-        txtIDCardNum.setEditable(editable);
-        txtAddress.setEditable(editable);
-        txtEmail.setEditable(editable);
-        txtPhoneNum.setEditable(editable);
-        txtCtrDuration.setEditable(editable);
-        txtExp.setEditable(editable);
-        txtPositionID.setEditable(false);
-        txtUsername.setEditable(false);
-        txtPassword.setEditable(false);
-        
-        //Show lại các nút để Edit
-        txtFullName.setEnabled(true);
-        txtIDCardNum.setEnabled(true);
-        txtAddress.setEnabled(true);
-        txtEmail.setEnabled(true);
-        txtPhoneNum.setEnabled(true);
-        txtCtrDuration.setEnabled(true);
-        txtExp.setEnabled(true);
-        txtPositionID.setEnabled(true);       
-        rbtnMale.setEnabled(true);
-        rbtnFemale.setEnabled(true);
-        rbtnOther.setEnabled(true);
-        jdDoB.setEnabled(true);
-        jdStartDate.setEnabled(true);
+    txtFullName.setEditable(editable);
+    txtIDCardNum.setEditable(editable);
+    txtAddress.setEditable(editable);
+    txtEmail.setEditable(editable);
+    txtPhoneNum.setEditable(editable);
+    txtCtrDuration.setEditable(editable);
+    txtExp.setEditable(editable);      
+    txtPositionID.setEditable(false);
+    txtUsername.setEditable(false);
+    txtPassword.setEditable(false);
+
+    // Hiển thị nhưng không cho chỉnh sửa các field
+    txtFullName.setEnabled(editable);
+    txtIDCardNum.setEnabled(editable);
+    txtAddress.setEnabled(editable);
+    txtEmail.setEnabled(editable);
+    txtPhoneNum.setEnabled(editable);
+    txtCtrDuration.setEnabled(editable);
+    txtExp.setEnabled(editable);
+    txtPositionID.setEnabled(true);
+
+    // Vô hiệu hóa RadioButton (giới tính)
+    rbtnMale.setEnabled(editable);
+    rbtnMale.setFocusable(editable);
+
+    rbtnFemale.setEnabled(editable);
+    rbtnFemale.setFocusable(editable);
+
+    rbtnOther.setEnabled(editable);
+    rbtnOther.setFocusable(editable);
+
+    jdDoB.getDateEditor().getUiComponent().setEnabled(editable);
+    jdDoB.getDateEditor().getUiComponent().setFocusable(editable);
+    jdDoB.getCalendarButton().setEnabled(editable); // Hiện nút chọn ngày
+
+    jdStartDate.getDateEditor().getUiComponent().setEnabled(editable);
+    jdStartDate.getDateEditor().getUiComponent().setFocusable(editable);
+    jdStartDate.getCalendarButton().setEnabled(editable);
     }
     private void submitInfo() {
         String employeeID = txtEmpID.getText().trim();
@@ -197,7 +209,6 @@ public class InfoAccount extends javax.swing.JPanel {
         jdStartDate = new com.toedter.calendar.JDateChooser();
         Submit1 = new javax.swing.JButton();
         Submit2 = new javax.swing.JButton();
-        btnChangePassword = new javax.swing.JButton();
 
         jtInfo.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jtInfo.setText("Infomation Account");
@@ -267,7 +278,7 @@ public class InfoAccount extends javax.swing.JPanel {
             }
         });
 
-        Submit1.setText("Submit");
+        Submit1.setText("Save");
         Submit1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 Submit1ActionPerformed(evt);
@@ -275,11 +286,9 @@ public class InfoAccount extends javax.swing.JPanel {
         });
 
         Submit2.setText("Cancel");
-
-        btnChangePassword.setText("Change Password");
-        btnChangePassword.addActionListener(new java.awt.event.ActionListener() {
+        Submit2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnChangePasswordActionPerformed(evt);
+                Submit2ActionPerformed(evt);
             }
         });
 
@@ -315,7 +324,7 @@ public class InfoAccount extends javax.swing.JPanel {
                             .addComponent(txtPositionID)
                             .addComponent(txtUsername)
                             .addComponent(txtPassword)
-                            .addComponent(jdDoB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jdDoB, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(rbtnMale)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -328,12 +337,10 @@ public class InfoAccount extends javax.swing.JPanel {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(btnEdit)
                         .addGap(18, 18, 18)
-                        .addComponent(btnChangePassword, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
                         .addComponent(Submit1)
                         .addGap(18, 18, 18)
                         .addComponent(Submit2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jlPhoneNum)
                         .addGap(46, 46, 46)
@@ -405,8 +412,7 @@ public class InfoAccount extends javax.swing.JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(Submit1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Submit2, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnChangePassword, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(Submit2, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(12, Short.MAX_VALUE))
         );
 
@@ -463,22 +469,20 @@ public class InfoAccount extends javax.swing.JPanel {
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         editInfo(true);
-        btnChangePassword.setEnabled(false);
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void Submit1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Submit1ActionPerformed
        submitInfo();
     }//GEN-LAST:event_Submit1ActionPerformed
 
-    private void btnChangePasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangePasswordActionPerformed
-        btnEdit.setEnabled(false);
-    }//GEN-LAST:event_btnChangePasswordActionPerformed
+    private void Submit2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Submit2ActionPerformed
+        loadInfo();
+    }//GEN-LAST:event_Submit2ActionPerformed
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Submit1;
     private javax.swing.JButton Submit2;
-    private javax.swing.JButton btnChangePassword;
     private javax.swing.JButton btnEdit;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JPanel jPanel1;

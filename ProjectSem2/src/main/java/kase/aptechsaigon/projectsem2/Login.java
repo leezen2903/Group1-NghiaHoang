@@ -221,17 +221,17 @@ public class Login extends javax.swing.JFrame {
             loggedStartDate = rs.getDate("StartDate");
             loggedPassword = rs.getString("PasswordHash");
             
-            JOptionPane.showMessageDialog(this, "Đăng nhập thành công! Xin chào, " + loggedFullName);
+            JOptionPane.showMessageDialog(this, "Login successfully! Hello, " + loggedFullName);
             MainFrame mainFrame = new MainFrame(loggedEmployeeID, loggedFullName, loggedPositionID);
             mainFrame.setVisible(true);
             this.dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Sai UserID hoặc không tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Wrong UserID or not exits", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
     } catch (SQLException ex) {
         ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Lỗi kết nối cơ sở dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Error connecting database!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

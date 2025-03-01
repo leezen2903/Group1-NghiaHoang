@@ -783,7 +783,7 @@ public class Employee extends javax.swing.JPanel {
                                         .addComponent(rbtnDManager)
                                         .addGap(9, 9, 9)
                                         .addComponent(rbtnStaff)))
-                                .addGap(0, 301, Short.MAX_VALUE))
+                                .addGap(0, 120, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnSaveJob)
@@ -847,12 +847,12 @@ public class Employee extends javax.swing.JPanel {
                             .addComponent(rbtnStaff)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(12, 12, 12)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btnSaveJob)
-                                .addComponent(btnCancel))
-                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(16, Short.MAX_VALUE))
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 234, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSaveJob)
+                    .addComponent(btnCancel))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
